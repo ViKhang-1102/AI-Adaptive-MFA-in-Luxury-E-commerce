@@ -1,0 +1,88 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProfileController;
+
+// Public Routes
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
+
+// Authentication Routes
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+});
+
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// Protected Routes for All Authenticated Users
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+    // Cart Routes
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/update/{item}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{item}', [CartController::class, 'remove'])->name('cart.remove');
+
+    // Order Routes
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+});
+
+// Customer Routes
+Route::middleware(['auth', \App\Http\Middleware\CustomerMiddleware::class])->group(function () {
+    Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::post('/orders/{order}/payment', [OrderController::class, 'payment'])->name('orders.payment');
+
+    // Wishlist Routes
+    Route::get('/wishlist', [ProductController::class, 'wishlist'])->name('wishlist');
+    Route::post('/wishlist/add/{product}', [ProductController::class, 'addWishlist'])->name('wishlist.add');
+    Route::delete('/wishlist/remove/{product}', [ProductController::class, 'removeWishlist'])->name('wishlist.remove');
+
+    // Addresses Routes
+    Route::get('/addresses', [ProfileController::class, 'addresses'])->name('addresses.index');
+    Route::post('/addresses', [ProfileController::class, 'storeAddress'])->name('addresses.store');
+    Route::put('/addresses/{address}', [ProfileController::class, 'updateAddress'])->name('addresses.update');
+    Route::delete('/addresses/{address}', [ProfileController::class, 'destroyAddress'])->name('addresses.destroy');
+});
+
+// Seller Routes
+Route::middleware(['auth', \App\Http\Middleware\SellerMiddleware::class])->prefix('seller')->name('seller.')->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\Seller\DashboardController::class, 'index'])->name('dashboard');
+    Route::resource('/products', App\Http\Controllers\Seller\ProductController::class);
+    Route::resource('/categories', App\Http\Controllers\Seller\CategoryController::class);
+    Route::get('/orders', [App\Http\Controllers\Seller\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [App\Http\Controllers\Seller\OrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{order}/confirm', [App\Http\Controllers\Seller\OrderController::class, 'confirm'])->name('orders.confirm');
+    Route::post('/orders/{order}/cancel', [App\Http\Controllers\Seller\OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::post('/orders/{order}/ship', [App\Http\Controllers\Seller\OrderController::class, 'ship'])->name('orders.ship');
+    Route::get('/wallet', [App\Http\Controllers\Seller\WalletController::class, 'index'])->name('wallet');
+});
+
+// Admin Routes
+Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::resource('/customers', App\Http\Controllers\Admin\CustomerController::class);
+    Route::resource('/sellers', App\Http\Controllers\Admin\SellerController::class);
+    Route::resource('/categories', App\Http\Controllers\Admin\CategoryController::class);
+    Route::resource('/banners', App\Http\Controllers\Admin\BannerController::class);
+    Route::resource('/fees', App\Http\Controllers\Admin\FeeController::class);
+    Route::get('/wallet', [App\Http\Controllers\Admin\WalletController::class, 'index'])->name('wallet');
+    Route::get('/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
+});
