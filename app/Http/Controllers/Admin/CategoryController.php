@@ -10,13 +10,13 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::with('parent', 'children')->parent()->paginate(15);
+        $categories = Category::with('parent', 'children')->whereNull('parent_id')->paginate(15);
         return view('admin.categories.index', compact('categories'));
     }
 
     public function create()
     {
-        $parentCategories = Category::active()->whereNull('parent_id')->get();
+        $parentCategories = Category::whereNull('parent_id')->get();
         return view('admin.categories.create', compact('parentCategories'));
     }
 
@@ -24,9 +24,7 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
             'parent_id' => 'nullable|exists:categories,id',
-            'sort_order' => 'nullable|integer',
         ]);
 
         Category::create([
@@ -51,31 +49,40 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
             'parent_id' => 'nullable|exists:categories,id',
-            'sort_order' => 'nullable|integer',
-            'is_active' => 'boolean',
         ]);
 
         $category->update($validated);
 
-        return back()->with('success', 'Category updated');
+        return redirect()->route('admin.categories.index')->with('success', 'Category updated');
     }
 
     public function destroy(Category $category)
     {
-        // Check if category has products
-        if ($category->products()->exists()) {
-            return back()->with('error', 'Cannot delete category with products');
+        // Delete all products in this category and their images
+        $category->products()->each(function ($product) {
+            $product->images()->delete();
+            $product->reviews()->delete();
+            $product->cartItems()->delete();
+            $product->orderItems()->delete();
+            $product->wishlistItems()->delete();
+            $product->delete();
+        });
+        
+        // Delete subcategories and their products
+        foreach ($category->children as $child) {
+            $child->products()->each(function ($product) {
+                $product->images()->delete();
+                $product->reviews()->delete();
+                $product->cartItems()->delete();
+                $product->orderItems()->delete();
+                $product->wishlistItems()->delete();
+                $product->delete();
+            });
+            $child->delete();
         }
 
         $category->delete();
-        return back()->with('success', 'Category deleted');
-    }
-
-    public function show(Category $category)
-    {
-        $products = $category->products()->count();
-        return view('admin.categories.show', compact('category', 'products'));
+        return back()->with('success', 'Category and all related products deleted');
     }
 }

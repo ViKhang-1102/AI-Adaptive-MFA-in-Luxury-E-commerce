@@ -41,9 +41,15 @@
 
                     <!-- User Menu -->
                     <div class="relative group">
-                        <button class="text-gray-700 hover:text-blue-600 flex items-center space-x-1">
-                            <i class="fas fa-user-circle text-xl"></i>
-                            <span><?php echo e(auth()->user()->name); ?></span>
+                        <button class="text-gray-700 hover:text-blue-600 flex items-center space-x-2">
+                            <?php if(auth()->user()->avatar): ?>
+                                <img src="<?php echo e(asset('storage/' . auth()->user()->avatar)); ?>" 
+                                     alt="<?php echo e(auth()->user()->name); ?>" 
+                                     class="w-8 h-8 rounded-full object-cover border border-gray-300">
+                            <?php else: ?>
+                                <i class="fas fa-user-circle text-2xl"></i>
+                            <?php endif; ?>
+                            <span class="hidden sm:inline"><?php echo e(auth()->user()->name); ?></span>
                         </button>
                         <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden group-hover:block z-10">
                             <a href="<?php echo e(route('profile.show')); ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">

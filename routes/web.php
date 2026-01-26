@@ -78,10 +78,10 @@ Route::middleware(['auth', \App\Http\Middleware\SellerMiddleware::class])->prefi
 // Admin Routes
 Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-    Route::resource('/customers', App\Http\Controllers\Admin\CustomerController::class);
-    Route::resource('/sellers', App\Http\Controllers\Admin\SellerController::class);
-    Route::resource('/categories', App\Http\Controllers\Admin\CategoryController::class);
-    Route::resource('/banners', App\Http\Controllers\Admin\BannerController::class);
+    Route::resource('/customers', App\Http\Controllers\Admin\CustomerController::class, ['except' => ['show']]);
+    Route::resource('/sellers', App\Http\Controllers\Admin\SellerController::class, ['except' => ['show']]);
+    Route::resource('/categories', App\Http\Controllers\Admin\CategoryController::class, ['except' => ['show']]);
+    Route::resource('/banners', App\Http\Controllers\Admin\BannerController::class, ['except' => ['show']]);
     Route::resource('/fees', App\Http\Controllers\Admin\FeeController::class);
     Route::get('/wallet', [App\Http\Controllers\Admin\WalletController::class, 'index'])->name('wallet');
     Route::get('/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');

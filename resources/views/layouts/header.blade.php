@@ -40,9 +40,15 @@
 
                     <!-- User Menu -->
                     <div class="relative group">
-                        <button class="text-gray-700 hover:text-blue-600 flex items-center space-x-1">
-                            <i class="fas fa-user-circle text-xl"></i>
-                            <span>{{ auth()->user()->name }}</span>
+                        <button class="text-gray-700 hover:text-blue-600 flex items-center space-x-2">
+                            @if(auth()->user()->avatar)
+                                <img src="{{ asset('storage/' . auth()->user()->avatar) }}" 
+                                     alt="{{ auth()->user()->name }}" 
+                                     class="w-8 h-8 rounded-full object-cover border border-gray-300">
+                            @else
+                                <i class="fas fa-user-circle text-2xl"></i>
+                            @endif
+                            <span class="hidden sm:inline">{{ auth()->user()->name }}</span>
                         </button>
                         <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden group-hover:block z-10">
                             <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">

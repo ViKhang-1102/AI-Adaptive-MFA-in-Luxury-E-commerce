@@ -3,7 +3,15 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold">Customers Management</h1>
+        <div class="flex items-center gap-4">
+            <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 font-semibold">
+                ← Dashboard
+            </a>
+            <h1 class="text-3xl font-bold">Customers Management</h1>
+        </div>
+        <a href="{{ route('admin.customers.create') }}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-semibold">
+            <i class="fas fa-plus"></i> Add Customer
+        </a>
     </div>
 
     <!-- Search and Filter -->
@@ -27,7 +35,6 @@
                         <th class="px-6 py-3 text-left">Email</th>
                         <th class="px-6 py-3 text-left">Phone</th>
                         <th class="px-6 py-3 text-left">Joined</th>
-                        <th class="px-6 py-3 text-left">Status</th>
                         <th class="px-6 py-3 text-left">Actions</th>
                     </tr>
                 </thead>
@@ -38,17 +45,15 @@
                         <td class="px-6 py-3">{{ $customer->email }}</td>
                         <td class="px-6 py-3">{{ $customer->phone ?? 'N/A' }}</td>
                         <td class="px-6 py-3">{{ $customer->created_at->format('M d, Y') }}</td>
-                        <td class="px-6 py-3">
-                            <span class="px-2 py-1 text-sm rounded-full {{ $customer->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                {{ $customer->is_active ? 'Active' : 'Inactive' }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <a href="{{ route('admin.customers.show', $customer) }}" class="text-blue-600 hover:underline">View</a>
-                            <a href="{{ route('admin.customers.edit', $customer) }}" class="ml-4 text-blue-600 hover:underline">Edit</a>
-                            <form method="POST" action="{{ route('admin.customers.destroy', $customer) }}" class="inline ml-4" onsubmit="return confirm('Are you sure?')">
+                        <td class="px-6 py-3 flex gap-2">
+                            <a href="{{ route('admin.customers.edit', $customer) }}" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-semibold">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <form method="POST" action="{{ route('admin.customers.destroy', $customer) }}" class="inline" onsubmit="return confirm('Delete this customer permanently?')">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:underline">Delete</button>
+                                <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-semibold">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
                             </form>
                         </td>
                     </tr>

@@ -3,8 +3,15 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold">Banners Management</h1>
-        <a href="{{ route('admin.banners.create') }}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">+ Add Banner</a>
+        <div class="flex items-center gap-4">
+            <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 font-semibold">
+                ← Dashboard
+            </a>
+            <h1 class="text-3xl font-bold">Banners Management</h1>
+        </div>
+        <a href="{{ route('admin.banners.create') }}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-semibold">
+            <i class="fas fa-plus"></i> Add Banner
+        </a>
     </div>
 
     @if($banners->isEmpty())
@@ -40,11 +47,15 @@
                                 {{ $banner->is_active ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
-                        <td class="px-6 py-3">
-                            <a href="{{ route('admin.banners.edit', $banner) }}" class="text-blue-600 hover:underline text-sm">Edit</a>
-                            <form method="POST" action="{{ route('admin.banners.destroy', $banner) }}" class="inline ml-3" onsubmit="return confirm('Are you sure?')">
+                        <td class="px-6 py-3 flex gap-2">
+                            <a href="{{ route('admin.banners.edit', $banner) }}" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-semibold">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <form method="POST" action="{{ route('admin.banners.destroy', $banner) }}" class="inline" onsubmit="return confirm('Are you sure?')">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:underline text-sm">Delete</button>
+                                <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-semibold">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
                             </form>
                         </td>
                     </tr>

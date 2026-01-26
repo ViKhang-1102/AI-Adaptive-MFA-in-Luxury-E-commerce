@@ -4,7 +4,12 @@
 
 <?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">My Profile</h1>
+    <div class="flex items-center gap-4 mb-8">
+        <a href="<?php echo e(route('home')); ?>" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 font-semibold">
+            ← Home
+        </a>
+        <h1 class="text-3xl font-bold">My Profile</h1>
+    </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Sidebar -->
@@ -37,9 +42,11 @@
                     <div>
                         <label class="block font-bold mb-2">Avatar</label>
                         <?php if(auth()->user()->avatar): ?>
-                        <img src="<?php echo e(asset('storage/' . auth()->user()->avatar)); ?>" class="w-24 h-24 rounded mb-2">
+                        <img src="<?php echo e(asset('storage/' . auth()->user()->avatar)); ?>" alt="Avatar" class="w-24 h-24 rounded mb-2 object-cover" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%2212%22 fill=%22%23ddd%22/%3E%3C/svg%3E'">
                         <?php else: ?>
-                        <i class="fas fa-user-circle text-6xl text-gray-300"></i>
+                        <div class="w-24 h-24 rounded mb-2 bg-gray-300 flex items-center justify-center">
+                            <i class="fas fa-user text-2xl text-gray-600"></i>
+                        </div>
                         <?php endif; ?>
                         <input type="file" name="avatar" accept="image/*" class="block mt-2 px-3 py-2 border rounded">
                     </div>

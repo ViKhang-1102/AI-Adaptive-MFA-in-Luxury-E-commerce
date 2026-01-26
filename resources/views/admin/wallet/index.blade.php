@@ -2,7 +2,12 @@
 @section('title', 'Platform Wallet')
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">Platform Wallet Management</h1>
+    <div class="flex items-center gap-4 mb-8">
+        <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 font-semibold">
+            ← Dashboard
+        </a>
+        <h1 class="text-3xl font-bold">Platform Wallet Management</h1>
+    </div>
 
     <!-- Platform Wallet Summary -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

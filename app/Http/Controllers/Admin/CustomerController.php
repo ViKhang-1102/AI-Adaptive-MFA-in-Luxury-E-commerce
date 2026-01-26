@@ -16,17 +16,41 @@ class CustomerController extends Controller
         return view('admin.customers.index', compact('customers'));
     }
 
-    public function show(User $user)
+    public function create()
     {
-        if (!$user->isCustomer()) {
-            abort(404);
-        }
-
-        return view('admin.customers.show', compact('user'));
+        return view('admin.customers.create');
     }
 
-    public function edit(User $user)
+    public function store(Request $request)
     {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6|confirmed',
+            'phone' => 'nullable|string|max:20',
+        ]);
+
+        $customer = User::create([
+            ...$validated,
+            'password' => Hash::make($validated['password']),
+            'role' => 'customer',
+            'is_active' => true,
+        ]);
+
+        EWallet::create([
+            'user_id' => $customer->id,
+            'balance' => 0,
+            'total_received' => 0,
+            'total_spent' => 0,
+        ]);
+
+        return redirect()->route('admin.customers.index')->with('success', 'Customer created');
+    }
+
+    public function edit($user)
+    {
+        $user = User::findOrFail($user);
+        
         if (!$user->isCustomer()) {
             abort(404);
         }
@@ -34,8 +58,10 @@ class CustomerController extends Controller
         return view('admin.customers.edit', compact('user'));
     }
 
-    public function update(Request $request, User $user)
+    public function update(Request $request, $user)
     {
+        $user = User::findOrFail($user);
+        
         if (!$user->isCustomer()) {
             abort(404);
         }
@@ -44,22 +70,50 @@ class CustomerController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
-            'is_active' => 'boolean',
         ]);
 
         $user->update($validated);
 
-        return redirect()->route('admin.customers.show', $user)->with('success', 'Customer updated');
+        return redirect()->route('admin.customers.index')->with('success', 'Customer updated');
     }
 
-    public function destroy(User $user)
+    public function destroy($user)
     {
+        $user = User::findOrFail($user);
+        
         if (!$user->isCustomer()) {
             abort(404);
         }
 
-        $user->update(['is_active' => false]);
+        // Delete all related data - cart items first, then cart
+        if ($user->cart) {
+            $user->cart->items()->delete();
+            $user->cart->delete();
+        }
 
-        return back()->with('success', 'Customer deactivated');
+        // Delete addresses
+        $user->addresses()->delete();
+
+        // Delete wishlist items
+        $user->wishlist()->delete();
+
+        // Delete reviews
+        $user->reviews()->delete();
+
+        // Delete orders and their items
+        $user->ordersAsCustomer()->each(function ($order) {
+            $order->items()->delete();
+            $order->delete();
+        });
+
+        // Delete wallet and transactions
+        if ($user->wallet) {
+            $user->wallet->delete();
+        }
+
+        // Delete user permanently
+        $user->delete();
+
+        return back()->with('success', 'Customer deleted permanently');
     }
 }

@@ -10,8 +10,8 @@ class FeeController extends Controller
 {
     public function index()
     {
-        $fee = SystemFee::firstOrFail();
-        return view('admin.fees.index', compact('fee'));
+        $fees = SystemFee::all();
+        return view('admin.fees.index', compact('fees'));
     }
 
     public function edit()

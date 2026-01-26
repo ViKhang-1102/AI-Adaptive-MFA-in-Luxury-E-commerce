@@ -44,16 +44,7 @@ class SellerController extends Controller
             'total_spent' => 0,
         ]);
 
-        return redirect()->route('admin.sellers.show', $seller)->with('success', 'Seller created');
-    }
-
-    public function show(User $seller)
-    {
-        if (!$seller->isSeller()) {
-            abort(404);
-        }
-
-        return view('admin.sellers.show', compact('seller'));
+        return redirect()->route('admin.sellers.index')->with('success', 'Seller created');
     }
 
     public function edit(User $seller)
@@ -75,12 +66,11 @@ class SellerController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $seller->id,
             'phone' => 'nullable|string|max:20',
-            'is_active' => 'boolean',
         ]);
 
         $seller->update($validated);
 
-        return redirect()->route('admin.sellers.show', $seller)->with('success', 'Seller updated');
+        return redirect()->route('admin.sellers.index')->with('success', 'Seller updated');
     }
 
     public function destroy(User $seller)
@@ -89,8 +79,33 @@ class SellerController extends Controller
             abort(404);
         }
 
-        $seller->update(['is_active' => false]);
+        // Delete all products and their images
+        $seller->products()->each(function ($product) {
+            $product->images()->delete();
+            $product->reviews()->delete();
+            $product->cartItems()->delete();
+            $product->orderItems()->delete();
+            $product->wishlistItems()->delete();
+            $product->delete();
+        });
 
-        return back()->with('success', 'Seller deactivated');
+        // Delete seller categories
+        $seller->sellerCategories()->delete();
+
+        // Delete orders and their items
+        $seller->ordersAsSeller()->each(function ($order) {
+            $order->items()->delete();
+            $order->delete();
+        });
+
+        // Delete wallet
+        if ($seller->wallet) {
+            $seller->wallet->delete();
+        }
+
+        // Delete seller permanently
+        $seller->delete();
+
+        return back()->with('success', 'Seller deleted permanently');
     }
 }

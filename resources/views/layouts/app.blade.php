@@ -7,10 +7,35 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     @stack('styles')
+    <style>
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        #scroll-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 40;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        #scroll-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
     <!-- Header -->
     @include('layouts.header')
+
+    <!-- Scroll to Top Button -->
+    <button id="scroll-to-top" class="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
     <!-- Alert Messages -->
     @if ($errors->any())
@@ -44,5 +69,24 @@
     @include('layouts.footer')
 
     @stack('scripts')
+
+    <script>
+        // Scroll to Top Button
+        const scrollBtn = document.getElementById('scroll-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollBtn.classList.add('show');
+            } else {
+                scrollBtn.classList.remove('show');
+            }
+        });
+
+        scrollBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
 </body>
 </html>

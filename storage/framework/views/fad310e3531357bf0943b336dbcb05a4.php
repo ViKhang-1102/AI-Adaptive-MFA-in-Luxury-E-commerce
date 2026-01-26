@@ -3,8 +3,15 @@
 <?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold">Categories Management</h1>
-        <a href="<?php echo e(route('admin.categories.create')); ?>" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">+ Add Category</a>
+        <div class="flex items-center gap-4">
+            <a href="<?php echo e(route('admin.dashboard')); ?>" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 font-semibold">
+                ← Dashboard
+            </a>
+            <h1 class="text-3xl font-bold">Categories Management</h1>
+        </div>
+        <a href="<?php echo e(route('admin.categories.create')); ?>" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-semibold">
+            <i class="fas fa-plus"></i> Add Category
+        </a>
     </div>
 
     <?php if($categories->isEmpty()): ?>
@@ -19,7 +26,6 @@
                         <th class="px-6 py-3 text-left">Category Name</th>
                         <th class="px-6 py-3 text-left">Parent</th>
                         <th class="px-6 py-3 text-left">Products</th>
-                        <th class="px-6 py-3 text-left">Status</th>
                         <th class="px-6 py-3 text-left">Actions</th>
                     </tr>
                 </thead>
@@ -29,17 +35,15 @@
                         <td class="px-6 py-3 font-semibold"><?php echo e($category->name); ?></td>
                         <td class="px-6 py-3"><?php echo e($category->parent->name ?? 'Root'); ?></td>
                         <td class="px-6 py-3"><?php echo e($category->products_count ?? 0); ?></td>
-                        <td class="px-6 py-3">
-                            <span class="px-2 py-1 text-sm rounded-full <?php echo e($category->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'); ?>">
-                                <?php echo e($category->is_active ? 'Active' : 'Inactive'); ?>
-
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <a href="<?php echo e(route('admin.categories.edit', $category)); ?>" class="text-blue-600 hover:underline text-sm">Edit</a>
-                            <form method="POST" action="<?php echo e(route('admin.categories.destroy', $category)); ?>" class="inline ml-3" onsubmit="return confirm('Are you sure?')">
+                        <td class="px-6 py-3 flex gap-2">
+                            <a href="<?php echo e(route('admin.categories.edit', $category)); ?>" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-semibold">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <form method="POST" action="<?php echo e(route('admin.categories.destroy', $category)); ?>" class="inline" onsubmit="return confirm('Delete this category and all its products?')">
                                 <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
-                                <button type="submit" class="text-red-600 hover:underline text-sm">Delete</button>
+                                <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-semibold">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
                             </form>
                         </td>
                     </tr>

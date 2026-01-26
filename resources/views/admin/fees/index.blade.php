@@ -2,7 +2,12 @@
 @section('title', 'System Fees & Settings')
 @section('content')
 <div class="max-w-2xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">System Fees & Settings</h1>
+    <div class="flex items-center gap-4 mb-8">
+        <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 font-semibold">
+            ← Dashboard
+        </a>
+        <h1 class="text-3xl font-bold">System Fees & Settings</h1>
+    </div>
 
     @if($fees->isEmpty())
         <div class="bg-white p-6 rounded-lg shadow text-center text-gray-500">

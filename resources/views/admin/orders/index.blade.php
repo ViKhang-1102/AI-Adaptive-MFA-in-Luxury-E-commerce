@@ -3,7 +3,12 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold">All Orders</h1>
+        <div class="flex items-center gap-4">
+            <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 font-semibold">
+                ← Dashboard
+            </a>
+            <h1 class="text-3xl font-bold">All Orders</h1>
+        </div>
         <div class="flex gap-2">
             <select id="status-filter" class="px-4 py-2 border rounded">
                 <option value="">All Status</option>

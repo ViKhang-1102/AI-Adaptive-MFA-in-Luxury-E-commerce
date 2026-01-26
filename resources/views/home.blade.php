@@ -7,18 +7,111 @@
     <!-- Banners Carousel -->
     @if($banners->count() > 0)
     <div class="mt-4 mb-8">
-        <div class="relative bg-gray-200 h-96 rounded-lg overflow-hidden">
-            @foreach($banners as $banner)
-            <div class="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
-                <img src="{{ asset('storage/' . $banner->image) }}" class="w-full h-full object-cover" alt="{{ $banner->title }}">
-                <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                    <h2 class="text-white text-4xl font-bold">{{ $banner->title }}</h2>
+        <div class="relative bg-gray-200 h-96 rounded-lg overflow-hidden group">
+            <div id="banner-carousel" class="relative w-full h-full">
+                @foreach($banners as $key => $banner)
+                <div class="banner-slide absolute inset-0 transition-opacity duration-1000 {{ $key === 0 ? 'opacity-100' : 'opacity-0' }}" data-index="{{ $key }}">
+                    <img src="{{ asset('storage/' . $banner->image) }}" class="w-full h-full object-cover" alt="{{ $banner->title }}">
+                    <div class="absolute inset-0 bg-black bg-opacity-40 flex items-end pb-12">
+                        <h2 class="text-white text-4xl font-bold text-center px-4 w-full">{{ $banner->title }}</h2>
+                    </div>
                 </div>
+                @endforeach
             </div>
-            @endforeach
-            <img src="https://via.placeholder.com/1200x400?text=Welcome+to+E-Shop" class="w-full h-full object-cover" alt="Banner">
+            
+            <!-- Previous Button -->
+            <button id="banner-prev" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-800 rounded-full p-2 transition opacity-0 group-hover:opacity-100 z-10">
+                <i class="fas fa-chevron-left text-xl"></i>
+            </button>
+            
+            <!-- Next Button -->
+            <button id="banner-next" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-800 rounded-full p-2 transition opacity-0 group-hover:opacity-100 z-10">
+                <i class="fas fa-chevron-right text-xl"></i>
+            </button>
+            
+            <!-- Banner navigation dots -->
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                @foreach($banners as $key => $banner)
+                <button class="banner-dot w-3 h-3 rounded-full bg-white transition {{ $key === 0 ? 'opacity-100' : 'opacity-50' }}" data-index="{{ $key }}"></button>
+                @endforeach
+            </div>
         </div>
     </div>
+
+    <script>
+        let currentBanner = 0;
+        let autoSlideInterval;
+        const banners = document.querySelectorAll('.banner-slide');
+        const dots = document.querySelectorAll('.banner-dot');
+        const prevBtn = document.getElementById('banner-prev');
+        const nextBtn = document.getElementById('banner-next');
+        const totalBanners = banners.length;
+
+        function showBanner(index) {
+            banners.forEach(el => el.classList.add('opacity-0'));
+            banners.forEach(el => el.classList.remove('opacity-100'));
+            dots.forEach(el => el.classList.add('opacity-50'));
+            dots.forEach(el => el.classList.remove('opacity-100'));
+            
+            banners[index].classList.remove('opacity-0');
+            banners[index].classList.add('opacity-100');
+            dots[index].classList.remove('opacity-50');
+            dots[index].classList.add('opacity-100');
+        }
+
+        function nextBanner() {
+            currentBanner = (currentBanner + 1) % totalBanners;
+            showBanner(currentBanner);
+        }
+
+        function prevBanner() {
+            currentBanner = (currentBanner - 1 + totalBanners) % totalBanners;
+            showBanner(currentBanner);
+        }
+
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(nextBanner, 5000);
+        }
+
+        function stopAutoSlide() {
+            clearInterval(autoSlideInterval);
+        }
+
+        function resetAutoSlide() {
+            stopAutoSlide();
+            startAutoSlide();
+        }
+
+        // Auto slide every 5 seconds
+        if (totalBanners > 1) {
+            startAutoSlide();
+        }
+
+        // Previous button
+        prevBtn.addEventListener('click', () => {
+            prevBanner();
+            resetAutoSlide();
+        });
+
+        // Next button
+        nextBtn.addEventListener('click', () => {
+            nextBanner();
+            resetAutoSlide();
+        });
+
+        // Click on dots
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentBanner = index;
+                showBanner(currentBanner);
+                resetAutoSlide();
+            });
+        });
+
+        // Stop auto-slide on hover
+        document.querySelector('.group')?.addEventListener('mouseenter', stopAutoSlide);
+        document.querySelector('.group')?.addEventListener('mouseleave', startAutoSlide);
+    </script>
     @endif
 
     <!-- Categories Section -->
