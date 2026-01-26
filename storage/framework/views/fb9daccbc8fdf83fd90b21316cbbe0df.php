@@ -2,14 +2,14 @@
 <?php $__env->startSection('title', 'My Categories'); ?>
 <?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold">My Categories</h1>
-        <a href="<?php echo e(route('seller.categories.create')); ?>" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">+ Add Category</a>
+    <div class="mb-8">
+        <a href="<?php echo e(route('seller.dashboard')); ?>" class="text-blue-600 hover:underline mb-4 inline-block">&larr; Back to Dashboard</a>
+        <h1 class="text-3xl font-bold">Available Categories</h1>
     </div>
 
     <?php if($categories->isEmpty()): ?>
         <div class="bg-white p-6 rounded-lg shadow text-center text-gray-500">
-            No categories found. <a href="<?php echo e(route('seller.categories.create')); ?>" class="text-blue-600 hover:underline">Create one</a>
+            No categories available yet. Please contact admin to create categories.
         </div>
     <?php else: ?>
         <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -17,10 +17,9 @@
                 <thead class="bg-gray-100 border-b">
                     <tr>
                         <th class="px-6 py-3 text-left">Category Name</th>
-                        <th class="px-6 py-3 text-left">Products</th>
-                        <th class="px-6 py-3 text-left">Status</th>
+                        <th class="px-6 py-3 text-left">Your Products</th>
                         <th class="px-6 py-3 text-left">Created</th>
-                        <th class="px-6 py-3 text-left">Actions</th>
+                        <th class="px-6 py-3 text-left">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,19 +27,9 @@
                     <tr class="border-b hover:bg-gray-50">
                         <td class="px-6 py-3 font-semibold"><?php echo e($category->name); ?></td>
                         <td class="px-6 py-3"><?php echo e($category->products_count ?? 0); ?></td>
-                        <td class="px-6 py-3">
-                            <span class="px-2 py-1 text-sm rounded-full <?php echo e($category->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'); ?>">
-                                <?php echo e($category->is_active ? 'Active' : 'Inactive'); ?>
-
-                            </span>
-                        </td>
                         <td class="px-6 py-3"><?php echo e($category->created_at->format('M d, Y')); ?></td>
                         <td class="px-6 py-3">
-                            <a href="<?php echo e(route('seller.categories.edit', $category)); ?>" class="text-blue-600 hover:underline text-sm">Edit</a>
-                            <form method="POST" action="<?php echo e(route('seller.categories.destroy', $category)); ?>" class="inline ml-3" onsubmit="return confirm('Are you sure?')">
-                                <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
-                                <button type="submit" class="text-red-600 hover:underline text-sm">Delete</button>
-                            </form>
+                            <a href="<?php echo e(route('seller.categories.show', $category)); ?>" class="text-blue-600 hover:underline text-sm">View Products</a>
                         </td>
                     </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -52,6 +41,13 @@
         <div class="mt-6">
             <?php echo e($categories->links()); ?>
 
+        </div>
+
+        <div class="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p class="text-blue-800">
+                <strong>Note:</strong> Categories are managed by the admin. 
+                To use more categories for your products, please contact the admin to create new ones.
+            </p>
         </div>
     <?php endif; ?>
 </div>

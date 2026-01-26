@@ -134,33 +134,35 @@
     <?php if($topProducts->count() > 0): ?>
     <section class="mb-12">
         <h2 class="text-2xl font-bold mb-6">🔥 Top Selling</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <?php $__currentLoopData = $topProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <div class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden">
-                <?php if($product->images->first()): ?>
-                <img src="<?php echo e(asset('storage/' . $product->images->first()->image)); ?>" class="w-full h-48 object-cover" alt="<?php echo e($product->name); ?>">
-                <?php else: ?>
-                <img src="https://via.placeholder.com/300x200?text=No+Image" class="w-full h-48 object-cover" alt="No image">
-                <?php endif; ?>
-                <div class="p-4">
-                    <h3 class="font-bold truncate"><?php echo e($product->name); ?></h3>
-                    <p class="text-gray-600 text-sm mb-2"><?php echo e($product->seller->name); ?></p>
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <?php if($product->hasDiscount()): ?>
-                            <span class="text-red-600 font-bold">$<?php echo e(number_format($product->getDiscountedPrice(), 2)); ?></span>
-                            <span class="text-gray-400 line-through text-sm">$<?php echo e(number_format($product->price, 2)); ?></span>
-                            <?php else: ?>
-                            <span class="font-bold">$<?php echo e(number_format($product->price, 2)); ?></span>
-                            <?php endif; ?>
+        <div class="overflow-x-auto pb-2">
+            <div class="flex gap-6" style="min-width: min-content;">
+                <?php $__currentLoopData = $topProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <a href="<?php echo e(route('products.show', $product)); ?>" class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden flex-shrink-0 block text-decoration-none group" style="width: 280px;">
+                    <?php if($product->images->first()): ?>
+                    <img src="<?php echo e(asset('storage/' . $product->images->first()->image)); ?>" class="w-full h-48 object-cover group-hover:opacity-90 transition" alt="<?php echo e($product->name); ?>">
+                    <?php else: ?>
+                    <img src="https://via.placeholder.com/300x200?text=No+Image" class="w-full h-48 object-cover" alt="No image">
+                    <?php endif; ?>
+                    <div class="p-4">
+                        <h3 class="font-bold truncate group-hover:text-blue-600"><?php echo e($product->name); ?></h3>
+                        <p class="text-gray-600 text-sm mb-2"><?php echo e($product->seller->name); ?></p>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <?php if($product->hasDiscount()): ?>
+                                <span class="text-red-600 font-bold">$<?php echo e(number_format($product->getDiscountedPrice(), 2)); ?></span>
+                                <span class="text-gray-400 line-through text-sm">$<?php echo e(number_format($product->price, 2)); ?></span>
+                                <?php else: ?>
+                                <span class="font-bold">$<?php echo e(number_format($product->price, 2)); ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <span class="text-blue-600 group-hover:text-blue-800">
+                                <i class="fas fa-arrow-right"></i>
+                            </span>
                         </div>
-                        <a href="<?php echo e(route('products.show', $product)); ?>" class="text-blue-600 hover:text-blue-800">
-                            <i class="fas fa-eye"></i>
-                        </a>
                     </div>
-                </div>
+                </a>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </section>
     <?php endif; ?>
@@ -171,31 +173,31 @@
         <h2 class="text-2xl font-bold mb-6">💰 Special Discounts</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <?php $__currentLoopData = $discountedProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <div class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden relative">
+            <a href="<?php echo e(route('products.show', $product)); ?>" class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden relative block text-decoration-none group">
                 <?php if($product->discount_percent): ?>
-                <div class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-sm font-bold">
+                <div class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-sm font-bold z-10">
                     -<?php echo e($product->discount_percent); ?>%
                 </div>
                 <?php endif; ?>
                 <?php if($product->images->first()): ?>
-                <img src="<?php echo e(asset('storage/' . $product->images->first()->image)); ?>" class="w-full h-48 object-cover" alt="<?php echo e($product->name); ?>">
+                <img src="<?php echo e(asset('storage/' . $product->images->first()->image)); ?>" class="w-full h-48 object-cover group-hover:opacity-90 transition" alt="<?php echo e($product->name); ?>">
                 <?php else: ?>
                 <img src="https://via.placeholder.com/300x200?text=No+Image" class="w-full h-48 object-cover" alt="No image">
                 <?php endif; ?>
                 <div class="p-4">
-                    <h3 class="font-bold truncate"><?php echo e($product->name); ?></h3>
+                    <h3 class="font-bold truncate group-hover:text-blue-600"><?php echo e($product->name); ?></h3>
                     <p class="text-gray-600 text-sm mb-2"><?php echo e($product->seller->name); ?></p>
                     <div class="flex justify-between items-center">
                         <div>
                             <span class="text-red-600 font-bold">$<?php echo e(number_format($product->getDiscountedPrice(), 2)); ?></span>
                             <span class="text-gray-400 line-through text-sm">$<?php echo e(number_format($product->price, 2)); ?></span>
                         </div>
-                        <a href="<?php echo e(route('products.show', $product)); ?>" class="text-blue-600 hover:text-blue-800">
-                            <i class="fas fa-eye"></i>
-                        </a>
+                        <span class="text-blue-600 group-hover:text-blue-800">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
                     </div>
                 </div>
-            </div>
+            </a>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </section>
@@ -206,23 +208,23 @@
         <h2 class="text-2xl font-bold mb-6">All Products</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <div class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden">
+            <a href="<?php echo e(route('products.show', $product)); ?>" class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden block text-decoration-none group">
                 <?php if($product->images->first()): ?>
-                <img src="<?php echo e(asset('storage/' . $product->images->first()->image)); ?>" class="w-full h-48 object-cover" alt="<?php echo e($product->name); ?>">
+                <img src="<?php echo e(asset('storage/' . $product->images->first()->image)); ?>" class="w-full h-48 object-cover group-hover:opacity-90 transition" alt="<?php echo e($product->name); ?>">
                 <?php else: ?>
                 <img src="https://via.placeholder.com/300x200?text=No+Image" class="w-full h-48 object-cover" alt="No image">
                 <?php endif; ?>
                 <div class="p-4">
-                    <h3 class="font-bold truncate"><?php echo e($product->name); ?></h3>
+                    <h3 class="font-bold truncate group-hover:text-blue-600"><?php echo e($product->name); ?></h3>
                     <p class="text-gray-600 text-sm mb-2"><?php echo e($product->seller->name); ?></p>
                     <div class="flex justify-between items-center">
-                        <span class="font-bold">$<?php echo e(number_format($product->getDiscountedPrice(), 2)); ?></span>
-                        <a href="<?php echo e(route('products.show', $product)); ?>" class="text-blue-600 hover:text-blue-800">
-                            <i class="fas fa-eye"></i>
-                        </a>
+                        <span class="font-bold group-hover:text-blue-600">$<?php echo e(number_format($product->getDiscountedPrice(), 2)); ?></span>
+                        <span class="text-blue-600 group-hover:text-blue-800">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
                     </div>
                 </div>
-            </div>
+            </a>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
 

@@ -44,19 +44,39 @@
                 <table class="w-full">
                     <thead class="border-b">
                         <tr>
+                            <th class="text-left pb-2">Image</th>
                             <th class="text-left pb-2">Product</th>
                             <th class="text-center pb-2">Quantity</th>
                             <th class="text-right pb-2">Price</th>
                             <th class="text-right pb-2">Total</th>
+                            <th class="text-center pb-2">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($order->items as $item)
-                        <tr class="border-b">
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-3">
+                                @if($item->product && $item->product->images->first())
+                                    <img src="{{ asset('storage/' . $item->product->images->first()->image) }}" 
+                                        class="w-16 h-16 object-cover rounded" alt="{{ $item->product_name }}">
+                                @else
+                                    <div class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
+                                        <i class="fas fa-image text-gray-400"></i>
+                                    </div>
+                                @endif
+                            </td>
                             <td class="py-3">{{ $item->product_name }}</td>
                             <td class="text-center">{{ $item->quantity }}</td>
                             <td class="text-right">${{ number_format($item->product_price, 2) }}</td>
                             <td class="text-right">${{ number_format($item->subtotal, 2) }}</td>
+                            <td class="text-center">
+                                @if($item->product)
+                                    <a href="{{ route('cart.add') }}" class="text-blue-600 hover:underline text-sm font-bold" 
+                                        onclick="buyAgain(event, {{ $item->product_id }}, {{ $item->quantity }})">
+                                        Buy Again
+                                    </a>
+                                @endif
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -111,4 +131,27 @@
         </div>
     </div>
 </div>
+
+<script>
+function buyAgain(event, productId, quantity) {
+    event.preventDefault();
+    
+    // Create and submit a form to add to cart
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{{ route("cart.add") }}';
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    
+    form.innerHTML = `
+        <input type="hidden" name="_token" value="${csrfToken}">
+        <input type="hidden" name="product_id" value="${productId}">
+        <input type="hidden" name="quantity" value="${quantity}">
+    `;
+    
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+}
+</script>
 @endsection

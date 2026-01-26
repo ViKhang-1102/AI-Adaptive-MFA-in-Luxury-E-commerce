@@ -72,6 +72,7 @@ Route::middleware(['auth', \App\Http\Middleware\SellerMiddleware::class])->prefi
     Route::post('/orders/{order}/confirm', [App\Http\Controllers\Seller\OrderController::class, 'confirm'])->name('orders.confirm');
     Route::post('/orders/{order}/cancel', [App\Http\Controllers\Seller\OrderController::class, 'cancel'])->name('orders.cancel');
     Route::post('/orders/{order}/ship', [App\Http\Controllers\Seller\OrderController::class, 'ship'])->name('orders.ship');
+    Route::delete('/products/image/{productImage}', [App\Http\Controllers\Seller\ProductController::class, 'deleteImage'])->name('products.deleteImage');
     Route::get('/wallet', [App\Http\Controllers\Seller\WalletController::class, 'index'])->name('wallet');
 });
 

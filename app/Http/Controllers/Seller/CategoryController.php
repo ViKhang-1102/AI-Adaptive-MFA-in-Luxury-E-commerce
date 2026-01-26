@@ -3,82 +3,91 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
-use App\Models\SellerCategory;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
+    /**
+     * Display all admin-created categories with seller's products count
+     */
     public function index()
     {
-        $categories = auth()->user()->sellerCategories()->with('category')->paginate(10);
+        $seller = auth()->user();
+        
+        // Get all active categories with count of seller's products in each
+        $categories = Category::active()
+            ->withCount(['products' => function ($query) use ($seller) {
+                $query->where('seller_id', $seller->id);
+            }])
+            ->paginate(10);
+        
         return view('seller.categories.index', compact('categories'));
     }
 
+    /**
+     * Show products filtered by category
+     */
+    public function show(Category $category)
+    {
+        if (!$category->is_active) {
+            abort(404);
+        }
+
+        $seller = auth()->user();
+        
+        // Get seller's products in this category
+        $products = $seller->products()
+            ->where('category_id', $category->id)
+            ->with('images')
+            ->paginate(10);
+
+        return view('seller.categories.show', compact('category', 'products'));
+    }
+
+    /**
+     * Sellers are not allowed to create categories
+     */
     public function create()
     {
-        $adminCategories = Category::active()->get();
-        return view('seller.categories.create', compact('adminCategories'));
+        return redirect()->route('seller.categories.index')
+            ->with('error', 'Sellers cannot create categories. Please use existing categories from admin.');
     }
 
+    /**
+     * Prevent store action
+     */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'category_id' => 'required|exists:categories,id|unique:seller_categories,category_id,NULL,id,seller_id,' . auth()->id(),
-            'description' => 'nullable|string',
-        ]);
-
-        SellerCategory::create([
-            'seller_id' => auth()->id(),
-            ...$validated,
-            'is_active' => true,
-        ]);
-
-        return redirect()->route('seller.categories.index')->with('success', 'Category added');
+        return redirect()->route('seller.categories.index')
+            ->with('error', 'Sellers cannot create categories.');
     }
 
-    public function edit(SellerCategory $category)
+    /**
+     * Prevent edit action
+     */
+    public function edit(Category $category)
     {
-        if ($category->seller_id !== auth()->id()) {
-            abort(403);
-        }
-
-        $adminCategories = Category::active()->get();
-        return view('seller.categories.edit', compact('category', 'adminCategories'));
+        return redirect()->route('seller.categories.index')
+            ->with('error', 'Sellers cannot edit categories.');
     }
 
-    public function update(Request $request, SellerCategory $category)
+    /**
+     * Prevent update action
+     */
+    public function update(Request $request, Category $category)
     {
-        if ($category->seller_id !== auth()->id()) {
-            abort(403);
-        }
-
-        $validated = $request->validate([
-            'description' => 'nullable|string',
-            'is_active' => 'boolean',
-        ]);
-
-        $category->update($validated);
-
-        return back()->with('success', 'Category updated');
+        return redirect()->route('seller.categories.index')
+            ->with('error', 'Sellers cannot edit categories.');
     }
 
-    public function destroy(SellerCategory $category)
+    /**
+     * Prevent delete action
+     */
+    public function destroy(Category $category)
     {
-        if ($category->seller_id !== auth()->id()) {
-            abort(403);
-        }
-
-        $category->delete();
-        return back()->with('success', 'Category deleted');
-    }
-
-    public function show(SellerCategory $category)
-    {
-        if ($category->seller_id !== auth()->id()) {
-            abort(403);
-        }
-
-        return view('seller.categories.show', compact('category'));
+        return redirect()->route('seller.categories.index')
+            ->with('error', 'Sellers cannot delete categories.');
     }
 }

@@ -3,7 +3,10 @@
 <?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold">My Orders</h1>
+        <div>
+            <a href="<?php echo e(route('seller.dashboard')); ?>" class="text-blue-600 hover:underline mb-4 inline-block">&larr; Back to Dashboard</a>
+            <h1 class="text-3xl font-bold">My Orders</h1>
+        </div>
         <div class="flex gap-2">
             <select id="status-filter" class="px-4 py-2 border rounded">
                 <option value="">All Status</option>
@@ -60,25 +63,35 @@
                         </td>
                         <td class="px-6 py-3"><?php echo e($order->created_at->format('M d, Y')); ?></td>
                         <td class="px-6 py-3">
-                            <a href="<?php echo e(route('seller.orders.show', $order)); ?>" class="text-blue-600 hover:underline text-sm">View</a>
-                            <?php if($order->status === 'pending'): ?>
-                                <form method="POST" action="<?php echo e(route('seller.orders.confirm', $order)); ?>" class="inline ml-2">
-                                    <?php echo csrf_field(); ?>
-                                    <button type="submit" class="text-green-600 hover:underline text-sm">Confirm</button>
-                                </form>
-                            <?php endif; ?>
-                            <?php if($order->status === 'confirmed'): ?>
-                                <form method="POST" action="<?php echo e(route('seller.orders.ship', $order)); ?>" class="inline ml-2">
-                                    <?php echo csrf_field(); ?>
-                                    <button type="submit" class="text-blue-600 hover:underline text-sm">Ship</button>
-                                </form>
-                            <?php endif; ?>
-                            <?php if(in_array($order->status, ['pending', 'confirmed'])): ?>
-                                <form method="POST" action="<?php echo e(route('seller.orders.cancel', $order)); ?>" class="inline ml-2" onsubmit="return confirm('Are you sure?')">
-                                    <?php echo csrf_field(); ?>
-                                    <button type="submit" class="text-red-600 hover:underline text-sm">Cancel</button>
-                                </form>
-                            <?php endif; ?>
+                            <div class="flex gap-2 flex-wrap">
+                                <a href="<?php echo e(route('seller.orders.show', $order)); ?>" class="inline-block px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
+                                    <i class="fas fa-eye mr-1"></i> View
+                                </a>
+                                <?php if($order->status === 'pending'): ?>
+                                    <form method="POST" action="<?php echo e(route('seller.orders.confirm', $order)); ?>" class="inline">
+                                        <?php echo csrf_field(); ?>
+                                        <button type="submit" class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition">
+                                            <i class="fas fa-check mr-1"></i> Confirm
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                                <?php if($order->status === 'confirmed'): ?>
+                                    <form method="POST" action="<?php echo e(route('seller.orders.ship', $order)); ?>" class="inline">
+                                        <?php echo csrf_field(); ?>
+                                        <button type="submit" class="px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition">
+                                            <i class="fas fa-truck mr-1"></i> Ship
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                                <?php if(in_array($order->status, ['pending', 'confirmed'])): ?>
+                                    <form method="POST" action="<?php echo e(route('seller.orders.cancel', $order)); ?>" class="inline" onsubmit="return confirm('Are you sure?')">
+                                        <?php echo csrf_field(); ?>
+                                        <button type="submit" class="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition">
+                                            <i class="fas fa-times mr-1"></i> Cancel
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                            </div>
                         </td>
                     </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

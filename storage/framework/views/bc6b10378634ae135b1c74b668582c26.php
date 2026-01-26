@@ -1,13 +1,14 @@
 
-<?php $__env->startSection('title', 'Create Product'); ?>
+<?php $__env->startSection('title', 'Edit Product'); ?>
 <?php $__env->startSection('content'); ?>
 <div class="max-w-2xl mx-auto px-4 py-8">
     <a href="<?php echo e(route('seller.products.index')); ?>" class="text-blue-600 hover:underline mb-6 inline-block">&larr; Back to Products</a>
-    <h1 class="text-3xl font-bold mb-8">Create Product</h1>
+    <h1 class="text-3xl font-bold mb-8">Edit Product</h1>
     
     <div class="bg-white p-6 rounded-lg shadow">
-        <form action="<?php echo e(route('seller.products.store')); ?>" method="POST" enctype="multipart/form-data">
+        <form action="<?php echo e(route('seller.products.update', $product)); ?>" method="POST" enctype="multipart/form-data">
             <?php echo csrf_field(); ?>
+            <?php echo method_field('PUT'); ?>
             
             <!-- Product Name -->
             <div class="mb-6">
@@ -20,7 +21,7 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                    value="<?php echo e(old('name')); ?>" required>
+                    value="<?php echo e(old('name', $product->name)); ?>" required>
                 <?php $__errorArgs = ['name'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -44,7 +45,7 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                    required><?php echo e(old('description')); ?></textarea>
+                    required><?php echo e(old('description', $product->description)); ?></textarea>
                 <?php $__errorArgs = ['description'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -71,7 +72,7 @@ unset($__errorArgs, $__bag); ?>"
                     required>
                     <option value="">-- Select Category --</option>
                     <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <option value="<?php echo e($category->id); ?>" <?php echo e(old('category_id') == $category->id ? 'selected' : ''); ?>>
+                        <option value="<?php echo e($category->id); ?>" <?php echo e(old('category_id', $product->category_id) == $category->id ? 'selected' : ''); ?>>
                             <?php echo e($category->name); ?>
 
                         </option>
@@ -101,7 +102,7 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                        value="<?php echo e(old('price')); ?>" required>
+                        value="<?php echo e(old('price', $product->price)); ?>" required>
                     <?php $__errorArgs = ['price'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -125,7 +126,7 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                        value="<?php echo e(old('stock')); ?>" required>
+                        value="<?php echo e(old('stock', $product->stock)); ?>" required>
                     <?php $__errorArgs = ['stock'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -151,7 +152,7 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                        value="<?php echo e(old('discount_percent')); ?>">
+                        value="<?php echo e(old('discount_percent', $product->discount_percent)); ?>">
                     <?php $__errorArgs = ['discount_percent'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -174,7 +175,7 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                        value="<?php echo e(old('discount_start_date')); ?>">
+                        value="<?php echo e(old('discount_start_date', $product->discount_start_date?->format('Y-m-d'))); ?>">
                     <?php $__errorArgs = ['discount_start_date'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -197,7 +198,7 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                        value="<?php echo e(old('discount_end_date')); ?>">
+                        value="<?php echo e(old('discount_end_date', $product->discount_end_date?->format('Y-m-d'))); ?>">
                     <?php $__errorArgs = ['discount_end_date'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -211,14 +212,34 @@ unset($__errorArgs, $__bag); ?>
                 </div>
             </div>
 
-            <!-- Images Upload -->
+            <!-- Current Images -->
+            <?php if($product->images->count() > 0): ?>
             <div class="mb-6">
-                <label for="images" class="block text-sm font-medium text-gray-700 mb-2">Product Images *</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Current Images</label>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <?php $__currentLoopData = $product->images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="relative bg-gray-100 rounded-lg overflow-hidden" style="aspect-ratio: 1;">
+                        <img src="<?php echo e(asset('storage/' . $image->image)); ?>" class="w-full h-full object-cover">
+                        <form action="<?php echo e(route('seller.products.deleteImage', $image)); ?>" method="POST" class="absolute inset-0" onsubmit="return confirm('Delete this image?')">
+                            <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
+                            <button type="submit" class="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700">
+                                <i class="fas fa-times text-sm"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <!-- Add More Images -->
+            <div class="mb-6">
+                <label for="new_images" class="block text-sm font-medium text-gray-700 mb-2">Add More Images</label>
                 <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition" id="drop-zone">
                     <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
                     <p class="text-gray-600 mb-1">Drag and drop images here or click to select</p>
-                    <p class="text-sm text-gray-500">Supported formats: JPG, PNG, GIF (Max 10 images)</p>
-                    <input type="file" id="images" name="images[]" multiple accept="image/jpeg,image/png,image/gif" class="hidden" required>
+                    <p class="text-sm text-gray-500">Supported formats: JPG, PNG, GIF (Max 10 images total)</p>
+                    <input type="file" id="new_images" name="images[]" multiple accept="image/jpeg,image/png,image/gif" class="hidden">
                 </div>
                 <?php $__errorArgs = ['images'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -241,14 +262,14 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
                 
-                <!-- Image Preview -->
+                <!-- New Image Preview -->
                 <div id="image-preview" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6"></div>
             </div>
 
             <!-- Actions -->
             <div class="flex gap-4">
                 <button type="submit" class="flex-1 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                    Create Product
+                    Update Product
                 </button>
                 <a href="<?php echo e(route('seller.products.index')); ?>" class="flex-1 px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition text-center">
                     Cancel
@@ -260,7 +281,7 @@ unset($__errorArgs, $__bag); ?>
 
 <script>
     const dropZone = document.getElementById('drop-zone');
-    const imageInput = document.getElementById('images');
+    const imageInput = document.getElementById('new_images');
     const preview = document.getElementById('image-preview');
     let selectedFiles = []; // Store selected files
 
@@ -360,4 +381,4 @@ unset($__errorArgs, $__bag); ?>
 </script>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\E-commerce2026\resources\views/seller/products/create.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\E-commerce2026\resources\views/seller/products/edit.blade.php ENDPATH**/ ?>

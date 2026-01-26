@@ -4,15 +4,19 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold">My Products</h1>
-        <a href="{{ route('seller.products.create') }}" class="bg-blue-600 text-white px-6 py-2 rounded">
-            Add Product
+        <div>
+            <a href="{{ route('seller.dashboard') }}" class="text-blue-600 hover:underline mb-4 inline-block">&larr; Back to Dashboard</a>
+            <h1 class="text-3xl font-bold">My Products</h1>
+        </div>
+        <a href="{{ route('seller.products.create') }}" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+            <i class="fas fa-plus mr-2"></i> Add Product
         </a>
     </div>
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <table class="w-full">
             <thead class="bg-gray-100 border-b">
                 <tr>
+                    <th class="px-6 py-3 text-left">Image</th>
                     <th class="px-6 py-3 text-left">Name</th>
                     <th class="px-6 py-3 text-left">Category</th>
                     <th class="px-6 py-3 text-center">Stock</th>
@@ -22,17 +26,32 @@
             </thead>
             <tbody>
                 @foreach($products as $product)
-                <tr class="border-b">
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-6 py-3">
+                        @if($product->images->first())
+                        <img src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-16 h-16 object-cover rounded" alt="{{ $product->name }}">
+                        @else
+                        <div class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
+                            <i class="fas fa-image text-gray-400"></i>
+                        </div>
+                        @endif
+                    </td>
                     <td class="px-6 py-3">{{ $product->name }}</td>
                     <td class="px-6 py-3">{{ $product->category->name }}</td>
                     <td class="px-6 py-3 text-center">{{ $product->stock }}</td>
                     <td class="px-6 py-3 text-right">${{ number_format($product->price, 2) }}</td>
                     <td class="px-6 py-3 text-center">
-                        <a href="{{ route('seller.products.edit', $product) }}" class="text-blue-600 hover:underline">Edit</a>
-                        <form action="{{ route('seller.products.destroy', $product) }}" method="POST" class="inline">
-                            @csrf @method('DELETE')
-                            <button class="text-red-600 hover:underline">Delete</button>
-                        </form>
+                        <div class="flex gap-2 justify-center">
+                            <a href="{{ route('seller.products.edit', $product) }}" class="inline-block px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
+                                <i class="fas fa-edit mr-1"></i> Edit
+                            </a>
+                            <form action="{{ route('seller.products.destroy', $product) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure?')">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition">
+                                    <i class="fas fa-trash mr-1"></i> Delete
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @endforeach

@@ -134,33 +134,35 @@
     @if($topProducts->count() > 0)
     <section class="mb-12">
         <h2 class="text-2xl font-bold mb-6">🔥 Top Selling</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            @foreach($topProducts as $product)
-            <div class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden">
-                @if($product->images->first())
-                <img src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-full h-48 object-cover" alt="{{ $product->name }}">
-                @else
-                <img src="https://via.placeholder.com/300x200?text=No+Image" class="w-full h-48 object-cover" alt="No image">
-                @endif
-                <div class="p-4">
-                    <h3 class="font-bold truncate">{{ $product->name }}</h3>
-                    <p class="text-gray-600 text-sm mb-2">{{ $product->seller->name }}</p>
-                    <div class="flex justify-between items-center">
-                        <div>
-                            @if($product->hasDiscount())
-                            <span class="text-red-600 font-bold">${{ number_format($product->getDiscountedPrice(), 2) }}</span>
-                            <span class="text-gray-400 line-through text-sm">${{ number_format($product->price, 2) }}</span>
-                            @else
-                            <span class="font-bold">${{ number_format($product->price, 2) }}</span>
-                            @endif
+        <div class="overflow-x-auto pb-2">
+            <div class="flex gap-6" style="min-width: min-content;">
+                @foreach($topProducts as $product)
+                <a href="{{ route('products.show', $product) }}" class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden flex-shrink-0 block text-decoration-none group" style="width: 280px;">
+                    @if($product->images->first())
+                    <img src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-full h-48 object-cover group-hover:opacity-90 transition" alt="{{ $product->name }}">
+                    @else
+                    <img src="https://via.placeholder.com/300x200?text=No+Image" class="w-full h-48 object-cover" alt="No image">
+                    @endif
+                    <div class="p-4">
+                        <h3 class="font-bold truncate group-hover:text-blue-600">{{ $product->name }}</h3>
+                        <p class="text-gray-600 text-sm mb-2">{{ $product->seller->name }}</p>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                @if($product->hasDiscount())
+                                <span class="text-red-600 font-bold">${{ number_format($product->getDiscountedPrice(), 2) }}</span>
+                                <span class="text-gray-400 line-through text-sm">${{ number_format($product->price, 2) }}</span>
+                                @else
+                                <span class="font-bold">${{ number_format($product->price, 2) }}</span>
+                                @endif
+                            </div>
+                            <span class="text-blue-600 group-hover:text-blue-800">
+                                <i class="fas fa-arrow-right"></i>
+                            </span>
                         </div>
-                        <a href="{{ route('products.show', $product) }}" class="text-blue-600 hover:text-blue-800">
-                            <i class="fas fa-eye"></i>
-                        </a>
                     </div>
-                </div>
+                </a>
+                @endforeach
             </div>
-            @endforeach
         </div>
     </section>
     @endif
@@ -171,31 +173,31 @@
         <h2 class="text-2xl font-bold mb-6">💰 Special Discounts</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             @foreach($discountedProducts as $product)
-            <div class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden relative">
+            <a href="{{ route('products.show', $product) }}" class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden relative block text-decoration-none group">
                 @if($product->discount_percent)
-                <div class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-sm font-bold">
+                <div class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-sm font-bold z-10">
                     -{{ $product->discount_percent }}%
                 </div>
                 @endif
                 @if($product->images->first())
-                <img src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-full h-48 object-cover" alt="{{ $product->name }}">
+                <img src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-full h-48 object-cover group-hover:opacity-90 transition" alt="{{ $product->name }}">
                 @else
                 <img src="https://via.placeholder.com/300x200?text=No+Image" class="w-full h-48 object-cover" alt="No image">
                 @endif
                 <div class="p-4">
-                    <h3 class="font-bold truncate">{{ $product->name }}</h3>
+                    <h3 class="font-bold truncate group-hover:text-blue-600">{{ $product->name }}</h3>
                     <p class="text-gray-600 text-sm mb-2">{{ $product->seller->name }}</p>
                     <div class="flex justify-between items-center">
                         <div>
                             <span class="text-red-600 font-bold">${{ number_format($product->getDiscountedPrice(), 2) }}</span>
                             <span class="text-gray-400 line-through text-sm">${{ number_format($product->price, 2) }}</span>
                         </div>
-                        <a href="{{ route('products.show', $product) }}" class="text-blue-600 hover:text-blue-800">
-                            <i class="fas fa-eye"></i>
-                        </a>
+                        <span class="text-blue-600 group-hover:text-blue-800">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
                     </div>
                 </div>
-            </div>
+            </a>
             @endforeach
         </div>
     </section>
@@ -206,23 +208,23 @@
         <h2 class="text-2xl font-bold mb-6">All Products</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             @foreach($products as $product)
-            <div class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden">
+            <a href="{{ route('products.show', $product) }}" class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden block text-decoration-none group">
                 @if($product->images->first())
-                <img src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-full h-48 object-cover" alt="{{ $product->name }}">
+                <img src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-full h-48 object-cover group-hover:opacity-90 transition" alt="{{ $product->name }}">
                 @else
                 <img src="https://via.placeholder.com/300x200?text=No+Image" class="w-full h-48 object-cover" alt="No image">
                 @endif
                 <div class="p-4">
-                    <h3 class="font-bold truncate">{{ $product->name }}</h3>
+                    <h3 class="font-bold truncate group-hover:text-blue-600">{{ $product->name }}</h3>
                     <p class="text-gray-600 text-sm mb-2">{{ $product->seller->name }}</p>
                     <div class="flex justify-between items-center">
-                        <span class="font-bold">${{ number_format($product->getDiscountedPrice(), 2) }}</span>
-                        <a href="{{ route('products.show', $product) }}" class="text-blue-600 hover:text-blue-800">
-                            <i class="fas fa-eye"></i>
-                        </a>
+                        <span class="font-bold group-hover:text-blue-600">${{ number_format($product->getDiscountedPrice(), 2) }}</span>
+                        <span class="text-blue-600 group-hover:text-blue-800">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
                     </div>
                 </div>
-            </div>
+            </a>
             @endforeach
         </div>
 

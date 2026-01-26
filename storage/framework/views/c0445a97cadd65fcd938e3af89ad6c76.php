@@ -1,8 +1,8 @@
-@extends('layouts.app')
 
-@section('title', 'My Addresses')
 
-@section('content')
+<?php $__env->startSection('title', 'My Addresses'); ?>
+
+<?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-8">My Addresses</h1>
 
@@ -10,8 +10,8 @@
         <!-- Add New Address -->
         <div class="bg-white p-6 rounded-lg shadow">
             <h3 class="font-bold text-lg mb-4">Add New Address</h3>
-            <form action="{{ route('addresses.store') }}" method="POST" onsubmit="return validateAddressForm()" class="space-y-3">
-                @csrf
+            <form action="<?php echo e(route('addresses.store')); ?>" method="POST" onsubmit="return validateAddressForm()" class="space-y-3">
+                <?php echo csrf_field(); ?>
                 
                 <input type="text" name="label" placeholder="Label (e.g., Home, Office)" 
                     class="w-full px-3 py-2 border rounded" maxlength="255">
@@ -71,43 +71,43 @@
 
         <!-- Address List -->
         <div class="lg:col-span-2 space-y-4">
-            @if($addresses->isEmpty())
+            <?php if($addresses->isEmpty()): ?>
             <div class="bg-white p-8 rounded-lg shadow text-center">
                 <p class="text-gray-600">No addresses yet. Add one above.</p>
             </div>
-            @else
-                @foreach($addresses as $address)
+            <?php else: ?>
+                <?php $__currentLoopData = $addresses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $address): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="bg-white p-6 rounded-lg shadow">
-                    @if($address->is_default)
+                    <?php if($address->is_default): ?>
                     <div class="mb-3 inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm font-bold">
                         Default Address
                     </div>
-                    @endif
+                    <?php endif; ?>
                     
-                    <h3 class="font-bold text-lg">{{ $address->label ?? 'Address' }}</h3>
-                    <p class="text-gray-700">{{ $address->recipient_name }}</p>
-                    <p class="text-gray-600 text-sm">{{ $address->recipient_phone }}</p>
-                    <p class="text-gray-600 mt-2">{{ $address->address }}</p>
+                    <h3 class="font-bold text-lg"><?php echo e($address->label ?? 'Address'); ?></h3>
+                    <p class="text-gray-700"><?php echo e($address->recipient_name); ?></p>
+                    <p class="text-gray-600 text-sm"><?php echo e($address->recipient_phone); ?></p>
+                    <p class="text-gray-600 mt-2"><?php echo e($address->address); ?></p>
 
                     <div class="mt-4 space-x-2">
-                        <button type="button" class="text-blue-600 hover:underline edit-address-btn" data-id="{{ $address->id }}" data-name="{{ $address->recipient_name }}" data-phone="{{ $address->recipient_phone }}" data-address="{{ $address->address }}" data-label="{{ $address->label ?? '' }}" data-default="{{ $address->is_default ? 'true' : 'false' }}">
+                        <button type="button" class="text-blue-600 hover:underline edit-address-btn" data-id="<?php echo e($address->id); ?>" data-name="<?php echo e($address->recipient_name); ?>" data-phone="<?php echo e($address->recipient_phone); ?>" data-address="<?php echo e($address->address); ?>" data-label="<?php echo e($address->label ?? ''); ?>" data-default="<?php echo e($address->is_default ? 'true' : 'false'); ?>">
                             Edit
                         </button>
-                        <form action="{{ route('addresses.destroy', $address) }}" method="POST" class="inline" 
+                        <form action="<?php echo e(route('addresses.destroy', $address)); ?>" method="POST" class="inline" 
                             onsubmit="return confirm('Delete this address?')">
-                            @csrf
-                            @method('DELETE')
+                            <?php echo csrf_field(); ?>
+                            <?php echo method_field('DELETE'); ?>
                             <button type="submit" class="text-red-600 hover:underline">Delete</button>
                         </form>
                     </div>
                 </div>
-                @endforeach
-            @endif
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            <?php endif; ?>
         </div>
     </div>
 </div>
 
-<script src="{{ asset('js/vietnam-addresses.js') }}"></script>
+<script src="<?php echo e(asset('js/vietnam-addresses.js')); ?>"></script>
 <script>
 // Handle edit address button clicks
 document.addEventListener('DOMContentLoaded', function() {
@@ -121,4 +121,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\E-commerce2026\resources\views/addresses/index.blade.php ENDPATH**/ ?>

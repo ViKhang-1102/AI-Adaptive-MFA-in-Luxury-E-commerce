@@ -4,26 +4,37 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <!-- Product Image -->
-        <div>
-            @if($product->images->first())
-            <img src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-full rounded-lg shadow" alt="{{ $product->name }}">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Product Images Section -->
+        <div class="md:col-span-1">
+            @if($product->images->count() > 0)
+                <!-- Main Image -->
+                <div class="bg-gray-100 rounded-lg overflow-hidden mb-4">
+                    <img id="main-image" src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-full h-auto object-cover rounded-lg" alt="{{ $product->name }}">
+                </div>
+                
+                <!-- Thumbnails Grid -->
+                @if($product->images->count() > 1)
+                <div class="grid grid-cols-4 gap-2">
+                    @foreach($product->images as $key => $image)
+                    <button class="image-thumbnail relative overflow-hidden rounded-lg border-2 aspect-square {{ $key === 0 ? 'border-blue-600' : 'border-gray-300' }} hover:border-blue-600 transition" data-index="{{ $key }}" data-src="{{ asset('storage/' . $image->image) }}">
+                        <img src="{{ asset('storage/' . $image->image) }}" class="w-full h-full object-cover" alt="Thumbnail {{ $key + 1 }}">
+                    </button>
+                    @endforeach
+                </div>
+                @endif
             @else
-            <img src="https://via.placeholder.com/500x500?text=No+Image" class="w-full rounded-lg shadow" alt="No image">
-            @endif
-            
-            @if($product->images->count() > 1)
-            <div class="grid grid-cols-4 gap-2 mt-4">
-                @foreach($product->images as $image)
-                <img src="{{ asset('storage/' . $image->image) }}" class="w-full rounded cursor-pointer hover:opacity-75" alt="">
-                @endforeach
-            </div>
+                <div class="bg-gray-200 rounded-lg flex items-center justify-center aspect-square">
+                    <div class="text-center text-gray-500">
+                        <i class="fas fa-image text-4xl mb-2"></i>
+                        <p>No images available</p>
+                    </div>
+                </div>
             @endif
         </div>
 
         <!-- Product Details -->
-        <div>
+        <div class="md:col-span-2">
             <h1 class="text-3xl font-bold mb-2">{{ $product->name }}</h1>
             
             <div class="mb-4">
@@ -69,18 +80,23 @@
             @auth
             @if(auth()->user()->isCustomer())
             <div class="space-y-3 mb-6">
+                <div class="flex gap-3 items-center mb-3">
+                    <label for="quantity" class="font-semibold">Quantity:</label>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ $product->stock }}" class="w-20 px-3 py-2 border rounded">
+                </div>
+
                 <form action="{{ route('cart.add') }}" method="POST" class="flex space-x-2">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
-                    <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}" class="w-20 px-3 py-2 border rounded">
+                    <input type="hidden" name="quantity" id="cartQuantity" value="1">
                     <button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
                         <i class="fas fa-shopping-cart"></i> Add to Cart
                     </button>
                 </form>
 
-                <form action="{{ route('orders.store') }}" method="POST">
-                    @csrf
+                <form action="{{ route('checkout') }}" method="GET">
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
+                    <input type="hidden" name="quantity" id="buyNowQuantity" value="1">
                     <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
                         Buy Now
                     </button>
@@ -171,4 +187,35 @@
         </div>
     </div>
 </div>
+
+<script>
+    const thumbnails = document.querySelectorAll('.image-thumbnail');
+    const mainImage = document.getElementById('main-image');
+    const quantityInput = document.getElementById('quantity');
+    const cartQuantityInput = document.getElementById('cartQuantity');
+    const buyNowQuantityInput = document.getElementById('buyNowQuantity');
+    
+    if (quantityInput) {
+        quantityInput.addEventListener('change', function() {
+            if (cartQuantityInput) cartQuantityInput.value = this.value;
+            if (buyNowQuantityInput) buyNowQuantityInput.value = this.value;
+        });
+    }
+    
+    if (thumbnails.length > 0 && mainImage) {
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', function(e) {
+                e.preventDefault();
+                const newSrc = this.dataset.src;
+                mainImage.src = newSrc;
+                
+                // Update border styling
+                thumbnails.forEach(t => t.classList.remove('border-blue-600'));
+                thumbnails.forEach(t => t.classList.add('border-gray-300'));
+                this.classList.remove('border-gray-300');
+                this.classList.add('border-blue-600');
+            });
+        });
+    }
+</script>
 @endsection

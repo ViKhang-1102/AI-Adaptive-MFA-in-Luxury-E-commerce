@@ -4,7 +4,12 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">Seller Dashboard</h1>
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold">Seller Dashboard</h1>
+        <a href="{{ route('home') }}" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition">
+            <i class="fas fa-arrow-left mr-2"></i> Back Home
+        </a>
+    </div>
 
     <!-- Statistics -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -53,7 +58,7 @@
                 <i class="fas fa-box text-blue-600 mr-2"></i> Manage Products
             </a>
             <a href="{{ route('seller.categories.index') }}" class="p-4 border rounded hover:bg-gray-50">
-                <i class="fas fa-folder text-blue-600 mr-2"></i> Manage Categories
+                <i class="fas fa-folder text-blue-600 mr-2"></i> View Categories
             </a>
             <a href="{{ route('seller.orders.index') }}" class="p-4 border rounded hover:bg-gray-50">
                 <i class="fas fa-receipt text-blue-600 mr-2"></i> Orders

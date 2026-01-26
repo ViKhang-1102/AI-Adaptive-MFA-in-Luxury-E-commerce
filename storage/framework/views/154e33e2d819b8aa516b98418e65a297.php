@@ -1,19 +1,19 @@
-@extends('layouts.app')
 
-@section('title', 'Checkout')
 
-@section('content')
+<?php $__env->startSection('title', 'Checkout'); ?>
+
+<?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-8">Checkout</h1>
 
-    <form action="{{ route('orders.store') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        @csrf
+    <form action="<?php echo e(route('orders.store')); ?>" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <?php echo csrf_field(); ?>
 
         <!-- Hidden fields for Buy Now -->
-        @if(request()->has('product_id'))
-            <input type="hidden" name="product_id" value="{{ request('product_id') }}">
-            <input type="hidden" name="quantity" value="{{ request('quantity') }}">
-        @endif
+        <?php if(request()->has('product_id')): ?>
+            <input type="hidden" name="product_id" value="<?php echo e(request('product_id')); ?>">
+            <input type="hidden" name="quantity" value="<?php echo e(request('quantity')); ?>">
+        <?php endif; ?>
 
         <!-- Delivery Information -->
         <div class="lg:col-span-2 space-y-6">
@@ -21,33 +21,33 @@
             <div class="bg-white p-6 rounded-lg shadow">
                 <h2 class="text-xl font-bold mb-4">Delivery Address</h2>
 
-                @if($defaultAddress)
+                <?php if($defaultAddress): ?>
                 <div class="mb-4 p-4 border rounded bg-blue-50">
                     <label class="flex items-center">
-                        <input type="radio" name="address_id" value="{{ $defaultAddress->id }}" checked class="mr-2">
+                        <input type="radio" name="address_id" value="<?php echo e($defaultAddress->id); ?>" checked class="mr-2">
                         <div>
-                            <strong>{{ $defaultAddress->label ?? 'Default Address' }}</strong>
-                            <p class="text-sm">{{ $defaultAddress->recipient_name }} | {{ $defaultAddress->recipient_phone }}</p>
-                            <p class="text-sm">{{ $defaultAddress->address }}</p>
+                            <strong><?php echo e($defaultAddress->label ?? 'Default Address'); ?></strong>
+                            <p class="text-sm"><?php echo e($defaultAddress->recipient_name); ?> | <?php echo e($defaultAddress->recipient_phone); ?></p>
+                            <p class="text-sm"><?php echo e($defaultAddress->address); ?></p>
                         </div>
                     </label>
                 </div>
-                @endif
+                <?php endif; ?>
 
-                @foreach($addresses as $address)
-                @if(!$address->is_default)
+                <?php $__currentLoopData = $addresses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $address): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php if(!$address->is_default): ?>
                 <div class="mb-4 p-4 border rounded">
                     <label class="flex items-center">
-                        <input type="radio" name="address_id" value="{{ $address->id }}" class="mr-2">
+                        <input type="radio" name="address_id" value="<?php echo e($address->id); ?>" class="mr-2">
                         <div>
-                            <strong>{{ $address->label }}</strong>
-                            <p class="text-sm">{{ $address->recipient_name }} | {{ $address->recipient_phone }}</p>
-                            <p class="text-sm">{{ $address->address }}</p>
+                            <strong><?php echo e($address->label); ?></strong>
+                            <p class="text-sm"><?php echo e($address->recipient_name); ?> | <?php echo e($address->recipient_phone); ?></p>
+                            <p class="text-sm"><?php echo e($address->address); ?></p>
                         </div>
                     </label>
                 </div>
-                @endif
-                @endforeach
+                <?php endif; ?>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                 <button type="button" class="text-blue-600 hover:underline text-sm mb-4" onclick="toggleAddressForm()">
                     + Add New Address
@@ -134,26 +134,26 @@
             <h2 class="text-xl font-bold mb-4">Order Summary</h2>
 
             <div class="space-y-4 mb-6">
-                @foreach($items as $item)
+                <?php $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="flex justify-between text-sm border-b pb-2">
-                    <span>{{ $item->product->name }} x {{ $item->quantity }}</span>
-                    <span>${{ number_format($item->product->getDiscountedPrice() * $item->quantity, 2) }}</span>
+                    <span><?php echo e($item->product->name); ?> x <?php echo e($item->quantity); ?></span>
+                    <span>$<?php echo e(number_format($item->product->getDiscountedPrice() * $item->quantity, 2)); ?></span>
                 </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
             <div class="space-y-3 border-t pt-4">
                 <div class="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>${{ number_format($subtotal, 2) }}</span>
+                    <span>$<?php echo e(number_format($subtotal, 2)); ?></span>
                 </div>
                 <div class="flex justify-between">
                     <span>Shipping:</span>
-                    <span>${{ number_format($shippingFee, 2) }}</span>
+                    <span>$<?php echo e(number_format($shippingFee, 2)); ?></span>
                 </div>
                 <div class="flex justify-between text-xl font-bold border-t pt-3">
                     <span>Total:</span>
-                    <span>${{ number_format($total, 2) }}</span>
+                    <span>$<?php echo e(number_format($total, 2)); ?></span>
                 </div>
             </div>
 
@@ -164,7 +164,7 @@
     </form>
 </div>
 
-<script src="{{ asset('js/vietnam-addresses.js') }}"></script>
+<script src="<?php echo e(asset('js/vietnam-addresses.js')); ?>"></script>
 <script>
 let checkoutAddressInitialized = false;
 
@@ -261,7 +261,7 @@ function saveCheckoutAddress() {
     const fullAddress = [street, ward, district, province].filter(x => x).join(', ');
     
     // Update main form with new address values
-    const form = document.querySelector('form[action="{{ route("orders.store") }}"]');
+    const form = document.querySelector('form[action="<?php echo e(route("orders.store")); ?>"]');
     
     // Create or update hidden inputs for new address
     let recipientNameInput = form.querySelector('input[name="recipient_name"][type="hidden"]');
@@ -297,4 +297,6 @@ function saveCheckoutAddress() {
     toggleAddressForm();
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\E-commerce2026\resources\views/checkout/index.blade.php ENDPATH**/ ?>

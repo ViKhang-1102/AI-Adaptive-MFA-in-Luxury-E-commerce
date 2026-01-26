@@ -3,7 +3,10 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold">My Orders</h1>
+        <div>
+            <a href="{{ route('seller.dashboard') }}" class="text-blue-600 hover:underline mb-4 inline-block">&larr; Back to Dashboard</a>
+            <h1 class="text-3xl font-bold">My Orders</h1>
+        </div>
         <div class="flex gap-2">
             <select id="status-filter" class="px-4 py-2 border rounded">
                 <option value="">All Status</option>
@@ -54,25 +57,35 @@
                         </td>
                         <td class="px-6 py-3">{{ $order->created_at->format('M d, Y') }}</td>
                         <td class="px-6 py-3">
-                            <a href="{{ route('seller.orders.show', $order) }}" class="text-blue-600 hover:underline text-sm">View</a>
-                            @if($order->status === 'pending')
-                                <form method="POST" action="{{ route('seller.orders.confirm', $order) }}" class="inline ml-2">
-                                    @csrf
-                                    <button type="submit" class="text-green-600 hover:underline text-sm">Confirm</button>
-                                </form>
-                            @endif
-                            @if($order->status === 'confirmed')
-                                <form method="POST" action="{{ route('seller.orders.ship', $order) }}" class="inline ml-2">
-                                    @csrf
-                                    <button type="submit" class="text-blue-600 hover:underline text-sm">Ship</button>
-                                </form>
-                            @endif
-                            @if(in_array($order->status, ['pending', 'confirmed']))
-                                <form method="POST" action="{{ route('seller.orders.cancel', $order) }}" class="inline ml-2" onsubmit="return confirm('Are you sure?')">
-                                    @csrf
-                                    <button type="submit" class="text-red-600 hover:underline text-sm">Cancel</button>
-                                </form>
-                            @endif
+                            <div class="flex gap-2 flex-wrap">
+                                <a href="{{ route('seller.orders.show', $order) }}" class="inline-block px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
+                                    <i class="fas fa-eye mr-1"></i> View
+                                </a>
+                                @if($order->status === 'pending')
+                                    <form method="POST" action="{{ route('seller.orders.confirm', $order) }}" class="inline">
+                                        @csrf
+                                        <button type="submit" class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition">
+                                            <i class="fas fa-check mr-1"></i> Confirm
+                                        </button>
+                                    </form>
+                                @endif
+                                @if($order->status === 'confirmed')
+                                    <form method="POST" action="{{ route('seller.orders.ship', $order) }}" class="inline">
+                                        @csrf
+                                        <button type="submit" class="px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition">
+                                            <i class="fas fa-truck mr-1"></i> Ship
+                                        </button>
+                                    </form>
+                                @endif
+                                @if(in_array($order->status, ['pending', 'confirmed']))
+                                    <form method="POST" action="{{ route('seller.orders.cancel', $order) }}" class="inline" onsubmit="return confirm('Are you sure?')">
+                                        @csrf
+                                        <button type="submit" class="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition">
+                                            <i class="fas fa-times mr-1"></i> Cancel
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                     @endforeach
