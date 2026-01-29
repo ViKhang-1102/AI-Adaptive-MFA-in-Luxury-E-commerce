@@ -59,11 +59,11 @@
             <!-- Price -->
             <div class="mb-6 text-2xl font-bold">
                 <?php if($product->hasDiscount()): ?>
-                <span class="text-red-600">$<?php echo e(number_format($product->getDiscountedPrice(), 2)); ?></span>
-                <span class="text-gray-400 line-through text-lg">$<?php echo e(number_format($product->price, 2)); ?></span>
+                <span class="text-red-600">₫<?php echo e(number_format($product->getDiscountedPrice(), 0)); ?></span>
+                <span class="text-gray-400 line-through text-lg">₫<?php echo e(number_format($product->price, 0)); ?></span>
                 <span class="text-red-600 bg-red-100 px-2 py-1 rounded text-sm ml-2">Save <?php echo e($product->discount_percent); ?>%</span>
                 <?php else: ?>
-                <span>$<?php echo e(number_format($product->price, 2)); ?></span>
+                <span>₫<?php echo e(number_format($product->price, 0)); ?></span>
                 <?php endif; ?>
             </div>
 
@@ -146,7 +146,7 @@
                     <h3 class="font-bold truncate"><?php echo e($related->name); ?></h3>
                     <p class="text-gray-600 text-sm mb-2"><?php echo e($related->seller->name); ?></p>
                     <div class="flex justify-between items-center">
-                        <span class="font-bold">$<?php echo e(number_format($related->getDiscountedPrice(), 2)); ?></span>
+                        <span class="font-bold">₫<?php echo e(number_format($related->getDiscountedPrice(), 0)); ?></span>
                         <a href="<?php echo e(route('products.show', $related)); ?>" class="text-blue-600 hover:text-blue-800">
                             <i class="fas fa-eye"></i>
                         </a>

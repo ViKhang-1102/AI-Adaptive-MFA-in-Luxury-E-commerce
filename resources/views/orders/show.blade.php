@@ -67,12 +67,12 @@
                             </td>
                             <td class="py-3">{{ $item->product_name }}</td>
                             <td class="text-center">{{ $item->quantity }}</td>
-                            <td class="text-right">${{ number_format($item->product_price, 2) }}</td>
-                            <td class="text-right">${{ number_format($item->subtotal, 2) }}</td>
+                            <td class="text-right">₫{{ number_format($item->product_price, 0) }}</td>
+                            <td class="text-right">₫{{ number_format($item->subtotal, 0) }}</td>
                             <td class="text-center">
                                 @if($item->product)
-                                    <a href="{{ route('cart.add') }}" class="text-blue-600 hover:underline text-sm font-bold" 
-                                        onclick="buyAgain(event, {{ $item->product_id }}, {{ $item->quantity }})">
+                                    <a href="#" class="text-blue-600 hover:underline text-sm font-bold buy-again-btn" 
+                                        data-product-id="{{ $item->product_id }}" data-quantity="{{ $item->quantity }}">
                                         Buy Again
                                     </a>
                                 @endif
@@ -101,23 +101,23 @@
             <div class="space-y-3 border-b pb-4 mb-4">
                 <div class="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>${{ number_format($order->subtotal, 2) }}</span>
+                    <span>₫{{ number_format($order->subtotal, 0) }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span>Shipping:</span>
-                    <span>${{ number_format($order->shipping_fee, 2) }}</span>
+                    <span>₫{{ number_format($order->shipping_fee, 0) }}</span>
                 </div>
                 @if($order->discount_amount > 0)
                 <div class="flex justify-between text-green-600">
                     <span>Discount:</span>
-                    <span>-${{ number_format($order->discount_amount, 2) }}</span>
+                    <span>-₫{{ number_format($order->discount_amount, 0) }}</span>
                 </div>
                 @endif
             </div>
 
             <div class="flex justify-between text-xl font-bold mb-6">
                 <span>Total:</span>
-                <span>${{ number_format($order->total_amount, 2) }}</span>
+                <span>₫{{ number_format($order->total_amount, 0) }}</span>
             </div>
 
             @if($order->canBeCancelled())
@@ -133,25 +133,30 @@
 </div>
 
 <script>
-function buyAgain(event, productId, quantity) {
-    event.preventDefault();
-    
-    // Create and submit a form to add to cart
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '{{ route("cart.add") }}';
-    
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-    
-    form.innerHTML = `
-        <input type="hidden" name="_token" value="${csrfToken}">
-        <input type="hidden" name="product_id" value="${productId}">
-        <input type="hidden" name="quantity" value="${quantity}">
-    `;
-    
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-}
+document.querySelectorAll('.buy-again-btn').forEach(btn => {
+    btn.addEventListener('click', function(event) {
+        event.preventDefault();
+        
+        const productId = this.getAttribute('data-product-id');
+        const quantity = this.getAttribute('data-quantity');
+        
+        // Create and submit a form to add to cart
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route("cart.add") }}';
+        
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        
+        form.innerHTML = `
+            <input type="hidden" name="_token" value="${csrfToken}">
+            <input type="hidden" name="product_id" value="${productId}">
+            <input type="hidden" name="quantity" value="${quantity}">
+        `;
+        
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+    });
+});
 </script>
 @endsection

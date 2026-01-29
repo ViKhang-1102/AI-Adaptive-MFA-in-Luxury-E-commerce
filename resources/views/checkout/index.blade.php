@@ -137,7 +137,7 @@
                 @foreach($items as $item)
                 <div class="flex justify-between text-sm border-b pb-2">
                     <span>{{ $item->product->name }} x {{ $item->quantity }}</span>
-                    <span>${{ number_format($item->product->getDiscountedPrice() * $item->quantity, 2) }}</span>
+                    <span>₫{{ number_format($item->product->getDiscountedPrice() * $item->quantity, 0) }}</span>
                 </div>
                 @endforeach
             </div>
@@ -145,15 +145,15 @@
             <div class="space-y-3 border-t pt-4">
                 <div class="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>${{ number_format($subtotal, 2) }}</span>
+                    <span>₫{{ number_format($subtotal, 0) }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span>Shipping:</span>
-                    <span>${{ number_format($shippingFee, 2) }}</span>
+                    <span>₫{{ number_format($shippingFee, 0) }}</span>
                 </div>
                 <div class="flex justify-between text-xl font-bold border-t pt-3">
                     <span>Total:</span>
-                    <span>${{ number_format($total, 2) }}</span>
+                    <span>₫{{ number_format($total, 0) }}</span>
                 </div>
             </div>
 

@@ -92,8 +92,9 @@ unset($__errorArgs, $__bag); ?>
             <!-- Price -->
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div>
-                    <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Price *</label>
-                    <input type="number" id="price" name="price" step="0.01" min="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent <?php $__errorArgs = ['price'];
+                    <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Price (VND) *</label>
+                    <input type="number" id="price" name="price" step="any" min="1000" max="999999999" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent <?php $__errorArgs = ['price'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -101,7 +102,7 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                        value="<?php echo e(old('price')); ?>" required>
+                        value="<?php echo e(old('price')); ?>" placeholder="Enter VND price (integer only)" required>
                     <?php $__errorArgs = ['price'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -142,8 +143,9 @@ unset($__errorArgs, $__bag); ?>
             <!-- Discount -->
             <div class="grid grid-cols-3 gap-4 mb-6">
                 <div>
-                    <label for="discount_percent" class="block text-sm font-medium text-gray-700 mb-2">Discount %</label>
-                    <input type="number" id="discount_percent" name="discount_percent" min="0" max="100" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent <?php $__errorArgs = ['discount_percent'];
+                    <label for="discount_percent" class="block text-sm font-medium text-gray-700 mb-2">Discount % (1-100)</label>
+                    <input type="number" id="discount_percent" name="discount_percent" min="1" max="100" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent <?php $__errorArgs = ['discount_percent'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -151,7 +153,8 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                        value="<?php echo e(old('discount_percent')); ?>">
+                        value="<?php echo e(old('discount_percent')); ?>" placeholder="Leave blank if no discount">
+                    <p class="text-xs text-gray-500 mt-1">Requires both start and end dates</p>
                     <?php $__errorArgs = ['discount_percent'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -165,8 +168,9 @@ unset($__errorArgs, $__bag); ?>
                 </div>
 
                 <div>
-                    <label for="discount_start_date" class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
-                    <input type="date" id="discount_start_date" name="discount_start_date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent <?php $__errorArgs = ['discount_start_date'];
+                    <label for="discount_start_date" class="block text-sm font-medium text-gray-700 mb-2">Discount Start Date</label>
+                    <input type="date" id="discount_start_date" name="discount_start_date" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent <?php $__errorArgs = ['discount_start_date'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -175,6 +179,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
                         value="<?php echo e(old('discount_start_date')); ?>">
+                    <p class="text-xs text-gray-500 mt-1">Cannot be in the past</p>
                     <?php $__errorArgs = ['discount_start_date'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -188,8 +193,9 @@ unset($__errorArgs, $__bag); ?>
                 </div>
 
                 <div>
-                    <label for="discount_end_date" class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
-                    <input type="date" id="discount_end_date" name="discount_end_date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent <?php $__errorArgs = ['discount_end_date'];
+                    <label for="discount_end_date" class="block text-sm font-medium text-gray-700 mb-2">Discount End Date</label>
+                    <input type="date" id="discount_end_date" name="discount_end_date" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent <?php $__errorArgs = ['discount_end_date'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -198,6 +204,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
                         value="<?php echo e(old('discount_end_date')); ?>">
+                    <p class="text-xs text-gray-500 mt-1">Must be after start date</p>
                     <?php $__errorArgs = ['discount_end_date'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -319,6 +326,10 @@ unset($__errorArgs, $__bag); ?>
 
     function displayPreviews() {
         preview.innerHTML = '';
+
+        if (selectedFiles.length === 0) {
+            return;
+        }
 
         selectedFiles.forEach((file, index) => {
             if (index >= 10) return;

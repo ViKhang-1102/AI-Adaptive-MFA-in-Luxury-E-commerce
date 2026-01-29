@@ -28,7 +28,7 @@
                     <tr class="border-b hover:bg-gray-50">
                         <td class="px-6 py-3"><?php echo e($product->name); ?></td>
                         <td class="px-6 py-3 text-center"><?php echo e($product->stock); ?></td>
-                        <td class="px-6 py-3 text-right">$<?php echo e(number_format($product->price, 2)); ?></td>
+                        <td class="px-6 py-3 text-right">₫<?php echo e(number_format($product->price, 0)); ?></td>
                         <td class="px-6 py-3 text-center">
                             <div class="flex gap-2 justify-center">
                                 <a href="<?php echo e(route('seller.products.edit', $product)); ?>" class="inline-block px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">

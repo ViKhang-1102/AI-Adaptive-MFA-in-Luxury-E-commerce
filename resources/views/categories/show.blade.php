@@ -23,7 +23,7 @@
                 <h3 class="font-bold truncate">{{ $product->name }}</h3>
                 <p class="text-gray-600 text-sm mb-2">{{ $product->seller->name }}</p>
                 <div class="flex justify-between items-center">
-                    <span class="font-bold">${{ number_format($product->getDiscountedPrice(), 2) }}</span>
+                    <span class="font-bold">₫{{ number_format($product->getDiscountedPrice(), 0) }}</span>
                     <a href="{{ route('products.show', $product) }}" class="text-blue-600 hover:text-blue-800">
                         <i class="fas fa-eye"></i>
                     </a>

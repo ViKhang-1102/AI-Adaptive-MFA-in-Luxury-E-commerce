@@ -86,4 +86,5 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix
     Route::resource('/fees', App\Http\Controllers\Admin\FeeController::class);
     Route::get('/wallet', [App\Http\Controllers\Admin\WalletController::class, 'index'])->name('wallet');
     Route::get('/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
 });

@@ -27,7 +27,7 @@
                 <h3 class="font-bold truncate">{{ $wishlist->product->name }}</h3>
                 <p class="text-gray-600 text-sm mb-2">{{ $wishlist->product->seller->name }}</p>
                 <div class="flex justify-between items-center mb-3">
-                    <span class="font-bold">${{ number_format($wishlist->product->getDiscountedPrice(), 2) }}</span>
+                    <span class="font-bold">₫{{ number_format($wishlist->product->getDiscountedPrice(), 0) }}</span>
                 </div>
                 <div class="flex space-x-2">
                     <form action="{{ route('cart.add') }}" method="POST" class="flex-1">

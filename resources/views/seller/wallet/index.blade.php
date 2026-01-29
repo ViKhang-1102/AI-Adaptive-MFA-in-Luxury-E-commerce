@@ -12,17 +12,17 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-lg shadow-lg">
             <p class="text-blue-100 text-sm mb-1">Available Balance</p>
-            <h2 class="text-4xl font-bold">${{ number_format($balance, 2) }}</h2>
+            <h2 class="text-4xl font-bold">₫{{ number_format($balance, 0) }}</h2>
             <p class="text-blue-100 text-xs mt-2">Ready to withdraw</p>
         </div>
         <div class="bg-white p-6 rounded-lg shadow">
             <p class="text-gray-600 text-sm mb-1">Total Earned</p>
-            <h2 class="text-3xl font-bold text-green-600">${{ number_format($totalEarned, 2) }}</h2>
+            <h2 class="text-3xl font-bold text-green-600">₫{{ number_format($totalEarned, 0) }}</h2>
             <p class="text-gray-500 text-xs mt-2">All time earnings</p>
         </div>
         <div class="bg-white p-6 rounded-lg shadow">
             <p class="text-gray-600 text-sm mb-1">Total Withdrawn</p>
-            <h2 class="text-3xl font-bold text-purple-600">${{ number_format($totalWithdrawn, 2) }}</h2>
+            <h2 class="text-3xl font-bold text-purple-600">₫{{ number_format($totalWithdrawn, 0) }}</h2>
             <p class="text-gray-500 text-xs mt-2">Funds transferred</p>
         </div>
     </div>
@@ -39,7 +39,7 @@
                     <input type="number" name="amount" step="0.01" max="{{ $balance }}" placeholder="Enter amount" class="flex-1 px-4 py-2 border rounded" required>
                     <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700">Request</button>
                 </div>
-                <p class="text-xs text-gray-500 mt-1">Maximum: ${{ number_format($balance, 2) }}</p>
+                <p class="text-xs text-gray-500 mt-1">Maximum: ₫{{ number_format($balance, 0) }}</p>
             </div>
         </form>
     </div>
@@ -77,7 +77,7 @@
                         </td>
                         <td class="px-6 py-3 text-right font-semibold">
                             <span class="{{ $transaction->type === 'credit' ? 'text-green-600' : 'text-red-600' }}">
-                                {{ $transaction->type === 'credit' ? '+' : '-' }}${{ number_format($transaction->amount, 2) }}
+                                {{ $transaction->type === 'credit' ? '+' : '-' }}₫{{ number_format($transaction->amount, 0) }}
                             </span>
                         </td>
                         <td class="px-6 py-3">

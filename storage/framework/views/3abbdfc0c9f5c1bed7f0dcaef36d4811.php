@@ -1,11 +1,13 @@
 
-<?php $__env->startSection('title', 'My Orders'); ?>
+<?php $__env->startSection('title', 'All Orders'); ?>
 <?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-8">
-        <div>
-            <a href="<?php echo e(route('seller.dashboard')); ?>" class="text-blue-600 hover:underline mb-4 inline-block">&larr; Back to Dashboard</a>
-            <h1 class="text-3xl font-bold">My Orders</h1>
+        <div class="flex items-center gap-4">
+            <a href="<?php echo e(route('admin.dashboard')); ?>" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 font-semibold">
+                ← Dashboard
+            </a>
+            <h1 class="text-3xl font-bold">All Orders</h1>
         </div>
         <div class="flex gap-2">
             <select id="status-filter" class="px-4 py-2 border rounded">
@@ -30,8 +32,9 @@
                     <tr>
                         <th class="px-6 py-3 text-left">Order ID</th>
                         <th class="px-6 py-3 text-left">Customer</th>
-                        <th class="px-6 py-3 text-left">Items</th>
+                        <th class="px-6 py-3 text-left">Seller</th>
                         <th class="px-6 py-3 text-right">Amount</th>
+                        <th class="px-6 py-3 text-left">Payment</th>
                         <th class="px-6 py-3 text-left">Status</th>
                         <th class="px-6 py-3 text-left">Date</th>
                         <th class="px-6 py-3 text-left">Actions</th>
@@ -41,9 +44,20 @@
                     <?php $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr class="border-b hover:bg-gray-50">
                         <td class="px-6 py-3 font-semibold">#<?php echo e($order->id); ?></td>
-                        <td class="px-6 py-3"><?php echo e($order->customer->name ?? 'N/A'); ?></td>
-                        <td class="px-6 py-3"><?php echo e($order->items->count() ?? 0); ?></td>
+                        <td class="px-6 py-3">
+                            <div class="text-sm">
+                                <div class="font-medium"><?php echo e($order->user->name ?? 'Guest'); ?></div>
+                                <div class="text-gray-500"><?php echo e($order->user->email ?? 'N/A'); ?></div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-3"><?php echo e($order->seller->name ?? 'Unknown'); ?></td>
                         <td class="px-6 py-3 text-right font-semibold">₫<?php echo e(number_format($order->total_amount, 0)); ?></td>
+                        <td class="px-6 py-3">
+                            <span class="px-2 py-1 text-sm rounded-full <?php echo e($order->payment_status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'); ?>">
+                                <?php echo e(ucfirst($order->payment_status ?? 'pending')); ?>
+
+                            </span>
+                        </td>
                         <td class="px-6 py-3">
                             <span class="px-2 py-1 text-sm rounded-full
                                 <?php echo e($order->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ''); ?>
@@ -63,35 +77,7 @@
                         </td>
                         <td class="px-6 py-3"><?php echo e($order->created_at->format('M d, Y')); ?></td>
                         <td class="px-6 py-3">
-                            <div class="flex gap-2 flex-wrap">
-                                <a href="<?php echo e(route('seller.orders.show', $order)); ?>" class="inline-block px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
-                                    <i class="fas fa-eye mr-1"></i> View
-                                </a>
-                                <?php if($order->status === 'pending'): ?>
-                                    <form method="POST" action="<?php echo e(route('seller.orders.confirm', $order)); ?>" class="inline">
-                                        <?php echo csrf_field(); ?>
-                                        <button type="submit" class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition">
-                                            <i class="fas fa-check mr-1"></i> Confirm
-                                        </button>
-                                    </form>
-                                <?php endif; ?>
-                                <?php if($order->status === 'confirmed'): ?>
-                                    <form method="POST" action="<?php echo e(route('seller.orders.ship', $order)); ?>" class="inline">
-                                        <?php echo csrf_field(); ?>
-                                        <button type="submit" class="px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition">
-                                            <i class="fas fa-truck mr-1"></i> Ship
-                                        </button>
-                                    </form>
-                                <?php endif; ?>
-                                <?php if(in_array($order->status, ['pending', 'confirmed'])): ?>
-                                    <form method="POST" action="<?php echo e(route('seller.orders.cancel', $order)); ?>" class="inline" onsubmit="return confirm('Are you sure?')">
-                                        <?php echo csrf_field(); ?>
-                                        <button type="submit" class="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition">
-                                            <i class="fas fa-times mr-1"></i> Cancel
-                                        </button>
-                                    </form>
-                                <?php endif; ?>
-                            </div>
+                            <a href="<?php echo e(route('admin.orders.show', $order)); ?>" class="text-blue-600 hover:underline text-sm">View</a>
                         </td>
                     </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -108,4 +94,4 @@
 </div>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\E-commerce2026\resources\views/seller/orders/index.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\E-commerce2026\resources\views/admin/orders/index.blade.php ENDPATH**/ ?>

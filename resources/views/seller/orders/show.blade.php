@@ -29,13 +29,15 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 border-b">
             <div>
                 <h3 class="font-bold text-lg mb-2">Customer</h3>
-                <p class="text-gray-700">{{ $order->user->name }}</p>
-                <p class="text-gray-600">{{ $order->user->email }}</p>
+                <p class="text-gray-700">{{ $order->customer->name ?? 'Guest Customer' }}</p>
+                <p class="text-gray-600">{{ $order->customer->email ?? 'N/A' }}</p>
+                <p class="text-gray-600">{{ $order->customer->phone ?? 'N/A' }}</p>
             </div>
             <div>
                 <h3 class="font-bold text-lg mb-2">Delivery Address</h3>
-                <p class="text-gray-700">{{ $order->address->address_line_1 ?? 'N/A' }}</p>
-                <p class="text-gray-600">{{ $order->address->city ?? '' }}, {{ $order->address->state ?? '' }} {{ $order->address->zip_code ?? '' }}</p>
+                <p class="text-gray-700">{{ $order->delivery_address ?? 'N/A' }}</p>
+                <p class="text-gray-600">{{ $order->recipient_name ?? '' }}</p>
+                <p class="text-gray-600">{{ $order->recipient_phone ?? '' }}</p>
             </div>
         </div>
 
@@ -43,15 +45,17 @@
         <div class="p-6 border-b">
             <h3 class="font-bold text-lg mb-4">Order Items</h3>
             <div class="space-y-4">
-                @foreach($order->orderItems as $item)
+                @forelse($order->items as $item)
                 <div class="flex justify-between items-center p-4 bg-gray-50 rounded">
                     <div>
-                        <p class="font-semibold">{{ $item->product->name }}</p>
-                        <p class="text-sm text-gray-600">Quantity: {{ $item->quantity }} × ${{ number_format($item->price, 2) }}</p>
+                        <p class="font-semibold">{{ $item->product->name ?? 'Product Removed' }}</p>
+                        <p class="text-sm text-gray-600">Quantity: {{ $item->quantity }} × ₫{{ number_format($item->price, 0) }}</p>
                     </div>
-                    <p class="font-bold">${{ number_format($item->quantity * $item->price, 2) }}</p>
+                    <p class="font-bold">₫{{ number_format($item->quantity * $item->price, 0) }}</p>
                 </div>
-                @endforeach
+                @empty
+                <p class="text-gray-500">No items in this order</p>
+                @endforelse
             </div>
         </div>
 
@@ -60,11 +64,11 @@
             <div class="space-y-2 text-right">
                 <div class="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>${{ number_format($order->total_amount, 2) }}</span>
+                    <span>₫{{ number_format($order->total_amount, 0) }}</span>
                 </div>
                 <div class="flex justify-between font-bold text-lg">
                     <span>Total:</span>
-                    <span>${{ number_format($order->total_amount, 2) }}</span>
+                    <span>₫{{ number_format($order->total_amount, 0) }}</span>
                 </div>
             </div>
         </div>

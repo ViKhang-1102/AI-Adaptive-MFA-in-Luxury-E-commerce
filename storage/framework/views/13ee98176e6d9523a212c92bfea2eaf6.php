@@ -2,6 +2,10 @@
 <?php $__env->startSection('title', 'My Wallet'); ?>
 <?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="mb-8">
+        <a href="<?php echo e(route('seller.dashboard')); ?>" class="text-blue-600 hover:underline">&larr; Back to Dashboard</a>
+    </div>
+
     <h1 class="text-3xl font-bold mb-8">My Wallet</h1>
 
     <!-- Wallet Balance -->

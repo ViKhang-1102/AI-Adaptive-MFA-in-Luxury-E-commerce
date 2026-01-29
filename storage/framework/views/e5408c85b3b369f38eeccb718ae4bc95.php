@@ -45,19 +45,39 @@
                 <table class="w-full">
                     <thead class="border-b">
                         <tr>
+                            <th class="text-left pb-2">Image</th>
                             <th class="text-left pb-2">Product</th>
                             <th class="text-center pb-2">Quantity</th>
                             <th class="text-right pb-2">Price</th>
                             <th class="text-right pb-2">Total</th>
+                            <th class="text-center pb-2">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php $__currentLoopData = $order->items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <tr class="border-b">
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-3">
+                                <?php if($item->product && $item->product->images->first()): ?>
+                                    <img src="<?php echo e(asset('storage/' . $item->product->images->first()->image)); ?>" 
+                                        class="w-16 h-16 object-cover rounded" alt="<?php echo e($item->product_name); ?>">
+                                <?php else: ?>
+                                    <div class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
+                                        <i class="fas fa-image text-gray-400"></i>
+                                    </div>
+                                <?php endif; ?>
+                            </td>
                             <td class="py-3"><?php echo e($item->product_name); ?></td>
                             <td class="text-center"><?php echo e($item->quantity); ?></td>
-                            <td class="text-right">$<?php echo e(number_format($item->product_price, 2)); ?></td>
-                            <td class="text-right">$<?php echo e(number_format($item->subtotal, 2)); ?></td>
+                            <td class="text-right">₫<?php echo e(number_format($item->product_price, 0)); ?></td>
+                            <td class="text-right">₫<?php echo e(number_format($item->subtotal, 0)); ?></td>
+                            <td class="text-center">
+                                <?php if($item->product): ?>
+                                    <a href="#" class="text-blue-600 hover:underline text-sm font-bold buy-again-btn" 
+                                        data-product-id="<?php echo e($item->product_id); ?>" data-quantity="<?php echo e($item->quantity); ?>">
+                                        Buy Again
+                                    </a>
+                                <?php endif; ?>
+                            </td>
                         </tr>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </tbody>
@@ -82,23 +102,23 @@
             <div class="space-y-3 border-b pb-4 mb-4">
                 <div class="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>$<?php echo e(number_format($order->subtotal, 2)); ?></span>
+                    <span>₫<?php echo e(number_format($order->subtotal, 0)); ?></span>
                 </div>
                 <div class="flex justify-between">
                     <span>Shipping:</span>
-                    <span>$<?php echo e(number_format($order->shipping_fee, 2)); ?></span>
+                    <span>₫<?php echo e(number_format($order->shipping_fee, 0)); ?></span>
                 </div>
                 <?php if($order->discount_amount > 0): ?>
                 <div class="flex justify-between text-green-600">
                     <span>Discount:</span>
-                    <span>-$<?php echo e(number_format($order->discount_amount, 2)); ?></span>
+                    <span>-₫<?php echo e(number_format($order->discount_amount, 0)); ?></span>
                 </div>
                 <?php endif; ?>
             </div>
 
             <div class="flex justify-between text-xl font-bold mb-6">
                 <span>Total:</span>
-                <span>$<?php echo e(number_format($order->total_amount, 2)); ?></span>
+                <span>₫<?php echo e(number_format($order->total_amount, 0)); ?></span>
             </div>
 
             <?php if($order->canBeCancelled()): ?>
@@ -112,6 +132,34 @@
         </div>
     </div>
 </div>
+
+<script>
+document.querySelectorAll('.buy-again-btn').forEach(btn => {
+    btn.addEventListener('click', function(event) {
+        event.preventDefault();
+        
+        const productId = this.getAttribute('data-product-id');
+        const quantity = this.getAttribute('data-quantity');
+        
+        // Create and submit a form to add to cart
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '<?php echo e(route("cart.add")); ?>';
+        
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        
+        form.innerHTML = `
+            <input type="hidden" name="_token" value="${csrfToken}">
+            <input type="hidden" name="product_id" value="${productId}">
+            <input type="hidden" name="quantity" value="${quantity}">
+        `;
+        
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+    });
+});
+</script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\E-commerce2026\resources\views/orders/show.blade.php ENDPATH**/ ?>

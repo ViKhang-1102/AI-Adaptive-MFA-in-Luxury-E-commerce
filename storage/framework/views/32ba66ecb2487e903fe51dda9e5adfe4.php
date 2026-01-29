@@ -27,7 +27,7 @@
                 <h3 class="font-bold truncate"><?php echo e($wishlist->product->name); ?></h3>
                 <p class="text-gray-600 text-sm mb-2"><?php echo e($wishlist->product->seller->name); ?></p>
                 <div class="flex justify-between items-center mb-3">
-                    <span class="font-bold">$<?php echo e(number_format($wishlist->product->getDiscountedPrice(), 2)); ?></span>
+                    <span class="font-bold">₫<?php echo e(number_format($wishlist->product->getDiscountedPrice(), 0)); ?></span>
                 </div>
                 <div class="flex space-x-2">
                     <form action="<?php echo e(route('cart.add')); ?>" method="POST" class="flex-1">

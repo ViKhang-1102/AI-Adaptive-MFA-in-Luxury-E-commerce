@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Seller;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
     public function index()
     {
-        $orders = auth()->user()->ordersAsSeller()
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $orders = $user->ordersAsSeller()
             ->with('customer', 'items')
             ->latest()
             ->paginate(10);
@@ -20,17 +23,17 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        if ($order->seller_id !== auth()->id()) {
+        if ($order->seller_id !== Auth::id()) {
             abort(403);
         }
 
-        $order->load('customer', 'items.product');
+        $order->load('customer', 'items.product', 'payment');
         return view('seller.orders.show', compact('order'));
     }
 
     public function confirm(Request $request, Order $order)
     {
-        if ($order->seller_id !== auth()->id() || $order->status !== 'pending') {
+        if ($order->seller_id !== Auth::id() || $order->status !== 'pending') {
             abort(403);
         }
 
@@ -44,7 +47,7 @@ class OrderController extends Controller
 
     public function cancel(Request $request, Order $order)
     {
-        if ($order->seller_id !== auth()->id() || !in_array($order->status, ['pending', 'confirmed'])) {
+        if ($order->seller_id !== Auth::id() || !in_array($order->status, ['pending', 'confirmed'])) {
             abort(403);
         }
 
@@ -68,7 +71,7 @@ class OrderController extends Controller
 
     public function ship(Request $request, Order $order)
     {
-        if ($order->seller_id !== auth()->id() || $order->status !== 'confirmed') {
+        if ($order->seller_id !== Auth::id() || $order->status !== 'confirmed') {
             abort(403);
         }
 

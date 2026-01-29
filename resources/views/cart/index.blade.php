@@ -41,7 +41,7 @@
                                     <p class="text-sm text-gray-600">{{ $item->product->seller->name }}</p>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-center">${{ number_format($item->product->getDiscountedPrice(), 2) }}</td>
+                            <td class="px-6 py-4 text-center">₫{{ number_format($item->product->getDiscountedPrice(), 0) }}</td>
                             <td class="px-6 py-4">
                                 <form action="{{ route('cart.update', $item) }}" method="POST" class="flex justify-center">
                                     @csrf
@@ -49,7 +49,7 @@
                                     <button type="submit" class="ml-2 text-blue-600 hover:text-blue-800">Update</button>
                                 </form>
                             </td>
-                            <td class="px-6 py-4 text-center font-bold">${{ number_format($item->product->getDiscountedPrice() * $item->quantity, 2) }}</td>
+                            <td class="px-6 py-4 text-center font-bold">₫{{ number_format($item->product->getDiscountedPrice() * $item->quantity, 0) }}</td>
                             <td class="px-6 py-4 text-center">
                                 <form action="{{ route('cart.remove', $item) }}" method="POST">
                                     @csrf
@@ -70,7 +70,7 @@
             <div class="space-y-3 border-b pb-4 mb-4">
                 <div class="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>${{ number_format($subtotal, 2) }}</span>
+                    <span>₫{{ number_format($subtotal, 0) }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span>Shipping:</span>
@@ -83,7 +83,7 @@
             </div>
             <div class="flex justify-between font-bold text-xl mb-6">
                 <span>Total:</span>
-                <span>${{ number_format($subtotal, 2) }}</span>
+                <span>₫{{ number_format($subtotal, 0) }}</span>
             </div>
             <a href="{{ route('checkout') }}" class="block w-full text-center bg-green-600 text-white py-3 rounded hover:bg-green-700 font-bold">
                 Proceed to Checkout

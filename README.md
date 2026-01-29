@@ -124,8 +124,8 @@ Rate products     View earnings     Manage categories
 
 ## 💳 Payment Methods
 
-- **Cash on Delivery (COD)**: Ready to use
-- **VNPay**: Framework in place (requires merchant account)
+- **Cash on Delivery (COD)**: Ready to use in Vietnamese Dong (VND)
+- **VNPay**: Framework in place (requires merchant account, uses VND)
 
 ## 📊 Project Statistics
 

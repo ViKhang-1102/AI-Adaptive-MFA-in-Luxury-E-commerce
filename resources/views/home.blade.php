@@ -149,10 +149,10 @@
                         <div class="flex justify-between items-center">
                             <div>
                                 @if($product->hasDiscount())
-                                <span class="text-red-600 font-bold">${{ number_format($product->getDiscountedPrice(), 2) }}</span>
-                                <span class="text-gray-400 line-through text-sm">${{ number_format($product->price, 2) }}</span>
+                                <span class="text-red-600 font-bold">₫{{ number_format($product->getDiscountedPrice(), 0) }}</span>
+                                <span class="text-gray-400 line-through text-sm">₫{{ number_format($product->price, 0) }}</span>
                                 @else
-                                <span class="font-bold">${{ number_format($product->price, 2) }}</span>
+                                <span class="font-bold">₫{{ number_format($product->price, 0) }}</span>
                                 @endif
                             </div>
                             <span class="text-blue-600 group-hover:text-blue-800">
@@ -189,8 +189,8 @@
                     <p class="text-gray-600 text-sm mb-2">{{ $product->seller->name }}</p>
                     <div class="flex justify-between items-center">
                         <div>
-                            <span class="text-red-600 font-bold">${{ number_format($product->getDiscountedPrice(), 2) }}</span>
-                            <span class="text-gray-400 line-through text-sm">${{ number_format($product->price, 2) }}</span>
+                            <span class="text-red-600 font-bold">₫{{ number_format($product->getDiscountedPrice(), 0) }}</span>
+                            <span class="text-gray-400 line-through text-sm">₫{{ number_format($product->price, 0) }}</span>
                         </div>
                         <span class="text-blue-600 group-hover:text-blue-800">
                             <i class="fas fa-arrow-right"></i>
@@ -218,7 +218,7 @@
                     <h3 class="font-bold truncate group-hover:text-blue-600">{{ $product->name }}</h3>
                     <p class="text-gray-600 text-sm mb-2">{{ $product->seller->name }}</p>
                     <div class="flex justify-between items-center">
-                        <span class="font-bold group-hover:text-blue-600">${{ number_format($product->getDiscountedPrice(), 2) }}</span>
+                        <span class="font-bold group-hover:text-blue-600">₫{{ number_format($product->getDiscountedPrice(), 0) }}</span>
                         <span class="text-blue-600 group-hover:text-blue-800">
                             <i class="fas fa-arrow-right"></i>
                         </span>

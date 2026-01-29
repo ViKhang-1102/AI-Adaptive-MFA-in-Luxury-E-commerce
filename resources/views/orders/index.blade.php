@@ -28,7 +28,7 @@
                 </div>
                 <div>
                     <p class="text-sm text-gray-600">Total</p>
-                    <strong>${{ number_format($order->total_amount, 2) }}</strong>
+                    <strong>₫{{ number_format($order->total_amount, 0) }}</strong>
                 </div>
                 <div>
                     <p class="text-sm text-gray-600">Status</p>

@@ -89,6 +89,8 @@ class Product extends Model
     public function hasDiscount()
     {
         return !is_null($this->discount_percent) &&
+               !is_null($this->discount_start_date) &&
+               !is_null($this->discount_end_date) &&
                $this->discount_start_date <= now() &&
                $this->discount_end_date >= now();
     }
@@ -96,7 +98,9 @@ class Product extends Model
     public function getDiscountedPrice()
     {
         if ($this->hasDiscount()) {
-            return $this->price - ($this->price * ($this->discount_percent / 100));
+            // Calculate discount amount with proper rounding for VND (no decimals)
+            $discountAmount = round($this->price * ($this->discount_percent / 100), 0);
+            return $this->price - $discountAmount;
         }
         return $this->price;
     }

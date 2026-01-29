@@ -46,15 +46,15 @@
                 <div class="mb-6 p-4 bg-gray-50 rounded-lg">
                     @if($product->hasDiscount())
                         <div class="flex items-center gap-3">
-                            <span class="text-3xl font-bold text-red-600">${{ number_format($product->getDiscountedPrice(), 2) }}</span>
-                            <span class="text-xl text-gray-400 line-through">${{ number_format($product->price, 2) }}</span>
+                            <span class="text-3xl font-bold text-red-600">₫{{ number_format($product->getDiscountedPrice(), 0) }}</span>
+                            <span class="text-xl text-gray-400 line-through">₫{{ number_format($product->price, 0) }}</span>
                             <span class="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">-{{ $product->discount_percent }}%</span>
                         </div>
                         <p class="text-sm text-gray-600 mt-2">
                             Valid from {{ $product->discount_start_date->format('M d, Y') }} to {{ $product->discount_end_date->format('M d, Y') }}
                         </p>
                     @else
-                        <div class="text-3xl font-bold">${{ number_format($product->price, 2) }}</div>
+                        <div class="text-3xl font-bold">₫{{ number_format($product->price, 0) }}</div>
                     @endif
                 </div>
 

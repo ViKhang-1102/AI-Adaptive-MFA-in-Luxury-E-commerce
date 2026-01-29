@@ -33,7 +33,7 @@
                                     @if($fee->fee_type === 'percentage')
                                         {{ $fee->fee_value }}%
                                     @else
-                                        ${{ number_format($fee->fee_value, 2) }}
+                                        ₫{{ number_format($fee->fee_value, 0) }}
                                     @endif
                                 </span>
                                 <span class="text-gray-500 ml-2">({{ ucfirst($fee->fee_type) }})</span>
