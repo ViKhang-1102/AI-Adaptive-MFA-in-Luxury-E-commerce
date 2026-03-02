@@ -31,7 +31,8 @@ class OrderItem extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class);
+        // product_id may be null once the product is deleted; use withDefault to avoid errors
+        return $this->belongsTo(Product::class)->withDefault();
     }
 }
 

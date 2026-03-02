@@ -121,8 +121,8 @@
                     <label class="flex items-center p-4 border rounded hover:bg-gray-50">
                         <input type="radio" name="payment_method" value="online" class="mr-2">
                         <div>
-                            <strong>Online Payment (VNPay)</strong>
-                            <p class="text-sm text-gray-600">Pay now with card or mobile wallet</p>
+                            <strong>Online Payment (PayPal)</strong>
+                            <p class="text-sm text-gray-600">Secure payment via PayPal Sandbox</p>
                         </div>
                     </label>
                 </div>

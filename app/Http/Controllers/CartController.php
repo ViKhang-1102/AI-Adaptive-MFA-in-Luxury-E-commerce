@@ -6,12 +6,13 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
     public function index()
     {
-        $cart = auth()->user()->cart ?? Cart::create(['customer_id' => auth()->id()]);
+        $cart = Auth::user()->cart ?? Cart::create(['customer_id' => Auth::id()]);
         $items = $cart->items()->with('product.seller', 'product.images')->get();
 
         $subtotal = $items->sum(function ($item) {
@@ -34,7 +35,7 @@ class CartController extends Controller
             return back()->with('error', 'Product not available');
         }
 
-        $cart = auth()->user()->cart ?? Cart::create(['customer_id' => auth()->id()]);
+        $cart = Auth::user()->cart ?? Cart::create(['customer_id' => Auth::id()]);
 
         $cartItem = $cart->items()->where('product_id', $product->id)->first();
 

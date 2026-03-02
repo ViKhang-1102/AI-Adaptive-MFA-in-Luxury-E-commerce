@@ -29,6 +29,7 @@
     25 => 'Carbon\\Laravel\\ServiceProvider',
     26 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     27 => 'Termwind\\Laravel\\TermwindServiceProvider',
+    28 => 'Srmklive\\PayPal\\Providers\\PayPalServiceProvider',
   ),
   'eager' => 
   array (
@@ -45,6 +46,7 @@
     10 => 'Carbon\\Laravel\\ServiceProvider',
     11 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     12 => 'Termwind\\Laravel\\TermwindServiceProvider',
+    13 => 'Srmklive\\PayPal\\Providers\\PayPalServiceProvider',
   ),
   'deferred' => 
   array (

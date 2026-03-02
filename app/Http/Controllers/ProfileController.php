@@ -3,14 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\CustomerAddress;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
     public function show()
     {
-        return view('profile.show', ['user' => auth()->user()]);
+        return view('profile.show', ['user' => Auth::user()]);
     }
 
     public function update(Request $request)
@@ -21,13 +23,22 @@ class ProfileController extends Controller
             'address' => 'nullable|string',
             'avatar' => 'nullable|image|max:2048',
             'bio' => 'nullable|string|max:500',
+            'paypal_email' => 'nullable|email|max:255',
         ]);
 
-        $user = auth()->user();
+        /** @var User $user */
+        $user = Auth::user();
 
         if ($request->hasFile('avatar')) {
             $path = $request->file('avatar')->store('avatars', 'public');
             $validated['avatar'] = $path;
+        }
+
+        // Only allow sellers to set paypal_email, but accept the field safely
+        /** @var User $current */
+        $current = Auth::user();
+        if (!$current || !$current->isSeller()) {
+            unset($validated['paypal_email']);
         }
 
         $user->update($validated);
@@ -42,7 +53,9 @@ class ProfileController extends Controller
             'password' => 'required|confirmed|min:6|different:current_password',
         ]);
 
-        auth()->user()->update([
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+        $currentUser->update([
             'password' => Hash::make($validated['password']),
         ]);
 
@@ -51,7 +64,9 @@ class ProfileController extends Controller
 
     public function addresses()
     {
-        $addresses = auth()->user()->addresses;
+        /** @var User $addrUser */
+        $addrUser = Auth::user();
+        $addresses = $addrUser->addresses;
         return view('addresses.index', compact('addresses'));
     }
 
@@ -66,7 +81,7 @@ class ProfileController extends Controller
         ]);
 
         CustomerAddress::create([
-            'customer_id' => auth()->id(),
+            'customer_id' => Auth::id(),
             ...$validated,
         ]);
 
@@ -75,7 +90,7 @@ class ProfileController extends Controller
 
     public function updateAddress(Request $request, CustomerAddress $address)
     {
-        if ($address->customer_id !== auth()->id()) {
+        if ($address->customer_id !== Auth::id()) {
             abort(403);
         }
 
@@ -94,7 +109,7 @@ class ProfileController extends Controller
 
     public function destroyAddress(CustomerAddress $address)
     {
-        if ($address->customer_id !== auth()->id()) {
+        if ($address->customer_id !== Auth::id()) {
             abort(403);
         }
 

@@ -291,7 +291,7 @@ unset($__errorArgs, $__bag); ?>
     const imageInput = document.getElementById('new_images');
     const preview = document.getElementById('image-preview');
     let selectedFiles = []; // Store selected files
-    const existingImageCount = <?php echo e($product->images->count()); ?>; // Count existing images
+    const existingImageCount = parseInt('<?php echo e($product->images->count()); ?>'); // Count existing images
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, preventDefaults, false);

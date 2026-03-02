@@ -121,8 +121,8 @@
                     <label class="flex items-center p-4 border rounded hover:bg-gray-50">
                         <input type="radio" name="payment_method" value="online" class="mr-2">
                         <div>
-                            <strong>Online Payment (VNPay)</strong>
-                            <p class="text-sm text-gray-600">Pay now with card or mobile wallet</p>
+                            <strong>Online Payment (PayPal)</strong>
+                            <p class="text-sm text-gray-600">Secure payment via PayPal Sandbox</p>
                         </div>
                     </label>
                 </div>
@@ -137,7 +137,7 @@
                 <?php $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="flex justify-between text-sm border-b pb-2">
                     <span><?php echo e($item->product->name); ?> x <?php echo e($item->quantity); ?></span>
-                    <span>$<?php echo e(number_format($item->product->getDiscountedPrice() * $item->quantity, 2)); ?></span>
+                    <span>₫<?php echo e(number_format($item->product->getDiscountedPrice() * $item->quantity, 0)); ?></span>
                 </div>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
@@ -145,15 +145,15 @@
             <div class="space-y-3 border-t pt-4">
                 <div class="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>$<?php echo e(number_format($subtotal, 2)); ?></span>
+                    <span>₫<?php echo e(number_format($subtotal, 0)); ?></span>
                 </div>
                 <div class="flex justify-between">
                     <span>Shipping:</span>
-                    <span>$<?php echo e(number_format($shippingFee, 2)); ?></span>
+                    <span>₫<?php echo e(number_format($shippingFee, 0)); ?></span>
                 </div>
                 <div class="flex justify-between text-xl font-bold border-t pt-3">
                     <span>Total:</span>
-                    <span>$<?php echo e(number_format($total, 2)); ?></span>
+                    <span>₫<?php echo e(number_format($total, 0)); ?></span>
                 </div>
             </div>
 

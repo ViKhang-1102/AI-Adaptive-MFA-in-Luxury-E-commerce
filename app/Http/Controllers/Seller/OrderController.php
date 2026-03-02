@@ -82,4 +82,25 @@ class OrderController extends Controller
 
         return back()->with('success', 'Order marked as shipped');
     }
+
+    /**
+     * Allow seller to permanently remove a cancelled order from their list.
+     */
+    public function destroy(Order $order)
+    {
+        if ($order->seller_id !== Auth::id()) {
+            abort(403);
+        }
+        if ($order->status !== 'cancelled') {
+            return back()->with('error', 'Only cancelled orders can be deleted');
+        }
+
+        // Delete associated payment record to prevent foreign key constraint violation
+        if ($order->payment) {
+            $order->payment->delete();
+        }
+
+        $order->delete();
+        return redirect()->route('seller.orders.index')->with('success', 'Order deleted permanently');
+    }
 }

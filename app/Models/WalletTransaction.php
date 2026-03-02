@@ -17,6 +17,14 @@ class WalletTransaction extends Model
         'order_id',
         'reference_type',
         'reference_id',
+        'status',
+        'payout_approved_at',
+        'payout_rejected_at',
+    ];
+
+    protected $casts = [
+        'payout_approved_at' => 'datetime',
+        'payout_rejected_at' => 'datetime',
     ];
 
     public function wallet()

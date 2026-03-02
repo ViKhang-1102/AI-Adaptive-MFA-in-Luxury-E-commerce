@@ -19,6 +19,7 @@ class User extends Authenticatable
         'address',
         'avatar',
         'bio',
+        'paypal_email',
         'is_active',
     ];
 
@@ -34,6 +35,21 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
         ];
+    }
+
+    // Auto-create wallet when user is created
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($user) {
+            EWallet::create([
+                'user_id' => $user->id,
+                'balance' => 0,
+                'total_received' => 0,
+                'total_spent' => 0,
+            ]);
+        });
     }
 
     // Relationships

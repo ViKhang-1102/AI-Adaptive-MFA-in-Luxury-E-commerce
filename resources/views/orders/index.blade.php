@@ -45,6 +45,11 @@
             </div>
 
             <div class="flex justify-end space-x-3">
+                @if($order->status === 'pending' && $order->payment_method === 'online' && $order->payment_status === 'pending')
+                <a href="{{ route('paypal.create', $order) }}" class="text-green-600 hover:underline font-bold">
+                    Pay Now
+                </a>
+                @endif
                 <a href="{{ route('orders.show', $order) }}" class="text-blue-600 hover:underline">
                     View Details
                 </a>
@@ -52,6 +57,13 @@
                 <form action="{{ route('orders.cancel', $order) }}" method="POST" onsubmit="return confirm('Cancel this order?')">
                     @csrf
                     <button type="submit" class="text-red-600 hover:underline">Cancel Order</button>
+                </form>
+                @endif
+                @if($order->status === 'cancelled')
+                <form action="{{ route('orders.destroy', $order) }}" method="POST" onsubmit="return confirm('Delete order permanently?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="text-gray-600 hover:underline">Delete</button>
                 </form>
                 @endif
             </div>

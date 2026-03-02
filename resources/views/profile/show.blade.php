@@ -69,6 +69,15 @@
                             class="w-full px-4 py-2 border rounded">
                     </div>
 
+                    @if(auth()->user()->isSeller())
+                    <div>
+                        <label class="block font-bold mb-2">PayPal Email (for payouts)</label>
+                        <input type="email" name="paypal_email" value="{{ auth()->user()->paypal_email }}"
+                            class="w-full px-4 py-2 border rounded" placeholder="seller@example.com">
+                        <p class="text-xs text-gray-500 mt-1">This email is used by admin to send payouts via PayPal.</p>
+                    </div>
+                    @endif
+
                     <div>
                         <label class="block font-bold mb-2">Address</label>
                         <textarea name="address" rows="3" 

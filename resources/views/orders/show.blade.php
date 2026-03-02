@@ -120,11 +120,27 @@
                 <span>₫{{ number_format($order->total_amount, 0) }}</span>
             </div>
 
+            @if($order->status === 'pending' && $order->payment_method === 'online' && $order->payment_status === 'pending')
+            <div class="mb-4">
+                <a href="{{ route('paypal.create', $order) }}" class="block w-full text-center bg-green-600 text-white py-2 rounded hover:bg-green-700 font-bold">
+                    Pay Now
+                </a>
+            </div>
+            @endif
+
             @if($order->canBeCancelled())
             <form action="{{ route('orders.cancel', $order) }}" method="POST" onsubmit="return confirm('Cancel this order?')">
                 @csrf
                 <button type="submit" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">
                     Cancel Order
+                </button>
+            </form>
+            @elseif($order->status === 'cancelled')
+            <form action="{{ route('orders.destroy', $order) }}" method="POST" onsubmit="return confirm('Delete order permanently?')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700">
+                    Delete Order
                 </button>
             </form>
             @endif

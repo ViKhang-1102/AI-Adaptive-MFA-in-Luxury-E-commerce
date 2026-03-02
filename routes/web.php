@@ -45,9 +45,14 @@ Route::middleware('auth')->group(function () {
 
 // Customer Routes
 Route::middleware(['auth', \App\Http\Middleware\CustomerMiddleware::class])->group(function () {
+    // PayPal initiation - customer triggers payment
+    Route::get('paypal/create/{order}', [\App\Http\Controllers\PayPalController::class, 'createPayment'])
+        ->name('paypal.create');
+
     Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('/orders/{order}/payment', [OrderController::class, 'payment'])->name('orders.payment');
 
     // Wishlist Routes
@@ -71,6 +76,7 @@ Route::middleware(['auth', \App\Http\Middleware\SellerMiddleware::class])->prefi
     Route::get('/orders/{order}', [App\Http\Controllers\Seller\OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{order}/confirm', [App\Http\Controllers\Seller\OrderController::class, 'confirm'])->name('orders.confirm');
     Route::post('/orders/{order}/cancel', [App\Http\Controllers\Seller\OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::delete('/orders/{order}', [App\Http\Controllers\Seller\OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('/orders/{order}/ship', [App\Http\Controllers\Seller\OrderController::class, 'ship'])->name('orders.ship');
     Route::delete('/products/image/{productImage}', [App\Http\Controllers\Seller\ProductController::class, 'deleteImage'])->name('products.deleteImage');
     Route::get('/wallet', [App\Http\Controllers\Seller\WalletController::class, 'index'])->name('wallet');
@@ -84,7 +90,14 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix
     Route::resource('/categories', App\Http\Controllers\Admin\CategoryController::class, ['except' => ['show']]);
     Route::resource('/banners', App\Http\Controllers\Admin\BannerController::class, ['except' => ['show']]);
     Route::resource('/fees', App\Http\Controllers\Admin\FeeController::class);
+    Route::post('/fees/commission/update', [App\Http\Controllers\Admin\FeeController::class, 'updatePlatformCommission'])->name('fees.commission.update');
     Route::get('/wallet', [App\Http\Controllers\Admin\WalletController::class, 'index'])->name('wallet');
+    Route::post('/transactions/{transaction}/approve', [App\Http\Controllers\Admin\TransactionController::class, 'approve'])->name('transaction.approve');
+    Route::post('/transactions/{transaction}/reject', [App\Http\Controllers\Admin\TransactionController::class, 'reject'])->name('transaction.reject');
     Route::get('/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
 });
+
+// PayPal marketplace callbacks (accessible to anyone after redirect)
+Route::get('paypal/success', [App\Http\Controllers\PayPalController::class, 'paymentSuccess'])->name('paypal.success');
+Route::get('paypal/cancel', [App\Http\Controllers\PayPalController::class, 'paymentCancel'])->name('paypal.cancel');

@@ -64,7 +64,7 @@ class CategoryController extends Controller
             $product->images()->delete();
             $product->reviews()->delete();
             $product->cartItems()->delete();
-            $product->orderItems()->delete();
+            // keep order_items records; FK will nullify product_id
             $product->wishlistItems()->delete();
             $product->delete();
         });
@@ -75,7 +75,7 @@ class CategoryController extends Controller
                 $product->images()->delete();
                 $product->reviews()->delete();
                 $product->cartItems()->delete();
-                $product->orderItems()->delete();
+                // order items will remain, product_id nulled by fk
                 $product->wishlistItems()->delete();
                 $product->delete();
             });

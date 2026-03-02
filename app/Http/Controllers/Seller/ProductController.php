@@ -150,10 +150,9 @@ class ProductController extends Controller
             abort(403);
         }
 
-        // Check if product has any orders
-        if ($product->orderItems()->exists()) {
-            return back()->with('error', 'Cannot delete product that has orders. Please contact admin to handle this.');
-        }
+        // Previously we prevented sellers from removing products once they had been ordered.
+        // order_items now use a nullable product_id with ON DELETE SET NULL, so it's safe to delete
+        // the product without losing historical order data.
 
         // Delete all product images
         foreach ($product->images as $image) {

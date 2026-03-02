@@ -85,6 +85,16 @@
                                         </button>
                                     </form>
                                 @endif
+
+                                @if($order->status === 'cancelled')
+                                    <form method="POST" action="{{ route('seller.orders.destroy', $order) }}" class="inline" onsubmit="return confirm('Remove order permanently?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition">
+                                            <i class="fas fa-trash-alt mr-1"></i> Delete
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </td>
                     </tr>

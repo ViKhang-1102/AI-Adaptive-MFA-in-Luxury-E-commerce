@@ -84,7 +84,7 @@ class SellerController extends Controller
             $product->images()->delete();
             $product->reviews()->delete();
             $product->cartItems()->delete();
-            $product->orderItems()->delete();
+            // order items are retained for audit; product_id will be set to NULL by database
             $product->wishlistItems()->delete();
             $product->delete();
         });

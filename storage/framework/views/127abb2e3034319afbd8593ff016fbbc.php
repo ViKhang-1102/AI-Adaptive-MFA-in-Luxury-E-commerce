@@ -91,6 +91,16 @@
                                         </button>
                                     </form>
                                 <?php endif; ?>
+
+                                <?php if($order->status === 'cancelled'): ?>
+                                    <form method="POST" action="<?php echo e(route('seller.orders.destroy', $order)); ?>" class="inline" onsubmit="return confirm('Remove order permanently?')">
+                                        <?php echo csrf_field(); ?>
+                                        <?php echo method_field('DELETE'); ?>
+                                        <button type="submit" class="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition">
+                                            <i class="fas fa-trash-alt mr-1"></i> Delete
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
                             </div>
                         </td>
                     </tr>

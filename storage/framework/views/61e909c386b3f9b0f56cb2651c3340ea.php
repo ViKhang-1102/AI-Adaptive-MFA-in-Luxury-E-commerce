@@ -9,15 +9,65 @@
         <h1 class="text-3xl font-bold">System Fees & Settings</h1>
     </div>
 
+    <?php if($errors->any()): ?>
+        <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <ul class="list-disc list-inside">
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <li><?php echo e($error); ?></li>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+
+    <?php if(session('success')): ?>
+        <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+            <?php echo e(session('success')); ?>
+
+        </div>
+    <?php endif; ?>
+
+    <!-- Platform Commission Configuration -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+        <h2 class="text-lg font-semibold text-blue-900 mb-4">Platform Commission Configuration</h2>
+        <form method="POST" action="<?php echo e(route('admin.fees.commission.update')); ?>" class="space-y-4">
+            <?php echo csrf_field(); ?>
+            <div>
+                <label for="platform_commission" class="block text-sm font-medium text-gray-700 mb-2">
+                    Admin Commission Percentage (%)
+                </label>
+                <div class="flex gap-4 items-end">
+                    <div class="flex-1">
+                        <input type="number" id="platform_commission" name="platform_commission" 
+                               value="<?php echo e($platformFee?->fee_value ?? 10); ?>"
+                               min="0" max="100" step="0.01"
+                               class="w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:blue-500"
+                               required>
+                        <p class="text-xs text-gray-500 mt-1">Enter the percentage (0-100) that Admin receives from each order</p>
+                    </div>
+                    <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold">
+                        Update Commission
+                    </button>
+                </div>
+            </div>
+            <div class="bg-blue-100 p-3 rounded text-sm text-blue-800">
+                <strong>Current Split:</strong>
+                <ul class="list-none mt-2">
+                    <li>✓ Admin receives: <strong><?php echo e($platformFee?->fee_value ?? 10); ?>%</strong></li>
+                    <li>✓ Seller receives: <strong><?php echo e(100 - ($platformFee?->fee_value ?? 10)); ?>%</strong></li>
+                </ul>
+            </div>
+        </form>
+    </div>
+
     <?php if($fees->isEmpty()): ?>
         <div class="bg-white p-6 rounded-lg shadow text-center text-gray-500">
-            <p>No fees configured yet.</p>
+            <p>No additional fees configured yet.</p>
             <a href="<?php echo e(route('admin.fees.create')); ?>" class="mt-4 inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">+ Add Fee</a>
         </div>
     <?php else: ?>
         <div class="bg-white p-6 rounded-lg shadow">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-semibold">Current Fees</h2>
+                <h2 class="text-xl font-semibold">Other Fees</h2>
                 <a href="<?php echo e(route('admin.fees.create')); ?>" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">+ Add Fee</a>
             </div>
 
@@ -33,7 +83,7 @@
                                     <?php if($fee->fee_type === 'percentage'): ?>
                                         <?php echo e($fee->fee_value); ?>%
                                     <?php else: ?>
-                                        $<?php echo e(number_format($fee->fee_value, 2)); ?>
+                                        ₫<?php echo e(number_format($fee->fee_value, 0)); ?>
 
                                     <?php endif; ?>
                                 </span>

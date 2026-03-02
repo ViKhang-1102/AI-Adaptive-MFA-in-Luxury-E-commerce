@@ -18,6 +18,7 @@ class Order extends Model
         'shipping_fee',
         'discount_amount',
         'total_amount',
+        'seller_amount',
         'payment_method',
         'payment_status',
         'recipient_name',

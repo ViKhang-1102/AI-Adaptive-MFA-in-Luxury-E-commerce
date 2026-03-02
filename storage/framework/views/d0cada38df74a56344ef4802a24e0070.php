@@ -46,6 +46,11 @@
             </div>
 
             <div class="flex justify-end space-x-3">
+                <?php if($order->status === 'pending' && $order->payment_method === 'online' && $order->payment_status === 'pending'): ?>
+                <a href="<?php echo e(route('paypal.create', $order)); ?>" class="text-green-600 hover:underline font-bold">
+                    Pay Now
+                </a>
+                <?php endif; ?>
                 <a href="<?php echo e(route('orders.show', $order)); ?>" class="text-blue-600 hover:underline">
                     View Details
                 </a>
@@ -53,6 +58,13 @@
                 <form action="<?php echo e(route('orders.cancel', $order)); ?>" method="POST" onsubmit="return confirm('Cancel this order?')">
                     <?php echo csrf_field(); ?>
                     <button type="submit" class="text-red-600 hover:underline">Cancel Order</button>
+                </form>
+                <?php endif; ?>
+                <?php if($order->status === 'cancelled'): ?>
+                <form action="<?php echo e(route('orders.destroy', $order)); ?>" method="POST" onsubmit="return confirm('Delete order permanently?')">
+                    <?php echo csrf_field(); ?>
+                    <?php echo method_field('DELETE'); ?>
+                    <button type="submit" class="text-gray-600 hover:underline">Delete</button>
                 </form>
                 <?php endif; ?>
             </div>

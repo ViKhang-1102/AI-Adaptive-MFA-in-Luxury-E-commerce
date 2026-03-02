@@ -164,7 +164,7 @@ class OrderController extends Controller
 
             // Handle payment
             if ($validated['payment_method'] === 'online') {
-                return redirect()->route('payment.vnpay', $order);
+                return redirect()->route('paypal.create', $order);
             }
 
             return redirect()->route('orders.show', $order)->with('success', 'Order placed successfully');
@@ -242,6 +242,18 @@ class OrderController extends Controller
         // Clear cart
         $cart->items()->delete();
 
+        // For first order in multi-seller, redirect to PayPal if online payment
+        if ($validated['payment_method'] === 'online') {
+            if (count($groupedItems) === 1) {
+                $firstOrder = Order::find($order->id ?? null);
+                if ($firstOrder) {
+                    return redirect()->route('paypal.create', $firstOrder)->with('success', 'Proceeding to PayPal payment');
+                }
+            } else {
+                return redirect()->route('orders.index')->with('success', 'Orders placed successfully. Please complete the online payment for each order below.');
+            }
+        }
+
         return redirect()->route('orders.index')->with('success', 'Order placed successfully');
     }
 
@@ -268,6 +280,28 @@ class OrderController extends Controller
         return back()->with('success', 'Order cancelled successfully');
     }
 
+    /**
+     * Permanently delete a cancelled order. Only the owner may do this.
+     */
+    public function destroy(Order $order)
+    {
+        if ($order->customer_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if ($order->status !== 'cancelled') {
+            return back()->with('error', 'Only cancelled orders can be deleted');
+        }
+
+        // Delete associated payment record to prevent foreign key constraint violation
+        if ($order->payment) {
+            $order->payment->delete();
+        }
+
+        $order->delete();
+        return redirect()->route('orders.index')->with('success', 'Order removed permanently');
+    }
+
     public function payment(Request $request, Order $order)
     {
         if ($order->customer_id !== Auth::id()) {
@@ -278,13 +312,10 @@ class OrderController extends Controller
             return back()->with('error', 'Order already paid');
         }
 
-        // Simulate VNPay payment
-        // In production, integrate with VNPay API
+        // This method is no longer used. Payment is handled via PayPal callback
+        // See PayPalController::paymentSuccess() for payment completion logic
         
-        $order->update(['payment_status' => 'paid']);
-        $order->payment()->update(['status' => 'completed', 'processed_at' => now()]);
-
-        return back()->with('success', 'Payment completed');
+        return redirect()->route('paypal.create', $order);
     }
 
     private function generateOrderNumber()

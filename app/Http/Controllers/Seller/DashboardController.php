@@ -18,21 +18,19 @@ class DashboardController extends Controller
         // Total products
         $totalProducts = $seller->products()->count();
         
-        // Total orders (only confirmed orders that contain seller's products)
+        // Total orders (confirmed orders for this seller)
+        // previously we relied on order_items.product_id which stopped matching when
+        // the product was deleted; use seller_id directly so history stays visible.
         $totalOrders = Order::where('status', 'confirmed')
-            ->whereHas('items', function($query) use ($seller) {
-                $query->whereIn('product_id', $seller->products()->pluck('id'));
-            })
-            ->distinct('id')
+            ->where('seller_id', $seller->id)
             ->count();
         
-        // Total revenue (from confirmed orders only)
-        $totalRevenue = OrderItem::whereIn('product_id', $seller->products()->pluck('id'))
-            ->whereHas('order', function($query) {
-                $query->where('status', 'confirmed');
+        // Total revenue (from confirmed orders for this seller)
+        $totalRevenue = OrderItem::whereHas('order', function($query) use ($seller) {
+                $query->where('status', 'confirmed')
+                      ->where('seller_id', $seller->id);
             })
-            ->sum(DB::raw('quantity * product_price'));
-        
+            ->sum(DB::raw('quantity * product_price'));        
         // Pending orders (orders with seller's products that are pending)
         $pendingOrders = Order::where('seller_id', $seller->id)
             ->where('status', 'pending')
