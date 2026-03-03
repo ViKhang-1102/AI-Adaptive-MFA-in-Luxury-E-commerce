@@ -13,12 +13,12 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="bg-white p-6 rounded-lg shadow">
             <p class="text-gray-600 text-sm mb-1">Total Platform Balance</p>
-            <h2 class="text-3xl font-bold text-blue-600">₫<?php echo e(number_format($totalBalance, 0)); ?></h2>
+            <h2 class="text-3xl font-bold text-blue-600">$<?php echo e(number_format($totalBalance / env('VND_PER_USD', 23000), 2)); ?></h2>
             <p class="text-gray-500 text-xs mt-2">Current funds in platform</p>
         </div>
         <div class="bg-white p-6 rounded-lg shadow">
             <p class="text-gray-600 text-sm mb-1">Total Seller Wallets</p>
-            <h2 class="text-3xl font-bold text-green-600">₫<?php echo e(number_format($totalSellerWallets, 0)); ?></h2>
+            <h2 class="text-3xl font-bold text-green-600">$<?php echo e(number_format($totalSellerWallets / env('VND_PER_USD', 23000), 2)); ?></h2>
             <p class="text-gray-500 text-xs mt-2">Owed to sellers</p>
         </div>
         <div class="bg-white p-6 rounded-lg shadow">
@@ -64,7 +64,7 @@
                         </td>
                         <td class="px-6 py-3 text-right font-semibold">
                             <span class="<?php echo e($transaction->type === 'credit' ? 'text-green-600' : 'text-red-600'); ?>">
-                                <?php echo e($transaction->type === 'credit' ? '+' : '-'); ?>₫<?php echo e(number_format($transaction->amount, 0)); ?>
+                                <?php echo e($transaction->type === 'credit' ? '+' : '-'); ?>$<?php echo e(number_format($transaction->amount / env('VND_PER_USD', 23000), 2)); ?>
 
                             </span>
                         </td>

@@ -4,8 +4,15 @@
  * Payment System Verification Script
  * 
  * This script verifies the PayPal Marketplace system is correctly configured
- * Run from terminal: php artisan tinker < verify-payment-system.php
+ * Run standalone via: php verify-payment-system.php
  */
+
+// bootstrap Laravel so helper functions are available
+require __DIR__ . '/vendor/autoload.php';
+$app = require_once __DIR__ . '/bootstrap/app.php';
+$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+$kernel->bootstrap();
+
 
 use App\Models\Order;
 use App\Models\Payment;

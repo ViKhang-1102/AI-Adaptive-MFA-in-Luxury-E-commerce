@@ -205,6 +205,7 @@ class OrderController extends Controller
                 'customer_id' => $user->id,
                 'seller_id' => $sellerId,
                 'status' => 'pending',
+                'payment_status' => 'pending',
                 'subtotal' => $subtotal,
                 'shipping_fee' => $shippingFee,
                 'discount_amount' => 0,

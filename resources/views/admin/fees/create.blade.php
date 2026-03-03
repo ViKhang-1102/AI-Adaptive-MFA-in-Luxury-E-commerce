@@ -48,7 +48,7 @@
                     >
                         <option value="">-- Select Type --</option>
                         <option value="percentage" @selected(old('fee_type') === 'percentage')>Percentage (%)</option>
-                        <option value="fixed" @selected(old('fee_type') === 'fixed')>Fixed Amount (₫)</option>
+                        <option value="fixed" @selected(old('fee_type') === 'fixed')>Fixed Amount ($)</option>
                     </select>
                     @error('fee_type')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>

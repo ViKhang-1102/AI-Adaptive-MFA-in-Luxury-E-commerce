@@ -83,7 +83,7 @@
                                     <?php if($fee->fee_type === 'percentage'): ?>
                                         <?php echo e($fee->fee_value); ?>%
                                     <?php else: ?>
-                                        ₫<?php echo e(number_format($fee->fee_value, 0)); ?>
+                                        $<?php echo e(number_format($fee->fee_value / env('VND_PER_USD', 23000), 2)); ?>
 
                                     <?php endif; ?>
                                 </span>

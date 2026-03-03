@@ -60,9 +60,9 @@
                         <p class="text-gray-600 text-sm mb-2"><?php echo e($product->seller->name); ?></p>
                         <div class="flex justify-between items-center mb-3">
                             <div>
-                                <span class="font-bold">₫<?php echo e(number_format($product->getDiscountedPrice(), 0)); ?></span>
+                                <span class="font-bold">$<?php echo e(number_format($product->getDiscountedPrice() / env('VND_PER_USD', 23000), 2)); ?></span>
                                 <?php if($product->hasDiscount()): ?>
-                                <span class="text-gray-400 line-through text-sm">₫<?php echo e(number_format($product->price, 0)); ?></span>
+                                <span class="text-gray-400 line-through text-sm">$<?php echo e(number_format($product->price / env('VND_PER_USD', 23000), 2)); ?></span>
                                 <?php endif; ?>
                             </div>
                         </div>

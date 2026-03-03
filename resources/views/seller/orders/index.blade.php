@@ -43,7 +43,7 @@
                         <td class="px-6 py-3 font-semibold">#{{ $order->id }}</td>
                         <td class="px-6 py-3">{{ $order->customer->name ?? 'N/A' }}</td>
                         <td class="px-6 py-3">{{ $order->items->count() ?? 0 }}</td>
-                        <td class="px-6 py-3 text-right font-semibold">₫{{ number_format($order->total_amount, 0) }}</td>
+                        <td class="px-6 py-3 text-right font-semibold">${{ number_format($order->total_amount / env('VND_PER_USD', 23000), 2) }}</td>
                         <td class="px-6 py-3">
                             <span class="px-2 py-1 text-sm rounded-full
                                 {{ $order->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}

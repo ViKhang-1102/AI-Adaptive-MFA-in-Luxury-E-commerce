@@ -75,6 +75,20 @@ class TransactionController extends Controller
                     'reference_code' => $response['batch_header']['payout_batch_id'],
                 ]);
 
+                // Deduct the payout amount from seller wallet balance (atomic)
+                try {
+                    $sellerWallet = $transaction->wallet;
+                    if ($sellerWallet) {
+                        $sellerWallet->adjustBalance(-1 * $transaction->amount);
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Failed to deduct seller wallet balance on payout approval', [
+                        'transaction_id' => $transaction->id,
+                        'seller_wallet_id' => $transaction->wallet_id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+
                 return back()->with('success', "Payout approved! Seller will receive ₫" . number_format($transaction->amount, 0) . " via PayPal. Batch ID: {$response['batch_header']['payout_batch_id']}");
             }
 

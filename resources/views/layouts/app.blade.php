@@ -88,6 +88,18 @@
                 behavior: 'smooth'
             });
         });
+
+        // user menu toggle logic (click-to-open, click-away to close)
+        document.addEventListener('click', function(e) {
+            const btn = document.getElementById('user-menu-button');
+            const menu = document.getElementById('user-menu-dropdown');
+            if (!btn || !menu) return;
+            if (btn.contains(e.target)) {
+                menu.classList.toggle('hidden');
+            } else if (!menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
     </script>
 </body>
 </html>

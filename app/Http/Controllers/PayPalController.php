@@ -39,6 +39,10 @@ class PayPalController extends Controller
         $provider->setApiCredentials(config('paypal'));
         $provider->getAccessToken();
 
+        // Convert stored VND order total to USD for PayPal (PayPal expects USD)
+        $vndPerUsd = (float) env('VND_PER_USD', 23000);
+        $amountInUsd = round($order->total_amount / ($vndPerUsd ?: 23000), 2);
+
         $response = $provider->createOrder([
             "intent" => "CAPTURE",
             "application_context" => [
@@ -48,7 +52,8 @@ class PayPalController extends Controller
             "purchase_units" => [[
                 "amount" => [
                     "currency_code" => env('PAYPAL_CURRENCY', 'USD'),
-                    "value" => number_format($order->total_amount, 2, '.', ''),
+                    // send converted USD amount
+                    "value" => number_format($amountInUsd, 2, '.', ''),
                 ],
                 "description" => "Order #{$order->order_number}",
             ]],
@@ -123,6 +128,14 @@ class PayPalController extends Controller
                     'status' => 'completed',
                     'transaction_reference' => $payment->reference_code,
                 ]);
+
+                // Update admin wallet balance immediately since platform earned the commission
+                try {
+                    $adminWallet->adjustBalance($adminFee);
+                } catch (\Exception $e) {
+                    // Log but do not fail the payment flow
+                    \Illuminate\Support\Facades\Log::error('Failed to adjust admin wallet balance', ['error' => $e->getMessage()]);
+                }
             }
 
             // Create wallet transaction for seller payment
@@ -137,6 +150,13 @@ class PayPalController extends Controller
                     'status' => 'pending',
                     'transaction_reference' => $payment->reference_code,
                 ]);
+
+                // Add seller amount to seller wallet balance (platform owes this to seller)
+                try {
+                    $sellerWallet->adjustBalance($sellerAmount);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Failed to adjust seller wallet balance', ['seller_id' => $seller?->id, 'error' => $e->getMessage()]);
+                }
             }
 
             return view('paypal.success', compact('order', 'adminFee', 'sellerAmount', 'sellerPayPalEmail', 'adminPercentage', 'sellerPercentage'));

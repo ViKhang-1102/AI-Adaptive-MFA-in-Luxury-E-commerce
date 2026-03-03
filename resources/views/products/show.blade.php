@@ -59,11 +59,11 @@
             <!-- Price -->
             <div class="mb-6 text-2xl font-bold">
                 @if($product->hasDiscount())
-                <span class="text-red-600">₫{{ number_format($product->getDiscountedPrice(), 0) }}</span>
-                <span class="text-gray-400 line-through text-lg">₫{{ number_format($product->price, 0) }}</span>
+                <span class="text-red-600">${{ number_format($product->getDiscountedPrice() / env('VND_PER_USD', 23000), 2) }}</span>
+                <span class="text-gray-400 line-through text-lg">${{ number_format($product->price / env('VND_PER_USD', 23000), 2) }}</span>
                 <span class="text-red-600 bg-red-100 px-2 py-1 rounded text-sm ml-2">Save {{ $product->discount_percent }}%</span>
                 @else
-                <span>₫{{ number_format($product->price, 0) }}</span>
+                <span>${{ number_format($product->price / env('VND_PER_USD', 23000), 2) }}</span>
                 @endif
             </div>
 
@@ -146,7 +146,7 @@
                     <h3 class="font-bold truncate">{{ $related->name }}</h3>
                     <p class="text-gray-600 text-sm mb-2">{{ $related->seller->name }}</p>
                     <div class="flex justify-between items-center">
-                        <span class="font-bold">₫{{ number_format($related->getDiscountedPrice(), 0) }}</span>
+                        <span class="font-bold">${{ number_format($related->getDiscountedPrice() / env('VND_PER_USD', 23000), 2) }}</span>
                         <a href="{{ route('products.show', $related) }}" class="text-blue-600 hover:text-blue-800">
                             <i class="fas fa-eye"></i>
                         </a>

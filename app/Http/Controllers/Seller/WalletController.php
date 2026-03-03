@@ -27,17 +27,22 @@ class WalletController extends Controller
             ->where('type', 'credit')
             ->sum('amount');
 
-        // Total withdrawn = all completed debits (approved/processed payouts)
+        // Pending credits (seller payments awaiting admin approval)
+        $pendingBalance = $wallet->transactions()
+            ->where('status', 'pending')
+            ->where('type', 'credit')
+            ->sum('amount');
+
+        // Total withdrawn = all approved payouts (debits that have been processed)
         $totalWithdrawn = $wallet->transactions()
             ->where('status', 'payout_approved')
             ->sum('amount');
-
         // Get recent transactions with details
         $transactions = $wallet->transactions()
             ->with('order')
             ->latest()
             ->paginate(15);
 
-        return view('seller.wallet.index', compact('wallet', 'balance', 'totalEarned', 'totalWithdrawn', 'transactions'));
+        return view('seller.wallet.index', compact('wallet', 'balance', 'totalEarned', 'totalWithdrawn', 'pendingBalance', 'transactions'));
     }
 }

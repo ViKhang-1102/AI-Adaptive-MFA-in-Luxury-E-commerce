@@ -28,7 +28,7 @@
                 </div>
                 <div>
                     <p class="text-sm text-gray-600">Total</p>
-                    <strong>₫<?php echo e(number_format($order->total_amount, 0)); ?></strong>
+                    <strong>$<?php echo e(number_format($order->total_amount / env('VND_PER_USD', 23000), 2)); ?></strong>
                 </div>
                 <div>
                     <p class="text-sm text-gray-600">Status</p>

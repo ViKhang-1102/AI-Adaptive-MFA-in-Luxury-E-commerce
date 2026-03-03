@@ -49,9 +49,9 @@
                 <div class="flex justify-between items-center p-4 bg-gray-50 rounded">
                     <div>
                         <p class="font-semibold">{{ $item->product->name ?? 'Product Removed' }}</p>
-                        <p class="text-sm text-gray-600">Quantity: {{ $item->quantity }} × ₫{{ number_format($item->price, 0) }}</p>
+                        <p class="text-sm text-gray-600">Quantity: {{ $item->quantity }} × ${{ number_format($item->price / env('VND_PER_USD', 23000), 2) }}</p>
                     </div>
-                    <p class="font-bold">₫{{ number_format($item->quantity * $item->price, 0) }}</p>
+                    <p class="font-bold">${{ number_format(($item->quantity * $item->price) / env('VND_PER_USD', 23000), 2) }}</p>
                 </div>
                 @empty
                 <p class="text-gray-500">No items in this order</p>
@@ -64,11 +64,11 @@
             <div class="space-y-2 text-right">
                 <div class="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>₫{{ number_format($order->total_amount, 0) }}</span>
+                    <span>${{ number_format($order->total_amount / env('VND_PER_USD', 23000), 2) }}</span>
                 </div>
                 <div class="flex justify-between font-bold text-lg">
                     <span>Total:</span>
-                    <span>₫{{ number_format($order->total_amount, 0) }}</span>
+                    <span>${{ number_format($order->total_amount / env('VND_PER_USD', 23000), 2) }}</span>
                 </div>
             </div>
         </div>

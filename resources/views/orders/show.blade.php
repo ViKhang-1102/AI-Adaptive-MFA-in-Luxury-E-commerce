@@ -67,8 +67,8 @@
                             </td>
                             <td class="py-3">{{ $item->product_name }}</td>
                             <td class="text-center">{{ $item->quantity }}</td>
-                            <td class="text-right">₫{{ number_format($item->product_price, 0) }}</td>
-                            <td class="text-right">₫{{ number_format($item->subtotal, 0) }}</td>
+                            <td class="text-right">${{ number_format($item->product_price / env('VND_PER_USD', 23000), 2) }}</td>
+                            <td class="text-right">${{ number_format($item->subtotal / env('VND_PER_USD', 23000), 2) }}</td>
                             <td class="text-center">
                                 @if($item->product)
                                     <a href="#" class="text-blue-600 hover:underline text-sm font-bold buy-again-btn" 
@@ -101,23 +101,23 @@
             <div class="space-y-3 border-b pb-4 mb-4">
                 <div class="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>₫{{ number_format($order->subtotal, 0) }}</span>
+                    <span>${{ number_format($order->subtotal / env('VND_PER_USD', 23000), 2) }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span>Shipping:</span>
-                    <span>₫{{ number_format($order->shipping_fee, 0) }}</span>
+                    <span>${{ number_format($order->shipping_fee / env('VND_PER_USD', 23000), 2) }}</span>
                 </div>
                 @if($order->discount_amount > 0)
                 <div class="flex justify-between text-green-600">
                     <span>Discount:</span>
-                    <span>-₫{{ number_format($order->discount_amount, 0) }}</span>
+                    <span>-${{ number_format($order->discount_amount / env('VND_PER_USD', 23000), 2) }}</span>
                 </div>
                 @endif
             </div>
 
             <div class="flex justify-between text-xl font-bold mb-6">
                 <span>Total:</span>
-                <span>₫{{ number_format($order->total_amount, 0) }}</span>
+                <span>${{ number_format($order->total_amount / env('VND_PER_USD', 23000), 2) }}</span>
             </div>
 
             @if($order->status === 'pending' && $order->payment_method === 'online' && $order->payment_status === 'pending')

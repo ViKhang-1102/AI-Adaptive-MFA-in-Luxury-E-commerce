@@ -68,8 +68,8 @@
                             </td>
                             <td class="py-3"><?php echo e($item->product_name); ?></td>
                             <td class="text-center"><?php echo e($item->quantity); ?></td>
-                            <td class="text-right">₫<?php echo e(number_format($item->product_price, 0)); ?></td>
-                            <td class="text-right">₫<?php echo e(number_format($item->subtotal, 0)); ?></td>
+                            <td class="text-right">$<?php echo e(number_format($item->product_price / env('VND_PER_USD', 23000), 2)); ?></td>
+                            <td class="text-right">$<?php echo e(number_format($item->subtotal / env('VND_PER_USD', 23000), 2)); ?></td>
                             <td class="text-center">
                                 <?php if($item->product): ?>
                                     <a href="#" class="text-blue-600 hover:underline text-sm font-bold buy-again-btn" 
@@ -102,30 +102,46 @@
             <div class="space-y-3 border-b pb-4 mb-4">
                 <div class="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>₫<?php echo e(number_format($order->subtotal, 0)); ?></span>
+                    <span>$<?php echo e(number_format($order->subtotal / env('VND_PER_USD', 23000), 2)); ?></span>
                 </div>
                 <div class="flex justify-between">
                     <span>Shipping:</span>
-                    <span>₫<?php echo e(number_format($order->shipping_fee, 0)); ?></span>
+                    <span>$<?php echo e(number_format($order->shipping_fee / env('VND_PER_USD', 23000), 2)); ?></span>
                 </div>
                 <?php if($order->discount_amount > 0): ?>
                 <div class="flex justify-between text-green-600">
                     <span>Discount:</span>
-                    <span>-₫<?php echo e(number_format($order->discount_amount, 0)); ?></span>
+                    <span>-$<?php echo e(number_format($order->discount_amount / env('VND_PER_USD', 23000), 2)); ?></span>
                 </div>
                 <?php endif; ?>
             </div>
 
             <div class="flex justify-between text-xl font-bold mb-6">
                 <span>Total:</span>
-                <span>₫<?php echo e(number_format($order->total_amount, 0)); ?></span>
+                <span>$<?php echo e(number_format($order->total_amount / env('VND_PER_USD', 23000), 2)); ?></span>
             </div>
+
+            <?php if($order->status === 'pending' && $order->payment_method === 'online' && $order->payment_status === 'pending'): ?>
+            <div class="mb-4">
+                <a href="<?php echo e(route('paypal.create', $order)); ?>" class="block w-full text-center bg-green-600 text-white py-2 rounded hover:bg-green-700 font-bold">
+                    Pay Now
+                </a>
+            </div>
+            <?php endif; ?>
 
             <?php if($order->canBeCancelled()): ?>
             <form action="<?php echo e(route('orders.cancel', $order)); ?>" method="POST" onsubmit="return confirm('Cancel this order?')">
                 <?php echo csrf_field(); ?>
                 <button type="submit" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">
                     Cancel Order
+                </button>
+            </form>
+            <?php elseif($order->status === 'cancelled'): ?>
+            <form action="<?php echo e(route('orders.destroy', $order)); ?>" method="POST" onsubmit="return confirm('Delete order permanently?')">
+                <?php echo csrf_field(); ?>
+                <?php echo method_field('DELETE'); ?>
+                <button type="submit" class="w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700">
+                    Delete Order
                 </button>
             </form>
             <?php endif; ?>

@@ -137,7 +137,7 @@
                 <?php $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="flex justify-between text-sm border-b pb-2">
                     <span><?php echo e($item->product->name); ?> x <?php echo e($item->quantity); ?></span>
-                    <span>₫<?php echo e(number_format($item->product->getDiscountedPrice() * $item->quantity, 0)); ?></span>
+                    <span>$<?php echo e(number_format(($item->product->getDiscountedPrice() * $item->quantity) / env('VND_PER_USD', 23000), 2)); ?></span>
                 </div>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
@@ -145,19 +145,19 @@
             <div class="space-y-3 border-t pt-4">
                 <div class="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>₫<?php echo e(number_format($subtotal, 0)); ?></span>
+                    <span>$<?php echo e(number_format($subtotal / env('VND_PER_USD', 23000), 2)); ?></span>
                 </div>
                 <div class="flex justify-between">
                     <span>Shipping:</span>
-                    <span>₫<?php echo e(number_format($shippingFee, 0)); ?></span>
+                    <span>$<?php echo e(number_format($shippingFee / env('VND_PER_USD', 23000), 2)); ?></span>
                 </div>
                 <div class="flex justify-between text-xl font-bold border-t pt-3">
                     <span>Total:</span>
-                    <span>₫<?php echo e(number_format($total, 0)); ?></span>
+                    <span>$<?php echo e(number_format($total / env('VND_PER_USD', 23000), 2)); ?></span>
                 </div>
             </div>
 
-            <button type="submit" class="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700 font-bold mt-6">
+            <button type="submit" onclick="validateCheckoutForm(event)" class="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700 font-bold mt-6">
                 Place Order
             </button>
         </div>
@@ -167,6 +167,35 @@
 <script src="<?php echo e(asset('js/vietnam-addresses.js')); ?>"></script>
 <script>
 let checkoutAddressInitialized = false;
+
+function validateCheckoutForm(event) {
+    event.preventDefault();
+    
+    const form = document.querySelector('form[action="<?php echo e(route("orders.store")); ?>"]');
+    const selectedAddressId = form.querySelector('input[name="address_id"]:checked');
+    const recipientNameInput = form.querySelector('input[name="recipient_name"][type="hidden"]');
+    
+    // Check if either a saved address is selected OR new address fields are filled
+    if (!selectedAddressId && (!recipientNameInput || !recipientNameInput.value)) {
+        alert('Vui lòng chọn hoặc thêm địa chỉ giao hàng');
+        return false;
+    }
+    
+    // If using new address, validate all fields
+    if (!selectedAddressId) {
+        const recipientPhoneInput = form.querySelector('input[name="recipient_phone"][type="hidden"]');
+        const deliveryAddressInput = form.querySelector('input[name="delivery_address"]');
+        
+        if (!deliveryAddressInput || !deliveryAddressInput.value) {
+            alert('Vui lòng thêm địa chỉ giao hàng');
+            document.getElementById('newAddressForm').classList.remove('hidden');
+            return false;
+        }
+    }
+    
+    // Form is valid, submit it
+    form.submit();
+}
 
 function toggleAddressForm() {
     const form = document.getElementById('newAddressForm');

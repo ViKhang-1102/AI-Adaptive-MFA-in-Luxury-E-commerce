@@ -27,4 +27,23 @@ class EWallet extends Model
     {
         return $this->hasMany(WalletTransaction::class, 'wallet_id');
     }
+
+    /**
+     * Adjust the wallet balance atomically by delta (positive or negative)
+     * Ensures balance never goes below zero.
+     */
+    public function adjustBalance(float $delta)
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($delta) {
+            $this->refresh();
+            $new = $this->balance + $delta;
+            if ($new < 0) {
+                $new = 0;
+            }
+            $this->balance = $new;
+            $this->save();
+            return $this->balance;
+        });
+    }
 }
+

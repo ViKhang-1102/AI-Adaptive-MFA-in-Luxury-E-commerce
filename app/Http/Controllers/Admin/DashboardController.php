@@ -15,9 +15,13 @@ class DashboardController extends Controller
     {
         $totalCustomers = User::customers()->count();
         $totalSellers = User::sellers()->count();
-        $totalOrders = Order::where('status', 'confirmed')->count();
-        $totalRevenue = Order::where('status', 'confirmed')->sum('total_amount');
-        $todayOrders = Order::where('status', 'confirmed')->whereDate('created_at', today())->count();
+        // count any order that has progressed past initial pending state
+        $validStatuses = ['confirmed', 'processing', 'shipped', 'delivered'];
+        $totalOrders = Order::whereIn('status', $validStatuses)->count();
+        $totalRevenue = Order::whereIn('status', $validStatuses)->sum('total_amount');
+        $todayOrders = Order::whereIn('status', $validStatuses)
+            ->whereDate('created_at', today())
+            ->count();
         $totalCategories = Category::count();
         $totalProducts = Product::count();
 

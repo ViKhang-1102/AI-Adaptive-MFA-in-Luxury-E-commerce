@@ -51,7 +51,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-3"><?php echo e($order->seller->name ?? 'Unknown'); ?></td>
-                        <td class="px-6 py-3 text-right font-semibold">₫<?php echo e(number_format($order->total_amount, 0)); ?></td>
+                        <td class="px-6 py-3 text-right font-semibold">$<?php echo e(number_format($order->total_amount / env('VND_PER_USD', 23000), 2)); ?></td>
                         <td class="px-6 py-3">
                             <span class="px-2 py-1 text-sm rounded-full <?php echo e($order->payment_status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'); ?>">
                                 <?php echo e(ucfirst($order->payment_status ?? 'pending')); ?>

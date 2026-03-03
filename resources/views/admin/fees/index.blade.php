@@ -82,7 +82,7 @@
                                     @if($fee->fee_type === 'percentage')
                                         {{ $fee->fee_value }}%
                                     @else
-                                        ₫{{ number_format($fee->fee_value, 0) }}
+                                        ${{ number_format($fee->fee_value / env('VND_PER_USD', 23000), 2) }}
                                     @endif
                                 </span>
                                 <span class="text-gray-500 ml-2">({{ ucfirst($fee->fee_type) }})</span>

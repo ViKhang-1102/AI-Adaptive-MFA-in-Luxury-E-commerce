@@ -31,7 +31,7 @@
                 </div>
                 <div>
                     <p class="text-gray-600 text-sm">Total Amount</p>
-                    <p class="font-semibold text-lg">{{ number_format($order->total_amount) }}₫</p>
+                    <p class="font-semibold text-lg">${{ number_format($order->total_amount / env('VND_PER_USD', 23000), 2) }}</p>
                 </div>
                 <div>
                     <p class="text-gray-600 text-sm">Payment Status</p>
@@ -116,8 +116,8 @@
                                 </div>
                             </td>
                             <td class="px-4 py-2 text-center">{{ $item->quantity }}</td>
-                            <td class="px-4 py-2 text-right">{{ number_format($item->price) }}₫</td>
-                            <td class="px-4 py-2 text-right font-semibold">{{ number_format($item->price * $item->quantity) }}₫</td>
+                            <td class="px-4 py-2 text-right">${{ number_format($item->price / env('VND_PER_USD', 23000), 2) }}</td>
+                            <td class="px-4 py-2 text-right font-semibold">${{ number_format(($item->price * $item->quantity) / env('VND_PER_USD', 23000), 2) }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -129,23 +129,23 @@
         <div class="bg-gray-50 rounded-lg p-4">
             <div class="flex justify-between mb-2">
                 <span>Subtotal:</span>
-                <span>{{ number_format($order->items->sum(fn($item) => $item->price * $item->quantity)) }}₫</span>
+                <span>${{ number_format($order->items->sum(fn($item) => $item->price * $item->quantity) / env('VND_PER_USD', 23000), 2) }}</span>
             </div>
             @if($order->shipping_fee)
-            <div class="flex justify-between mb-2">
+                <div class="flex justify-between mb-2">
                 <span>Shipping Fee:</span>
-                <span>{{ number_format($order->shipping_fee) }}₫</span>
+                <span>${{ number_format($order->shipping_fee / env('VND_PER_USD', 23000), 2) }}</span>
             </div>
             @endif
             @if($order->tax_amount)
             <div class="flex justify-between mb-2">
                 <span>Tax:</span>
-                <span>{{ number_format($order->tax_amount) }}₫</span>
+                <span>${{ number_format($order->tax_amount / env('VND_PER_USD', 23000), 2) }}</span>
             </div>
             @endif
             <div class="flex justify-between text-lg font-bold border-t pt-2">
                 <span>Total:</span>
-                <span>{{ number_format($order->total_amount) }}₫</span>
+                <span>${{ number_format($order->total_amount / env('VND_PER_USD', 23000), 2) }}</span>
             </div>
         </div>
 
