@@ -61,18 +61,42 @@ class ProductController extends Controller
             ->get();
 
         $reviews = $product->reviews()
-            ->with('customer')
+            ->with('customer', 'images')
             ->latest()
             ->paginate(5);
 
         $userReview = null;
+        $canReview = false;
+
         if (auth()->check() && auth()->user()->isCustomer()) {
+            $userId = auth()->id();
+            // find any delivered order for this product
+            $deliveredOrder = \App\Models\Order::where('customer_id', $userId)
+                ->where('status', 'delivered')
+                ->whereHas('items', function($q) use ($product) {
+                    $q->where('product_id', $product->id);
+                })
+                ->orderByDesc('delivered_at')
+                ->first();
+
+            if ($deliveredOrder) {
+                // check if user already reviewed this order's product
+                $has = $product->reviews()
+                    ->where('customer_id', $userId)
+                    ->where('order_id', $deliveredOrder->id)
+                    ->exists();
+                $canReview = !$has;
+            }
+
+            // also existing user review for convenience (most recent)
             $userReview = $product->reviews()
-                ->where('customer_id', auth()->id())
+                ->where('customer_id', $userId)
+                ->orderByDesc('created_at')
                 ->first();
         }
 
-        return view('products.show', compact('product', 'relatedProducts', 'reviews', 'userReview'));
+        return view('products.show', compact('product', 'relatedProducts', 'reviews', 'userReview', 'canReview'));
+
     }
 
     public function wishlist()

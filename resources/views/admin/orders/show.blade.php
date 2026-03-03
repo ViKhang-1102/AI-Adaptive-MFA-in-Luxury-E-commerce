@@ -93,6 +93,7 @@
                 <table class="w-full text-sm">
                     <thead class="bg-gray-100 border-b">
                         <tr>
+                            <th class="px-4 py-2 text-left">Image</th>
                             <th class="px-4 py-2 text-left">Product</th>
                             <th class="px-4 py-2 text-center">Quantity</th>
                             <th class="px-4 py-2 text-right">Price</th>
@@ -103,16 +104,18 @@
                         @foreach($order->items as $item)
                         <tr class="border-b hover:bg-gray-50">
                             <td class="px-4 py-2">
-                                <div class="flex items-center gap-3">
-                                    @if($item->product && $item->product->image)
-                                        <img src="{{ asset($item->product->image) }}" alt="{{ $item->product->name }}" class="w-12 h-12 object-cover rounded">
-                                    @else
-                                        <div class="w-12 h-12 bg-gray-200 rounded"></div>
-                                    @endif
-                                    <div>
-                                        <p class="font-semibold">{{ $item->product->name ?? 'Product Removed' }}</p>
-                                        <p class="text-gray-600 text-xs">SKU: {{ $item->product->sku ?? 'N/A' }}</p>
+                                @if($item->product && $item->product->images->first())
+                                    <img src="{{ asset('storage/' . $item->product->images->first()->image) }}" alt="{{ $item->product->name }}" class="w-12 h-12 object-cover rounded">
+                                @else
+                                    <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                        <i class="fas fa-image text-gray-400"></i>
                                     </div>
+                                @endif
+                            </td>
+                            <td class="px-4 py-2">
+                                <div>
+                                    <p class="font-semibold">{{ $item->product->name ?? 'Product Removed' }}</p>
+                                    <p class="text-gray-600 text-xs">SKU: {{ $item->product->sku ?? 'N/A' }}</p>
                                 </div>
                             </td>
                             <td class="px-4 py-2 text-center">{{ $item->quantity }}</td>

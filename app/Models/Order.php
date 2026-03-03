@@ -60,6 +60,11 @@ class Order extends Model
         return $this->hasOne(Payment::class);
     }
 
+    public function notifications()
+    {
+        return $this->hasMany(\App\Models\OrderNotification::class);
+    }
+
     // Scopes
     public function scopePending($query)
     {

@@ -54,6 +54,7 @@ Route::middleware(['auth', \App\Http\Middleware\CustomerMiddleware::class])->gro
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('/orders/{order}/payment', [OrderController::class, 'payment'])->name('orders.payment');
+    Route::post('/orders/{order}/buy-again', [OrderController::class, 'buyAgain'])->name('orders.buyAgain');
 
     // Wishlist Routes
     Route::get('/wishlist', [ProductController::class, 'wishlist'])->name('wishlist');
@@ -65,6 +66,18 @@ Route::middleware(['auth', \App\Http\Middleware\CustomerMiddleware::class])->gro
     Route::post('/addresses', [ProfileController::class, 'storeAddress'])->name('addresses.store');
     Route::put('/addresses/{address}', [ProfileController::class, 'updateAddress'])->name('addresses.update');
     Route::delete('/addresses/{address}', [ProfileController::class, 'destroyAddress'])->name('addresses.destroy');
+
+    // Review Routes
+    Route::post('/products/{product}/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
+    Route::delete('/reviews/{review}', [App\Http\Controllers\ReviewController::class, 'destroy'])->name('reviews.destroy');
+
+    // Message Routes
+    Route::get('/messages', [App\Http\Controllers\MessageController::class, 'customerInbox'])->name('customer.messages.index');
+    Route::get('/messages/{product}/{other}', [App\Http\Controllers\MessageController::class, 'customerConversation'])->name('customer.messages.conversation');
+    Route::get('/products/{product}/messages', [App\Http\Controllers\MessageController::class, 'getMessages'])->name('messages.get');
+    Route::post('/products/{product}/messages', [App\Http\Controllers\MessageController::class, 'sendMessage'])->name('messages.send');
+    Route::post('/messages/{message}/read', [App\Http\Controllers\MessageController::class, 'markAsRead'])->name('messages.read');
+    Route::get('/messages/unread/count', [App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unread-count');
 });
 
 // Seller Routes
@@ -74,10 +87,17 @@ Route::middleware(['auth', \App\Http\Middleware\SellerMiddleware::class])->prefi
     Route::resource('/categories', App\Http\Controllers\Seller\CategoryController::class);
     Route::get('/orders', [App\Http\Controllers\Seller\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [App\Http\Controllers\Seller\OrderController::class, 'show'])->name('orders.show');
+    
+    // Seller message inbox & conversation
+    Route::get('/messages', [App\Http\Controllers\MessageController::class, 'sellerInbox'])->name('messages.index');
+    Route::get('/messages/api/customers', [App\Http\Controllers\MessageController::class, 'getCustomersList'])->name('messages.api.customers');
+    Route::get('/messages/api/customers/{customerId}/products', [App\Http\Controllers\MessageController::class, 'getCustomerProducts'])->name('messages.api.customer-products');
+    Route::get('/messages/{product}/{other}', [App\Http\Controllers\MessageController::class, 'sellerConversation'])->name('messages.conversation');
     Route::post('/orders/{order}/confirm', [App\Http\Controllers\Seller\OrderController::class, 'confirm'])->name('orders.confirm');
     Route::post('/orders/{order}/cancel', [App\Http\Controllers\Seller\OrderController::class, 'cancel'])->name('orders.cancel');
     Route::delete('/orders/{order}', [App\Http\Controllers\Seller\OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('/orders/{order}/ship', [App\Http\Controllers\Seller\OrderController::class, 'ship'])->name('orders.ship');
+    Route::post('/orders/{order}/deliver', [App\Http\Controllers\Seller\OrderController::class, 'deliver'])->name('orders.deliver');
     Route::delete('/products/image/{productImage}', [App\Http\Controllers\Seller\ProductController::class, 'deleteImage'])->name('products.deleteImage');
     Route::get('/wallet', [App\Http\Controllers\Seller\WalletController::class, 'index'])->name('wallet');
 });

@@ -14,7 +14,7 @@ class OrderController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
         $orders = $user->ordersAsSeller()
-            ->with('customer', 'items')
+            ->with('customer', 'items.product.images')
             ->latest()
             ->paginate(10);
 
@@ -27,7 +27,7 @@ class OrderController extends Controller
             abort(403);
         }
 
-        $order->load('customer', 'items.product', 'payment');
+        $order->load('customer', 'items.product.images', 'payment');
         return view('seller.orders.show', compact('order'));
     }
 
@@ -80,7 +80,38 @@ class OrderController extends Controller
             'shipped_at' => now(),
         ]);
 
+        // notify customer
+        \App\Models\OrderNotification::create([
+            'order_id' => $order->id,
+            'customer_id' => $order->customer_id,
+            'message' => "Your order {$order->order_number} has been shipped.",
+        ]);
+
         return back()->with('success', 'Order marked as shipped');
+    }
+
+    /**
+     * Mark an order as delivered. Only valid when shipped.
+     */
+    public function deliver(Request $request, Order $order)
+    {
+        if ($order->seller_id !== Auth::id() || $order->status !== 'shipped') {
+            abort(403);
+        }
+
+        $order->update([
+            'status' => 'delivered',
+            'delivered_at' => now(),
+        ]);
+
+        // notify customer
+        \App\Models\OrderNotification::create([
+            'order_id' => $order->id,
+            'customer_id' => $order->customer_id,
+            'message' => "Your order {$order->order_number} has been delivered.",
+        ]);
+
+        return back()->with('success', 'Order marked as delivered');
     }
 
     /**

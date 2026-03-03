@@ -22,6 +22,18 @@ class OrderController extends Controller
             ->latest()
             ->paginate(10);
 
+        // check for any unread notifications for this customer
+        $unread = \App\Models\OrderNotification::where('customer_id', $user->id)
+            ->where('is_read', false)
+            ->get();
+
+        if ($unread->isNotEmpty()) {
+            // flash so view can display them
+            session()->flash('order_notifications', $unread->toArray());
+            // mark as read
+            \App\Models\OrderNotification::whereIn('id', $unread->pluck('id'))->update(['is_read' => true]);
+        }
+
         return view('orders.index', compact('orders'));
     }
 
@@ -31,9 +43,21 @@ class OrderController extends Controller
             abort(403);
         }
 
-        $order->load('items.product', 'seller', 'payment');
+        $order->load('items.product.images', 'seller', 'payment');
+
+        // show any notifications specifically for this order
+        $orderNotifications = \App\Models\OrderNotification::where('order_id', $order->id)
+            ->where('customer_id', Auth::id())
+            ->where('is_read', false)
+            ->get();
+
+        if ($orderNotifications->isNotEmpty()) {
+            session()->flash('order_notifications', $orderNotifications->toArray());
+            \App\Models\OrderNotification::whereIn('id', $orderNotifications->pluck('id'))->update(['is_read' => true]);
+        }
 
         return view('orders.show', compact('order'));
+
     }
 
     public function checkout()
@@ -54,14 +78,30 @@ class OrderController extends Controller
                 ]
             ]);
         } else {
-            // Get items from cart
+            // Get items from cart - either selected items or all items
             $cart = $user->cart;
 
             if (!$cart || $cart->items->isEmpty()) {
                 return redirect()->route('cart.index')->with('error', 'Cart is empty');
             }
 
-            $items = $cart->items()->with('product.seller')->get();
+            // Get selected item IDs from request
+            $selectedItemIds = request('item_ids', []);
+            
+            if (!empty($selectedItemIds)) {
+                // Only get selected items
+                $items = $cart->items()
+                    ->whereIn('id', $selectedItemIds)
+                    ->with('product.seller', 'product.images')
+                    ->get();
+            } else {
+                // If no selection, get all items
+                $items = $cart->items()->with('product.seller', 'product.images')->get();
+            }
+
+            if ($items->isEmpty()) {
+                return redirect()->route('cart.index')->with('error', 'Please select at least one item');
+            }
         }
 
         $addresses = $user->addresses;
@@ -317,6 +357,35 @@ class OrderController extends Controller
         // See PayPalController::paymentSuccess() for payment completion logic
         
         return redirect()->route('paypal.create', $order);
+    }
+
+    /**
+     * Add all items from an existing order back into the customer's cart for quick repurchase.
+     */
+    public function buyAgain(Order $order)
+    {
+        if ($order->customer_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $cart = Auth::user()->cart ?? \App\Models\Cart::create(['customer_id' => Auth::id()]);
+        foreach ($order->items as $item) {
+            if (!$item->product) {
+                continue; // product removed
+            }
+            $existing = $cart->items()->where('product_id', $item->product_id)->first();
+            if ($existing) {
+                $existing->increment('quantity', $item->quantity);
+            } else {
+                \App\Models\CartItem::create([
+                    'cart_id' => $cart->id,
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                ]);
+            }
+        }
+
+        return redirect()->route('cart.index')->with('success', 'All items added to cart.');
     }
 
     private function generateOrderNumber()

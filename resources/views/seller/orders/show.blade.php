@@ -44,18 +44,41 @@
         <!-- Order Items -->
         <div class="p-6 border-b">
             <h3 class="font-bold text-lg mb-4">Order Items</h3>
-            <div class="space-y-4">
-                @forelse($order->items as $item)
-                <div class="flex justify-between items-center p-4 bg-gray-50 rounded">
-                    <div>
-                        <p class="font-semibold">{{ $item->product->name ?? 'Product Removed' }}</p>
-                        <p class="text-sm text-gray-600">Quantity: {{ $item->quantity }} × ${{ number_format($item->price / env('VND_PER_USD', 23000), 2) }}</p>
-                    </div>
-                    <p class="font-bold">${{ number_format(($item->quantity * $item->price) / env('VND_PER_USD', 23000), 2) }}</p>
-                </div>
-                @empty
-                <p class="text-gray-500">No items in this order</p>
-                @endforelse
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-100 border-b">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Image</th>
+                            <th class="px-4 py-2 text-left">Product</th>
+                            <th class="px-4 py-2 text-center">Quantity</th>
+                            <th class="px-4 py-2 text-right">Price</th>
+                            <th class="px-4 py-2 text-right">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($order->items as $item)
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="px-4 py-2">
+                                @if($item->product && $item->product->images->first())
+                                    <img src="{{ asset('storage/' . $item->product->images->first()->image) }}" alt="{{ $item->product->name }}" class="w-12 h-12 object-cover rounded">
+                                @else
+                                    <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                        <i class="fas fa-image text-gray-400"></i>
+                                    </div>
+                                @endif
+                            </td>
+                            <td class="px-4 py-2 font-semibold">{{ $item->product->name ?? 'Product Removed' }}</td>
+                            <td class="px-4 py-2 text-center">{{ $item->quantity }}</td>
+                            <td class="px-4 py-2 text-right">${{ number_format($item->price / env('VND_PER_USD', 23000), 2) }}</td>
+                            <td class="px-4 py-2 text-right font-semibold">${{ number_format(($item->quantity * $item->price) / env('VND_PER_USD', 23000), 2) }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="px-4 py-2 text-center text-gray-500">No items in this order</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -89,6 +112,15 @@
                     @csrf
                     <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition">
                         <i class="fas fa-truck mr-2"></i> Ship Order
+                    </button>
+                </form>
+            @endif
+
+            @if($order->status === 'shipped')
+                <form method="POST" action="{{ route('seller.orders.deliver', $order) }}" class="inline">
+                    @csrf
+                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                        <i class="fas fa-check-double mr-2"></i> Mark as Delivered
                     </button>
                 </form>
             @endif

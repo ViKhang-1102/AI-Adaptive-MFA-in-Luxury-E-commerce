@@ -48,14 +48,14 @@
         <div class="lg:col-span-3">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($products as $product)
-                <div class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden">
+                <a href="{{ route('products.show', $product) }}" class="block bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden text-decoration-none group">
                     @if($product->images->first())
-                    <img src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-full h-48 object-cover" alt="{{ $product->name }}">
+                    <img src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-full h-48 object-cover group-hover:opacity-90 transition" alt="{{ $product->name }}">
                     @else
                     <img src="https://via.placeholder.com/300x200?text=No+Image" class="w-full h-48 object-cover" alt="No image">
                     @endif
                     <div class="p-4">
-                        <h3 class="font-bold truncate">{{ $product->name }}</h3>
+                        <h3 class="font-bold truncate group-hover:text-blue-600">{{ $product->name }}</h3>
                         <p class="text-gray-600 text-sm mb-2">{{ $product->seller->name }}</p>
                         <div class="flex justify-between items-center mb-3">
                             <div>
@@ -64,12 +64,12 @@
                                 <span class="text-gray-400 line-through text-sm">${{ number_format($product->price / env('VND_PER_USD', 23000), 2) }}</span>
                                 @endif
                             </div>
+                            <span class="text-blue-600 group-hover:text-blue-800">
+                                <i class="fas fa-arrow-right"></i>
+                            </span>
                         </div>
-                        <a href="{{ route('products.show', $product) }}" class="block text-center bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-                            View Details
-                        </a>
                     </div>
-                </div>
+                </a>
                 @endforeach
             </div>
 

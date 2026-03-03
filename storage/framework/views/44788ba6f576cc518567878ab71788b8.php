@@ -66,11 +66,27 @@
                                 <a href="<?php echo e(route('addresses.index')); ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                                     Addresses
                                 </a>
+                                <a href="<?php echo e(route('customer.messages.index')); ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 flex justify-between">
+                                    <span>Messages</span>
+                                    <?php if(auth()->user()->unreadMessagesCount() > 0): ?>
+                                        <span data-message-badge class="bg-red-600 text-white rounded-full px-2 text-xs flex items-center"><?php echo e(auth()->user()->unreadMessagesCount()); ?></span>
+                                    <?php else: ?>
+                                        <span data-message-badge class="bg-red-600 text-white rounded-full px-2 text-xs flex items-center hidden"></span>
+                                    <?php endif; ?>
+                                </a>
                             <?php endif; ?>
 
                             <?php if(auth()->user()->isSeller()): ?>
                                 <a href="<?php echo e(route('seller.dashboard')); ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                                     Seller Dashboard
+                                </a>
+                                <a href="<?php echo e(route('seller.messages.index')); ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 flex justify-between">
+                                    <span>Messages</span>
+                                    <?php if(auth()->user()->unreadMessagesCount() > 0): ?>
+                                        <span data-message-badge class="bg-red-600 text-white rounded-full px-2 text-xs flex items-center"><?php echo e(auth()->user()->unreadMessagesCount()); ?></span>
+                                    <?php else: ?>
+                                        <span data-message-badge class="bg-red-600 text-white rounded-full px-2 text-xs flex items-center hidden"></span>
+                                    <?php endif; ?>
                                 </a>
                             <?php endif; ?>
 
@@ -100,4 +116,28 @@
         </div>
     </nav>
 </header>
-<?php /**PATH C:\laragon\www\E-commerce2026\resources\views/layouts/header.blade.php ENDPATH**/ ?>
+<?php if(auth()->guard()->check()): ?>
+<script>
+    // Update message badge count every 3 seconds
+    function updateMessageBadge() {
+        fetch('/messages/unread/count')
+            .then(response => response.json())
+            .then(data => {
+                const badges = document.querySelectorAll('[data-message-badge]');
+                badges.forEach(badge => {
+                    if (data.unread_count > 0) {
+                        badge.textContent = data.unread_count;
+                        badge.parentElement.style.display = 'flex';
+                    } else {
+                        badge.parentElement.style.display = 'none';
+                    }
+                });
+            })
+            .catch(error => console.error('Error updating message badge:', error));
+    }
+
+    // Update badge on page load and every 3 seconds
+    updateMessageBadge();
+    setInterval(updateMessageBadge, 3000);
+</script>
+<?php endif; ?><?php /**PATH C:\laragon\www\E-commerce2026\resources\views/layouts/header.blade.php ENDPATH**/ ?>

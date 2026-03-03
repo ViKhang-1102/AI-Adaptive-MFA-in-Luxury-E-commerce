@@ -4,6 +4,15 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
+    @if(session('order_notifications'))
+    <div class="mb-6">
+        @foreach(session('order_notifications') as $note)
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-2">
+            <p class="text-blue-700">{{ $note['message'] }}</p>
+        </div>
+        @endforeach
+    </div>
+    @endif
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Order Information -->
         <div class="lg:col-span-2 space-y-6">

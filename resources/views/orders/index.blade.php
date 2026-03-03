@@ -6,6 +6,16 @@
 <div class="max-w-7xl mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-8">My Orders</h1>
 
+    @if(session('order_notifications'))
+    <div class="mb-6">
+        @foreach(session('order_notifications') as $note)
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-2">
+            <p class="text-blue-700">{{ $note['message'] }}</p>
+        </div>
+        @endforeach
+    </div>
+    @endif
+
     @if($orders->isEmpty())
     <div class="bg-white p-8 rounded-lg shadow text-center">
         <p class="text-gray-600 text-lg mb-4">You have no orders yet</p>
@@ -53,6 +63,10 @@
                 <a href="{{ route('orders.show', $order) }}" class="text-blue-600 hover:underline">
                     View Details
                 </a>
+                <form action="{{ route('orders.buyAgain', $order) }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="text-indigo-600 hover:underline">Buy Again</button>
+                </form>
                 @if($order->canBeCancelled())
                 <form action="{{ route('orders.cancel', $order) }}" method="POST" onsubmit="return confirm('Cancel this order?')">
                     @csrf

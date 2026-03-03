@@ -43,10 +43,18 @@
             <h3 class="font-bold">Manage Orders</h3>
             <p class="text-sm text-gray-600">View and manage orders</p>
         </a>
-        <a href="{{ route('seller.wallet') }}" class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
+        <a href="{{ route('seller.wallet') }}" class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition relative">
             <i class="fas fa-wallet text-2xl text-purple-600 mb-2"></i>
             <h3 class="font-bold">My Wallet</h3>
             <p class="text-sm text-gray-600">Check wallet balance</p>
+        </a>
+        <a href="{{ route('seller.messages.index') }}" class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition relative">
+            <i class="fas fa-envelope text-2xl text-blue-600 mb-2"></i>
+            <h3 class="font-bold">Messages</h3>
+            <p class="text-sm text-gray-600">View inbox</p>
+            @if(isset($unreadMessages) && $unreadMessages > 0)
+            <span class="absolute top-2 right-4 bg-red-600 text-white text-xs px-2 py-1 rounded-full">{{ $unreadMessages }}</span>
+            @endif
         </a>
     </div>
 

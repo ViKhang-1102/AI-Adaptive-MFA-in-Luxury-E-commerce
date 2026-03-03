@@ -38,11 +38,17 @@ class DashboardController extends Controller
             ->where('status', 'pending')
             ->count();
 
+        // unread messages for seller
+        $unreadMessages = \App\Models\Message::where('receiver_id', $seller->id)
+            ->where('read', false)
+            ->count();
+
         return view('seller.dashboard', compact(
             'totalProducts',
             'totalOrders',
             'totalRevenue',
-            'pendingOrders'
+            'pendingOrders',
+            'unreadMessages'
         ));
     }
 }

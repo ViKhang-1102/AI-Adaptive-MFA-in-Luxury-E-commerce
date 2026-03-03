@@ -134,4 +134,11 @@ class User extends Authenticatable
     {
         return $this->role === 'customer';
     }
+
+    public function unreadMessagesCount()
+    {
+        return \App\Models\Message::where('receiver_id', $this->id)
+            ->where('read', false)
+            ->count();
+    }
 }

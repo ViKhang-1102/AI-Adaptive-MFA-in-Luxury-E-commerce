@@ -65,11 +65,27 @@
                                 <a href="{{ route('addresses.index') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                                     Addresses
                                 </a>
+                                <a href="{{ route('customer.messages.index') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 flex justify-between">
+                                    <span>Messages</span>
+                                    @if(auth()->user()->unreadMessagesCount() > 0)
+                                        <span data-message-badge class="bg-red-600 text-white rounded-full px-2 text-xs flex items-center">{{ auth()->user()->unreadMessagesCount() }}</span>
+                                    @else
+                                        <span data-message-badge class="bg-red-600 text-white rounded-full px-2 text-xs flex items-center hidden"></span>
+                                    @endif
+                                </a>
                             @endif
 
                             @if(auth()->user()->isSeller())
                                 <a href="{{ route('seller.dashboard') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                                     Seller Dashboard
+                                </a>
+                                <a href="{{ route('seller.messages.index') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 flex justify-between">
+                                    <span>Messages</span>
+                                    @if(auth()->user()->unreadMessagesCount() > 0)
+                                        <span data-message-badge class="bg-red-600 text-white rounded-full px-2 text-xs flex items-center">{{ auth()->user()->unreadMessagesCount() }}</span>
+                                    @else
+                                        <span data-message-badge class="bg-red-600 text-white rounded-full px-2 text-xs flex items-center hidden"></span>
+                                    @endif
                                 </a>
                             @endif
 
@@ -99,3 +115,28 @@
         </div>
     </nav>
 </header>
+@auth
+<script>
+    // Update message badge count every 3 seconds
+    function updateMessageBadge() {
+        fetch('/messages/unread/count')
+            .then(response => response.json())
+            .then(data => {
+                const badges = document.querySelectorAll('[data-message-badge]');
+                badges.forEach(badge => {
+                    if (data.unread_count > 0) {
+                        badge.textContent = data.unread_count;
+                        badge.parentElement.style.display = 'flex';
+                    } else {
+                        badge.parentElement.style.display = 'none';
+                    }
+                });
+            })
+            .catch(error => console.error('Error updating message badge:', error));
+    }
+
+    // Update badge on page load and every 3 seconds
+    updateMessageBadge();
+    setInterval(updateMessageBadge, 3000);
+</script>
+@endauth

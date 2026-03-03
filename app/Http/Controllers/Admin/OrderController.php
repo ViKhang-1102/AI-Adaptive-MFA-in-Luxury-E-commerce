@@ -9,13 +9,13 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with('customer', 'seller')->latest()->paginate(15);
+        $orders = Order::with('customer', 'seller', 'items.product.images')->latest()->paginate(15);
         return view('admin.orders.index', compact('orders'));
     }
 
     public function show(Order $order)
     {
-        $order->load('items.product', 'customer', 'seller', 'payment');
+        $order->load('items.product.images', 'customer', 'seller', 'payment');
         return view('admin.orders.show', compact('order'));
     }
 }
