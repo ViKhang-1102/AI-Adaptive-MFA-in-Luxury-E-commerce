@@ -8,6 +8,7 @@ use App\Models\CartItem;
 use App\Models\Payment;
 use App\Models\SystemFee;
 use App\Models\User;
+use App\Models\WalletTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -391,5 +392,68 @@ class OrderController extends Controller
     private function generateOrderNumber()
     {
         return 'ORD' . date('Ymd') . str_pad(mt_rand(0, 99999), 5, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Fake webhook endpoint used by shippers to notify delivery.
+     *
+     * Expects JSON body containing `order_id` and `secret_key`.
+     * If the key does not match the hardcoded value we return 401.
+     * When valid we update the order's status to delivered and stamp delivered_at.
+     * This route is deliberately left outside of any auth middleware so that
+     * external services (or Postman) can hit it directly.
+     */
+    public function shipperUpdateStatus(Request $request)
+    {
+        // always check the secret key first so a wrong key never reveals order existence
+        $secret = $request->input('secret_key');
+        if ($secret !== 'LUXGUARD_SECRET_2026') {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $data = $request->validate([
+            'order_id' => 'required|integer',
+            // secret_key already checked above, validation only ensures presence
+            'secret_key' => 'required|string',
+        ]);
+
+        $order = Order::find($data['order_id']);
+        if (! $order) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
+
+        $order->status = 'delivered';
+        $order->delivered_at = now();
+        $order->save();
+
+        // When an order is delivered we finalize the seller payout:
+        // - Find the pending seller wallet transaction for this order
+        // - Mark it as completed
+        // - Credit the seller's wallet balance (available balance)
+        try {
+            $tx = WalletTransaction::where('order_id', $order->id)
+                ->where('type', 'credit')
+                ->where('status', 'pending')
+                ->first();
+
+            if ($tx) {
+                $tx->status = 'completed';
+                $tx->save();
+
+                // Adjust seller wallet balance
+                try {
+                    $wallet = $tx->wallet;
+                    if ($wallet) {
+                        $wallet->adjustBalance($tx->amount);
+                    }
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Failed to credit seller wallet on delivery', ['order_id' => $order->id, 'tx' => $tx->id, 'error' => $e->getMessage()]);
+                }
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error finalizing seller payout on delivery', ['order_id' => $order->id, 'error' => $e->getMessage()]);
+        }
+
+        return response()->json(['message' => 'Order status updated']);
     }
 }

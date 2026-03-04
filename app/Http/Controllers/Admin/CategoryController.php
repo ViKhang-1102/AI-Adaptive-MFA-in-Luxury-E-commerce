@@ -27,9 +27,19 @@ class CategoryController extends Controller
             'parent_id' => 'nullable|exists:categories,id',
         ]);
 
+        $slug = str()->slug($validated['name']);
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (Category::where('slug', $slug)->exists()) {
+            $slug = "{$originalSlug}-{$count}";
+            $count++;
+        }
+
         Category::create([
-            ...$validated,
-            'slug' => str()->slug($validated['name']),
+            'name' => $validated['name'],
+            'parent_id' => $validated['parent_id'] ?? null,
+            'slug' => $slug,
             'is_active' => true,
         ]);
 

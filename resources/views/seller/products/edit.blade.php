@@ -5,6 +5,18 @@
     <a href="{{ route('seller.products.index') }}" class="text-blue-600 hover:underline mb-6 inline-block">&larr; Back to Products</a>
     <h1 class="text-3xl font-bold mb-8">Edit Product</h1>
     
+    @if ($errors->any())
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+            <strong class="font-bold">Oops!</strong>
+            <span class="block sm:inline">There were some problems with your input.</span>
+            <ul class="list-disc mt-2 ml-4">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="bg-white p-6 rounded-lg shadow">
         <form action="{{ route('seller.products.update', $product) }}" method="POST" enctype="multipart/form-data">
             @csrf
@@ -50,10 +62,10 @@
             <!-- Price -->
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div>
-                    <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Price (VND) *</label>
-                    <input type="number" id="price" name="price" step="any" min="1000" max="999999999" 
+                    <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Price (USD) *</label>
+                    <input type="number" id="price" name="price" step="any" min="1" max="999999999" 
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('price') border-red-500 @enderror" 
-                        value="{{ old('price', (int)$product->price) }}" placeholder="Enter VND price (integer only)" required>
+                        value="{{ old('price', $product->price) }}" placeholder="Enter USD price" required>
                     @error('price')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -114,12 +126,11 @@
                     @foreach($product->images as $image)
                     <div class="relative bg-gray-100 rounded-lg overflow-hidden" style="aspect-ratio: 1;">
                         <img src="{{ asset('storage/' . $image->image) }}" class="w-full h-full object-cover">
-                        <form action="{{ route('seller.products.deleteImage', $image) }}" method="POST" class="absolute inset-0" onsubmit="return confirm('Delete this image?')">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700">
-                                <i class="fas fa-times text-sm"></i>
-                            </button>
-                        </form>
+                        <button type="button" 
+                            onclick="if(confirm('Delete this image?')) { document.getElementById('delete-image-form').action = '{{ route('seller.products.deleteImage', $image) }}'; document.getElementById('delete-image-form').submit(); }"
+                            class="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700 z-10">
+                            <i class="fas fa-times text-sm"></i>
+                        </button>
                     </div>
                     @endforeach
                 </div>
@@ -158,6 +169,11 @@
         </form>
     </div>
 </div>
+
+<form id="delete-image-form" method="POST" class="hidden">
+    @csrf
+    @method('DELETE')
+</form>
 
 <script>
     const dropZone = document.getElementById('drop-zone');

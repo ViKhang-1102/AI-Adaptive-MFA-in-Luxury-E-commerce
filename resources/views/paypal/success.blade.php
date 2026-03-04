@@ -15,20 +15,20 @@
                 <tr>
                     <td><strong>Tổng tiền khách trả:</strong></td>
                     <td>
-                            {{ number_format($order->total_amount, 0) }} VND
-                            ({{ number_format($order->total_amount / env('VND_PER_USD', 23000), 2) }} {{ env('PAYPAL_CURRENCY', 'USD') }})
+                            {{ number_format($order->total_amount, 0) }} USD
+                            ({{ number_format($order->total_amount, 2) }} {{ env('PAYPAL_CURRENCY', 'USD') }})
                         </td>
                 </tr>
                 <tr class="table-info">
                     <td><strong>💼 Phí Platform (Admin 10%):</strong></td>
                     <td>
-                        {{ number_format($adminFee / env('VND_PER_USD', 23000), 2) }} {{ env('PAYPAL_CURRENCY', 'USD') }}
+                        {{ number_format($adminFee, 2) }} {{ env('PAYPAL_CURRENCY', 'USD') }}
                     </td>
                 </tr>
                 <tr class="table-warning">
                     <td><strong>👤 Số tiền Seller nhận (90%):</strong></td>
                     <td>
-                        {{ number_format($sellerAmount / env('VND_PER_USD', 23000), 2) }} {{ env('PAYPAL_CURRENCY', 'USD') }}
+                        {{ number_format($sellerAmount, 2) }} {{ env('PAYPAL_CURRENCY', 'USD') }}
                     </td>
                 </tr>
                 <tr>

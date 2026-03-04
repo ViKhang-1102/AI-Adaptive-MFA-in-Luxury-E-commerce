@@ -59,9 +59,9 @@
                         <p class="text-gray-600 text-sm mb-2">{{ $product->seller->name }}</p>
                         <div class="flex justify-between items-center mb-3">
                             <div>
-                                <span class="font-bold">${{ number_format($product->getDiscountedPrice() / env('VND_PER_USD', 23000), 2) }}</span>
+                                <span class="font-bold">${{ number_format($product->getDiscountedPrice(), 2) }}</span>
                                 @if($product->hasDiscount())
-                                <span class="text-gray-400 line-through text-sm">${{ number_format($product->price / env('VND_PER_USD', 23000), 2) }}</span>
+                                <span class="text-gray-400 line-through text-sm">${{ number_format($product->price, 2) }}</span>
                                 @endif
                             </div>
                             <span class="text-blue-600 group-hover:text-blue-800">

@@ -117,18 +117,24 @@
 </header>
 @auth
 <script>
+    // Determine correct route for unread count
+    const unreadCountUrl = "{{ auth()->user()->isSeller() ? route('seller.messages.unread-count') : route('messages.unread-count') }}";
+
     // Update message badge count every 3 seconds
     function updateMessageBadge() {
-        fetch('/messages/unread/count')
-            .then(response => response.json())
+        fetch(unreadCountUrl)
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
             .then(data => {
                 const badges = document.querySelectorAll('[data-message-badge]');
                 badges.forEach(badge => {
                     if (data.unread_count > 0) {
                         badge.textContent = data.unread_count;
-                        badge.parentElement.style.display = 'flex';
+                        badge.classList.remove('hidden');
                     } else {
-                        badge.parentElement.style.display = 'none';
+                        badge.classList.add('hidden');
                     }
                 });
             })

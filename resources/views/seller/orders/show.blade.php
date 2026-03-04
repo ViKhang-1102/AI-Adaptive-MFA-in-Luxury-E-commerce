@@ -14,14 +14,19 @@
                     <h1 class="text-2xl font-bold mb-2">Order #{{ $order->id }}</h1>
                     <p class="text-gray-600">{{ $order->created_at->format('M d, Y \a\t h:i A') }}</p>
                 </div>
-                <span class="px-3 py-1 rounded-full text-white text-sm font-bold {{ 
-                    $order->status === 'pending' ? 'bg-yellow-600' : 
-                    ($order->status === 'confirmed' ? 'bg-blue-600' : 
-                    ($order->status === 'shipped' ? 'bg-purple-600' : 
-                    ($order->status === 'delivered' ? 'bg-green-600' : 'bg-red-600'))) 
-                }}">
-                    {{ ucfirst($order->status) }}
-                </span>
+                <div class="text-right">
+                    <span class="px-3 py-1 rounded-full text-white text-sm font-bold {{ 
+                        $order->status === 'pending' ? 'bg-yellow-600' : 
+                        ($order->status === 'confirmed' ? 'bg-blue-600' : 
+                        ($order->status === 'shipped' ? 'bg-purple-600' : 
+                        ($order->status === 'delivered' ? 'bg-green-600' : 'bg-red-600'))) 
+                    }}">
+                        {{ ucfirst($order->status) }}
+                    </span>
+                    @if($order->delivered_at)
+                    <p class="text-xs text-white mt-1">Delivered: {{ $order->delivered_at->format('M d, Y H:i') }}</p>
+                    @endif
+                </div>
             </div>
         </div>
 
@@ -69,8 +74,8 @@
                             </td>
                             <td class="px-4 py-2 font-semibold">{{ $item->product->name ?? 'Product Removed' }}</td>
                             <td class="px-4 py-2 text-center">{{ $item->quantity }}</td>
-                            <td class="px-4 py-2 text-right">${{ number_format($item->price / env('VND_PER_USD', 23000), 2) }}</td>
-                            <td class="px-4 py-2 text-right font-semibold">${{ number_format(($item->quantity * $item->price) / env('VND_PER_USD', 23000), 2) }}</td>
+                            <td class="px-4 py-2 text-right">${{ number_format($item->price, 2) }}</td>
+                            <td class="px-4 py-2 text-right font-semibold">${{ number_format(($item->quantity * $item->price), 2) }}</td>
                         </tr>
                         @empty
                         <tr>
@@ -87,11 +92,11 @@
             <div class="space-y-2 text-right">
                 <div class="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>${{ number_format($order->total_amount / env('VND_PER_USD', 23000), 2) }}</span>
+                    <span>${{ number_format($order->total_amount, 2) }}</span>
                 </div>
                 <div class="flex justify-between font-bold text-lg">
                     <span>Total:</span>
-                    <span>${{ number_format($order->total_amount / env('VND_PER_USD', 23000), 2) }}</span>
+                    <span>${{ number_format($order->total_amount, 2) }}</span>
                 </div>
             </div>
         </div>

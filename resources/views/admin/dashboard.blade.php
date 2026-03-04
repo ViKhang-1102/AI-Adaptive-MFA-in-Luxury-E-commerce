@@ -29,7 +29,7 @@
             <p class="text-gray-600">Total Orders</p>
         </div>
         <div class="bg-orange-100 p-6 rounded-lg shadow">
-            <div class="text-2xl font-bold text-orange-600">${{ number_format(($totalRevenue ?? 0) / env('VND_PER_USD', 23000), 2) }}</div>
+            <div class="text-2xl font-bold text-orange-600">${{ number_format(($totalRevenue ?? 0), 2) }}</div>
             <p class="text-gray-600">Revenue</p>
         </div>
         <div class="bg-red-100 p-6 rounded-lg shadow">

@@ -149,10 +149,10 @@
                         <div class="flex justify-between items-center">
                             <div>
                                 <?php if($product->hasDiscount()): ?>
-                                <span class="text-red-600 font-bold">$<?php echo e(number_format($product->getDiscountedPrice() / env('VND_PER_USD', 23000), 2)); ?></span>
-                                <span class="text-gray-400 line-through text-sm">$<?php echo e(number_format($product->price / env('VND_PER_USD', 23000), 2)); ?></span>
+                                <span class="text-red-600 font-bold">$<?php echo e(number_format($product->getDiscountedPrice(), 2)); ?></span>
+                                <span class="text-gray-400 line-through text-sm">$<?php echo e(number_format($product->price, 2)); ?></span>
                                 <?php else: ?>
-                                <span class="font-bold">$<?php echo e(number_format($product->price / env('VND_PER_USD', 23000), 2)); ?></span>
+                                <span class="font-bold">$<?php echo e(number_format($product->price, 2)); ?></span>
                                 <?php endif; ?>
                             </div>
                             <span class="text-blue-600 group-hover:text-blue-800">
@@ -189,8 +189,8 @@
                     <p class="text-gray-600 text-sm mb-2"><?php echo e($product->seller->name); ?></p>
                     <div class="flex justify-between items-center">
                         <div>
-                            <span class="text-red-600 font-bold">$<?php echo e(number_format($product->getDiscountedPrice() / env('VND_PER_USD', 23000), 2)); ?></span>
-                            <span class="text-gray-400 line-through text-sm">$<?php echo e(number_format($product->price / env('VND_PER_USD', 23000), 2)); ?></span>
+                            <span class="text-red-600 font-bold">$<?php echo e(number_format($product->getDiscountedPrice(), 2)); ?></span>
+                            <span class="text-gray-400 line-through text-sm">$<?php echo e(number_format($product->price, 2)); ?></span>
                         </div>
                         <span class="text-blue-600 group-hover:text-blue-800">
                             <i class="fas fa-arrow-right"></i>
@@ -218,7 +218,7 @@
                     <h3 class="font-bold truncate group-hover:text-blue-600"><?php echo e($product->name); ?></h3>
                     <p class="text-gray-600 text-sm mb-2"><?php echo e($product->seller->name); ?></p>
                     <div class="flex justify-between items-center">
-                        <span class="font-bold group-hover:text-blue-600">$<?php echo e(number_format($product->getDiscountedPrice() / env('VND_PER_USD', 23000), 2)); ?></span>
+                        <span class="font-bold group-hover:text-blue-600">$<?php echo e(number_format($product->getDiscountedPrice(), 2)); ?></span>
                         <span class="text-blue-600 group-hover:text-blue-800">
                             <i class="fas fa-arrow-right"></i>
                         </span>

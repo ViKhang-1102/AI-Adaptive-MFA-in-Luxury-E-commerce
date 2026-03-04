@@ -93,6 +93,7 @@ Route::middleware(['auth', \App\Http\Middleware\SellerMiddleware::class])->prefi
     Route::get('/messages/api/customers', [App\Http\Controllers\MessageController::class, 'getCustomersList'])->name('messages.api.customers');
     Route::get('/messages/api/customers/{customerId}/products', [App\Http\Controllers\MessageController::class, 'getCustomerProducts'])->name('messages.api.customer-products');
     Route::get('/messages/{product}/{other}', [App\Http\Controllers\MessageController::class, 'sellerConversation'])->name('messages.conversation');
+    Route::get('/messages/unread/count', [App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unread-count');
     Route::post('/orders/{order}/confirm', [App\Http\Controllers\Seller\OrderController::class, 'confirm'])->name('orders.confirm');
     Route::post('/orders/{order}/cancel', [App\Http\Controllers\Seller\OrderController::class, 'cancel'])->name('orders.cancel');
     Route::delete('/orders/{order}', [App\Http\Controllers\Seller\OrderController::class, 'destroy'])->name('orders.destroy');
@@ -100,6 +101,7 @@ Route::middleware(['auth', \App\Http\Middleware\SellerMiddleware::class])->prefi
     Route::post('/orders/{order}/deliver', [App\Http\Controllers\Seller\OrderController::class, 'deliver'])->name('orders.deliver');
     Route::delete('/products/image/{productImage}', [App\Http\Controllers\Seller\ProductController::class, 'deleteImage'])->name('products.deleteImage');
     Route::get('/wallet', [App\Http\Controllers\Seller\WalletController::class, 'index'])->name('wallet');
+    Route::post('/wallet/withdraw', [App\Http\Controllers\Seller\WalletController::class, 'withdraw'])->name('wallet.withdraw');
 });
 
 // Admin Routes
@@ -118,6 +120,7 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix
     Route::get('/orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
 });
 
-// PayPal marketplace callbacks (accessible to anyone after redirect)
+
+// PayPal callbacks
 Route::get('paypal/success', [App\Http\Controllers\PayPalController::class, 'paymentSuccess'])->name('paypal.success');
 Route::get('paypal/cancel', [App\Http\Controllers\PayPalController::class, 'paymentCancel'])->name('paypal.cancel');

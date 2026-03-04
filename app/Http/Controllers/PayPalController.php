@@ -39,9 +39,8 @@ class PayPalController extends Controller
         $provider->setApiCredentials(config('paypal'));
         $provider->getAccessToken();
 
-        // Convert stored VND order total to USD for PayPal (PayPal expects USD)
-        $vndPerUsd = (float) env('VND_PER_USD', 23000);
-        $amountInUsd = round($order->total_amount / ($vndPerUsd ?: 23000), 2);
+        // Order total is already stored in USD
+        $amountInUsd = round($order->total_amount, 2);
 
         $response = $provider->createOrder([
             "intent" => "CAPTURE",
@@ -138,7 +137,8 @@ class PayPalController extends Controller
                 }
             }
 
-            // Create wallet transaction for seller payment
+            // Create wallet transaction for seller payment (pending).
+            // Seller balance will be credited only when delivery is completed.
             $sellerWallet = $seller?->wallet;
             if ($sellerWallet) {
                 WalletTransaction::create([
@@ -150,13 +150,6 @@ class PayPalController extends Controller
                     'status' => 'pending',
                     'transaction_reference' => $payment->reference_code,
                 ]);
-
-                // Add seller amount to seller wallet balance (platform owes this to seller)
-                try {
-                    $sellerWallet->adjustBalance($sellerAmount);
-                } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::error('Failed to adjust seller wallet balance', ['seller_id' => $seller?->id, 'error' => $e->getMessage()]);
-                }
             }
 
             return view('paypal.success', compact('order', 'adminFee', 'sellerAmount', 'sellerPayPalEmail', 'adminPercentage', 'sellerPercentage'));

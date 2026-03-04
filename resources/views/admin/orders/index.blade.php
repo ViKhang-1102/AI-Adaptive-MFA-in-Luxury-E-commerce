@@ -51,7 +51,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-3">{{ $order->seller->name ?? 'Unknown' }}</td>
-                        <td class="px-6 py-3 text-right font-semibold">${{ number_format($order->total_amount / env('VND_PER_USD', 23000), 2) }}</td>
+                        <td class="px-6 py-3 text-right font-semibold">${{ number_format($order->total_amount, 2) }}</td>
                         <td class="px-6 py-3">
                             <span class="px-2 py-1 text-sm rounded-full {{ $order->payment_status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
                                 {{ ucfirst($order->payment_status ?? 'pending') }}
