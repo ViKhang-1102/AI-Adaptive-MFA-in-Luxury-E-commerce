@@ -33,13 +33,19 @@ class OrderController extends Controller
 
     public function confirm(Request $request, Order $order)
     {
-        if ($order->seller_id !== Auth::id() || $order->status !== 'pending') {
+        if ($order->seller_id !== Auth::id() || !in_array($order->status, ['pending', 'processing'])) {
             abort(403);
         }
 
         $order->update([
             'status' => 'confirmed',
             'confirmed_at' => now(),
+        ]);
+
+        \App\Models\OrderNotification::create([
+            'order_id' => $order->id,
+            'customer_id' => $order->customer_id,
+            'message' => "Your order {$order->order_number} has been confirmed.",
         ]);
 
         return back()->with('success', 'Order confirmed');
@@ -59,6 +65,12 @@ class OrderController extends Controller
             'status' => 'cancelled',
             'cancellation_reason' => $validated['reason'],
             'cancelled_at' => now(),
+        ]);
+
+        \App\Models\OrderNotification::create([
+            'order_id' => $order->id,
+            'customer_id' => $order->customer_id,
+            'message' => "Your order {$order->order_number} has been cancelled. Reason: {$validated['reason']}",
         ]);
 
         // Restore stock

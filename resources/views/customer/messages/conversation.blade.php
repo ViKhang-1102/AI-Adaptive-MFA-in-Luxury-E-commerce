@@ -5,22 +5,22 @@
 @section('content')
 <div class="max-w-4xl mx-auto px-4 py-8">
     <div class="mb-4">
-        <a href="{{ route('customer.messages.index') }}" class="text-blue-600 hover:underline">&larr; Back to Inbox</a>
+        <a href="{{ route('customer.messages.index') }}" class="text-primary hover:underline">&larr; Back to Inbox</a>
     </div>
 
-    <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-xl font-bold mb-4">Product: <a href="{{ route('products.show', $product) }}" class="text-blue-600 hover:underline">{{ $product->name }}</a></h2>
+    <div class="bg-white p-6 rounded-md-lg shadow-sm">
+        <h2 class="text-xl font-bold mb-4">Product: <a href="{{ route('products.show', $product) }}" class="text-primary hover:underline">{{ $product->name }}</a></h2>
         <h3 class="text-lg mb-4">Seller: {{ $other->name }}</h3>
-        <div id="messages-container" class="h-96 bg-gray-100 rounded-lg p-4 mb-4 overflow-y-auto flex flex-col">
+        <div id="messages-container" class="h-96 bg-neutral-100 rounded-md-lg p-4 mb-4 overflow-y-auto flex flex-col">
             <!-- messages loaded by JS -->
         </div>
         <form id="message-form" class="space-y-3">
             @csrf
             <input type="hidden" name="receiver_id" value="{{ $other->id }}">
             <textarea name="message" placeholder="Type your message..." 
-                class="w-full px-3 py-2 border rounded resize-none h-20"
+                class="w-full px-3 py-2 border rounded-md resize-none h-20"
                 maxlength="1000" required></textarea>
-            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+            <button type="submit" class="w-full bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 py-2 rounded-md hover:bg-primary-light hover:-translate-y-0.5">
                 Send Message
             </button>
         </form>
@@ -52,10 +52,10 @@
                 const div = document.createElement('div');
                 div.className = `mb-3 ${isOwn ? 'text-right' : 'text-left'}`;
                 div.innerHTML = `
-                    <div class="${isOwn ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'} rounded-lg px-3 py-2 inline-block max-w-xs text-left">
+                    <div class="${isOwn ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'} rounded-md-lg px-3 py-2 inline-block max-w-xs text-left">
                         ${msg.message}
                     </div>
-                    <div class="text-xs text-gray-600 mt-1">
+                    <div class="text-xs text-neutral-600 mt-1">
                         ${new Date(msg.created_at).toLocaleTimeString()}
                     </div>
                 `;

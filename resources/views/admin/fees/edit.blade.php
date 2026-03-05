@@ -3,25 +3,25 @@
 @section('content')
 <div class="max-w-2xl mx-auto px-4 py-8">
     <div class="flex items-center gap-4 mb-8">
-        <a href="{{ route('admin.fees.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 font-semibold">
+        <a href="{{ route('admin.fees.index') }}" class="px-4 py-2 bg-neutral-500 text-white rounded-md hover:bg-gray-600 font-semibold">
             ← Back to Fees
         </a>
         <h1 class="text-3xl font-bold">Edit Fee</h1>
     </div>
 
-    <div class="bg-white p-6 rounded-lg shadow">
+    <div class="bg-white p-6 rounded-md-lg shadow-sm">
         <form method="POST" action="{{ route('admin.fees.update', $fee) }}" class="space-y-6">
             @csrf
             @method('PUT')
 
             <div>
-                <label class="block text-gray-700 font-semibold mb-2">Fee Name *</label>
+                <label class="block text-neutral-700 font-semibold mb-2">Fee Name *</label>
                 <input 
                     type="text" 
                     name="name" 
                     value="{{ old('name', $fee->name) }}"
                     placeholder="e.g., Platform Commission, Transaction Fee"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('name') border-red-500 @enderror"
+                    class="w-full px-4 py-2 border rounded-md-lg focus:outline-none focus:ring-2 focus:ring-gold @error('name') border-red-500 @enderror"
                     required
                 >
                 @error('name')
@@ -30,21 +30,21 @@
             </div>
 
             <div>
-                <label class="block text-gray-700 font-semibold mb-2">Description</label>
+                <label class="block text-neutral-700 font-semibold mb-2">Description</label>
                 <textarea 
                     name="description" 
                     rows="3"
                     placeholder="Optional description for this fee"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="w-full px-4 py-2 border rounded-md-lg focus:outline-none focus:ring-2 focus:ring-gold"
                 >{{ old('description', $fee->description) }}</textarea>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-gray-700 font-semibold mb-2">Fee Type *</label>
+                    <label class="block text-neutral-700 font-semibold mb-2">Fee Type *</label>
                     <select 
                         name="fee_type" 
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('fee_type') border-red-500 @enderror"
+                        class="w-full px-4 py-2 border rounded-md-lg focus:outline-none focus:ring-2 focus:ring-gold @error('fee_type') border-red-500 @enderror"
                         required
                     >
                         <option value="">-- Select Type --</option>
@@ -57,14 +57,14 @@
                 </div>
 
                 <div>
-                    <label class="block text-gray-700 font-semibold mb-2">Fee Value *</label>
+                    <label class="block text-neutral-700 font-semibold mb-2">Fee Value *</label>
                     <input 
                         type="number" 
                         name="fee_value" 
                         step="0.01"
                         value="{{ old('fee_value', $fee->fee_value) }}"
                         placeholder="0.00"
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('fee_value') border-red-500 @enderror"
+                        class="w-full px-4 py-2 border rounded-md-lg focus:outline-none focus:ring-2 focus:ring-gold @error('fee_value') border-red-500 @enderror"
                         required
                     >
                     @error('fee_value')
@@ -73,17 +73,17 @@
                 </div>
             </div>
 
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div class="bg-blue-50 border border-blue-200 rounded-md-lg p-4">
                 <p class="text-sm text-blue-800">
                     💡 <strong>Tips:</strong> Use percentage for commission fees (e.g., 10% for platform) or fixed amount for flat fees.
                 </p>
             </div>
 
             <div class="flex justify-between pt-4 border-t">
-                <a href="{{ route('admin.fees.index') }}" class="px-6 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 font-semibold">
+                <a href="{{ route('admin.fees.index') }}" class="px-6 py-2 bg-gray-300 text-primary rounded-md hover:bg-gray-400 font-semibold">
                     Cancel
                 </a>
-                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold">
+                <button type="submit" class="px-6 py-2 bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 rounded-md hover:bg-primary-light hover:-translate-y-0.5 font-semibold">
                     Update Fee
                 </button>
             </div>

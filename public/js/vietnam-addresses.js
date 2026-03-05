@@ -321,21 +321,14 @@ function initCheckoutAddress() {
 }
 
 // Function to validate address form
-function validateAddressForm() {
+function validateAddressForm(event) {
   const province = document.getElementById('province').value;
   const district = document.getElementById('district').value;
   const ward = document.getElementById('ward').value;
 
-  if (!province) {
-    alert('Please select Province/City');
-    return false;
-  }
-  if (!district) {
-    alert('Please select District');
-    return false;
-  }
-  if (!ward) {
-    alert('Please select Ward/Commune');
+  if (!province || !district || !ward) {
+    alert('Please select Province/City, District, and Ward/Commune');
+    if (event) event.preventDefault();
     return false;
   }
 

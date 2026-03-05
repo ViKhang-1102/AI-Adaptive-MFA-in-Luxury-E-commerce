@@ -9,23 +9,23 @@
         <div class="md:col-span-1">
             <?php if($product->images->count() > 0): ?>
                 <!-- Main Image -->
-                <div class="bg-gray-100 rounded-lg overflow-hidden mb-4">
-                    <img id="main-image" src="<?php echo e(asset('storage/' . $product->images->first()->image)); ?>" class="w-full h-auto object-cover rounded-lg" alt="<?php echo e($product->name); ?>">
+                <div class="bg-neutral-100 rounded-md-lg overflow-hidden mb-4">
+                    <img id="main-image" src="<?php echo e(asset('storage/' . $product->images->first()->image)); ?>" class="w-full h-auto object-cover rounded-md-lg" alt="<?php echo e($product->name); ?>">
                 </div>
                 
                 <!-- Thumbnails Grid -->
                 <?php if($product->images->count() > 1): ?>
                 <div class="grid grid-cols-4 gap-2">
                     <?php $__currentLoopData = $product->images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <button class="image-thumbnail relative overflow-hidden rounded-lg border-2 aspect-square <?php echo e($key === 0 ? 'border-blue-600' : 'border-gray-300'); ?> hover:border-blue-600 transition" data-index="<?php echo e($key); ?>" data-src="<?php echo e(asset('storage/' . $image->image)); ?>">
+                    <button class="image-thumbnail relative overflow-hidden rounded-md-lg border-2 aspect-square <?php echo e($key === 0 ? 'border-gold' : 'border-neutral-200'); ?> hover:border-gold transition" data-index="<?php echo e($key); ?>" data-src="<?php echo e(asset('storage/' . $image->image)); ?>">
                         <img src="<?php echo e(asset('storage/' . $image->image)); ?>" class="w-full h-full object-cover" alt="Thumbnail <?php echo e($key + 1); ?>">
                     </button>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
                 <?php endif; ?>
             <?php else: ?>
-                <div class="bg-gray-200 rounded-lg flex items-center justify-center aspect-square">
-                    <div class="text-center text-gray-500">
+                <div class="bg-neutral-200 rounded-md-lg flex items-center justify-center aspect-square">
+                    <div class="text-center text-neutral-500">
                         <i class="fas fa-image text-4xl mb-2"></i>
                         <p>No images available</p>
                     </div>
@@ -38,7 +38,7 @@
             <h1 class="text-3xl font-bold mb-2"><?php echo e($product->name); ?></h1>
             
             <div class="mb-4">
-                <span class="text-gray-600">By <strong><?php echo e($product->seller->name); ?></strong></span>
+                <span class="text-neutral-600">By <strong><?php echo e($product->seller->name); ?></strong></span>
             </div>
 
             <!-- Rating -->
@@ -53,7 +53,7 @@
                     endfor;
                     ?>
                 </div>
-                <span class="ml-2 text-gray-600">(<?php echo e($product->getReviewCount()); ?> reviews)</span>
+                <span class="ml-2 text-neutral-600">(<?php echo e($product->getReviewCount()); ?> reviews)</span>
             </div>
 
             <!-- Price -->
@@ -61,7 +61,7 @@
                 <?php if($product->hasDiscount()): ?>
                 <span class="text-red-600">$<?php echo e(number_format($product->getDiscountedPrice(), 2)); ?></span>
                 <span class="text-gray-400 line-through text-lg">$<?php echo e(number_format($product->price, 2)); ?></span>
-                <span class="text-red-600 bg-red-100 px-2 py-1 rounded text-sm ml-2">Save <?php echo e($product->discount_percent); ?>%</span>
+                <span class="text-red-600 bg-red-100 px-2 py-1 rounded-md text-sm ml-2">Save <?php echo e($product->discount_percent); ?>%</span>
                 <?php else: ?>
                 <span>$<?php echo e(number_format($product->price, 2)); ?></span>
                 <?php endif; ?>
@@ -78,18 +78,18 @@
 
             <!-- Actions -->
             <?php if(auth()->guard()->check()): ?>
-            <?php if(auth()->user()->isCustomer()): ?>
+            <?php if(auth()->user()->isCustomer() || auth()->user()->isSeller()): ?>
             <div class="space-y-3 mb-6">
                 <div class="flex gap-3 items-center mb-3">
                     <label for="quantity" class="font-semibold">Quantity:</label>
-                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="<?php echo e($product->stock); ?>" class="w-20 px-3 py-2 border rounded">
+                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="<?php echo e($product->stock); ?>" class="w-20 px-3 py-2 border rounded-md">
                 </div>
 
                 <form action="<?php echo e(route('cart.add')); ?>" method="POST" class="flex space-x-2">
                     <?php echo csrf_field(); ?>
                     <input type="hidden" name="product_id" value="<?php echo e($product->id); ?>">
                     <input type="hidden" name="quantity" id="cartQuantity" value="1">
-                    <button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                    <button type="submit" class="flex-1 bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 py-2 rounded-md hover:bg-primary-light hover:-translate-y-0.5">
                         <i class="fas fa-shopping-cart"></i> Add to Cart
                     </button>
                 </form>
@@ -97,7 +97,7 @@
                 <form action="<?php echo e(route('checkout')); ?>" method="GET">
                     <input type="hidden" name="product_id" value="<?php echo e($product->id); ?>">
                     <input type="hidden" name="quantity" id="buyNowQuantity" value="1">
-                    <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
+                    <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700">
                         Buy Now
                     </button>
                 </form>
@@ -106,14 +106,14 @@
                 <form action="<?php echo e(route('wishlist.remove', $product->id)); ?>" method="POST">
                     <?php echo csrf_field(); ?>
                     <?php echo method_field('DELETE'); ?>
-                    <button type="submit" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">
+                    <button type="submit" class="w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700">
                         <i class="fas fa-heart"></i> Remove from Wishlist
                     </button>
                 </form>
                 <?php else: ?>
                 <form action="<?php echo e(route('wishlist.add', $product->id)); ?>" method="POST">
                     <?php echo csrf_field(); ?>
-                    <button type="submit" class="w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700">
+                    <button type="submit" class="w-full bg-gray-600 text-white py-2 rounded-md hover:bg-gray-700">
                         <i class="far fa-heart"></i> Add to Wishlist
                     </button>
                 </form>
@@ -125,7 +125,7 @@
             <!-- Description -->
             <div class="border-t pt-6">
                 <h3 class="font-bold text-lg mb-2">Description</h3>
-                <p class="text-gray-700"><?php echo e($product->description); ?></p>
+                <p class="text-neutral-700"><?php echo e($product->description); ?></p>
             </div>
         </div>
     </div>
@@ -134,42 +134,42 @@
     <div class="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Chat Section -->
         <div class="lg:col-span-1">
-            <div class="bg-white p-6 rounded-lg shadow">
+            <div class="bg-white p-6 rounded-md-lg shadow-sm">
                 <h3 class="font-bold text-lg mb-4">Message Seller</h3>
                 <?php if(auth()->guard()->check()): ?>
                     <?php if(auth()->user()->id !== $product->seller_id): ?>
-                    <div id="messages-container" class="h-96 bg-gray-100 rounded-lg p-4 mb-4 overflow-y-auto flex flex-col">
+                    <div id="messages-container" class="h-96 bg-neutral-100 rounded-md-lg p-4 mb-4 overflow-y-auto flex flex-col">
                         <!-- Messages will load here -->
                     </div>
                     <form id="message-form" class="space-y-3">
                         <?php echo csrf_field(); ?>
                         <input type="hidden" name="receiver_id" value="<?php echo e($product->seller_id); ?>">
                         <textarea name="message" placeholder="Type your message..." 
-                            class="w-full px-3 py-2 border rounded resize-none h-20"
+                            class="w-full px-3 py-2 border rounded-md resize-none h-20"
                             maxlength="1000" required></textarea>
-                        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                        <button type="submit" class="w-full bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 py-2 rounded-md hover:bg-primary-light hover:-translate-y-0.5">
                             Send Message
                         </button>
                     </form>
                     <?php else: ?>
-                    <p class="text-gray-600 text-sm">You are the seller of this product</p>
+                    <p class="text-neutral-600 text-sm">You are the seller of this product</p>
                     <?php endif; ?>
                 <?php else: ?>
-                <p class="text-gray-600 text-sm"><a href="<?php echo e(route('login')); ?>" class="text-blue-600 hover:underline">Login</a> to message the seller</p>
+                <p class="text-neutral-600 text-sm"><a href="<?php echo e(route('login')); ?>" class="text-primary hover:underline">Login</a> to message the seller</p>
                 <?php endif; ?>
             </div>
         </div>
 
         <!-- Reviews Section -->
         <div class="lg:col-span-2">
-            <div class="bg-white p-6 rounded-lg shadow">
+            <div class="bg-white p-6 rounded-md-lg shadow-sm">
                 <h2 class="text-2xl font-bold mb-6">Customer Reviews</h2>
 
                 <!-- Review Form -->
                 <?php if(auth()->guard()->check()): ?>
-                    <?php if(auth()->user()->isCustomer()): ?>
+                    <?php if(auth()->user()->isCustomer() || auth()->user()->isSeller()): ?>
                     <?php if($canReview): ?>
-                    <div class="mb-8 p-4 bg-blue-50 rounded-lg">
+                    <div class="mb-8 p-4 bg-blue-50 rounded-md-lg">
                         <h3 class="font-bold mb-4">Leave a Review</h3>
                         <form action="<?php echo e(route('reviews.store', $product)); ?>" method="POST" enctype="multipart/form-data" class="space-y-4">
                             <?php echo csrf_field(); ?>
@@ -196,7 +196,7 @@ unset($__errorArgs, $__bag); ?>
                             <div>
                                 <label class="block font-semibold mb-2">Comment (Optional)</label>
                                 <textarea name="comment" placeholder="Share your experience with this product..."
-                                    class="w-full px-3 py-2 border rounded h-24 resize-none" maxlength="1000"></textarea>
+                                    class="w-full px-3 py-2 border rounded-md h-24 resize-none" maxlength="1000"></textarea>
                                 <?php $__errorArgs = ['comment'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -210,8 +210,8 @@ unset($__errorArgs, $__bag); ?>
                             <div>
                                 <label class="block font-semibold mb-2">Upload Images (Optional)</label>
                                 <input type="file" name="images[]" multiple accept="image/*" 
-                                    class="w-full px-3 py-2 border rounded">
-                                <p class="text-sm text-gray-600 mt-1">Max 2MB per image, up to 5 images</p>
+                                    class="w-full px-3 py-2 border rounded-md">
+                                <p class="text-sm text-neutral-600 mt-1">Max 2MB per image, up to 5 images</p>
                                 <?php $__errorArgs = ['images.*'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -222,13 +222,13 @@ endif;
 unset($__errorArgs, $__bag); ?>
                             </div>
 
-                            <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
+                            <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700">
                                 Submit Review
                             </button>
                         </form>
                     </div>
                     <?php else: ?>
-                    <div class="mb-8 p-4 bg-yellow-50 rounded-lg">
+                    <div class="mb-8 p-4 bg-yellow-50 rounded-md-lg">
                         <p class="text-yellow-800">Reviews are available only after delivery and one review per order.</p>
                     </div>
                     <?php endif; ?>
@@ -252,16 +252,16 @@ unset($__errorArgs, $__bag); ?>
                                     <?php endfor; ?>
                                 </div>
                             </div>
-                            <span class="text-gray-600 text-sm"><?php echo e($review->created_at->format('M d, Y')); ?></span>
+                            <span class="text-neutral-600 text-sm"><?php echo e($review->created_at->format('M d, Y')); ?></span>
                         </div>
                         <?php if($review->comment): ?>
-                        <p class="text-gray-700 mb-2"><?php echo e($review->comment); ?></p>
+                        <p class="text-neutral-700 mb-2"><?php echo e($review->comment); ?></p>
                         <?php endif; ?>
                         
                         <?php if($review->images->count() > 0): ?>
                         <div class="flex gap-2 mb-2 flex-wrap">
                             <?php $__currentLoopData = $review->images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $img): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <img src="<?php echo e(asset('storage/' . $img->image)); ?>" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80" data-image-url="<?php echo e(asset('storage/' . $img->image)); ?>" alt="Review image">
+                            <img src="<?php echo e(asset('storage/' . $img->image)); ?>" class="h-20 w-20 object-cover rounded-md cursor-pointer hover:opacity-80" data-image-url="<?php echo e(asset('storage/' . $img->image)); ?>" alt="Review image">
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                         <?php endif; ?>
@@ -279,13 +279,13 @@ unset($__errorArgs, $__bag); ?>
                         <?php endif; ?>
                     </div>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                    <p class="text-gray-600 text-center">No reviews yet. Be the first to review!</p>
+                    <p class="text-neutral-600 text-center">No reviews yet. Be the first to review!</p>
                     <?php endif; ?>
                 </div>
 
                 <!-- Load More Reviews -->
                 <?php if($reviews->count() > 5): ?>
-                <button id="load-more-reviews" class="w-full mt-4 py-2 border-2 border-gray-300 text-gray-700 rounded hover:bg-gray-50">
+                <button id="load-more-reviews" class="w-full mt-4 py-2 border-2 border-neutral-200 text-neutral-700 rounded-md hover:bg-neutral-50">
                     Load More Reviews
                 </button>
                 <?php endif; ?>
@@ -299,18 +299,18 @@ unset($__errorArgs, $__bag); ?>
         <h2 class="text-2xl font-bold mb-6">Related Products</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <?php $__currentLoopData = $relatedProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $related): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <a href="<?php echo e(route('products.show', $related)); ?>" class="block bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden text-decoration-none group">
+            <a href="<?php echo e(route('products.show', $related)); ?>" class="block bg-white rounded-md-lg shadow-sm hover:shadow-sm-lg transition overflow-hidden text-decoration-none group">
                 <?php if($related->images->first()): ?>
                 <img src="<?php echo e(asset('storage/' . $related->images->first()->image)); ?>" class="w-full h-48 object-cover group-hover:opacity-90 transition" alt="<?php echo e($related->name); ?>">
                 <?php else: ?>
                 <img src="https://via.placeholder.com/300x200?text=No+Image" class="w-full h-48 object-cover" alt="No image">
                 <?php endif; ?>
                 <div class="p-4">
-                    <h3 class="font-bold truncate group-hover:text-blue-600"><?php echo e($related->name); ?></h3>
-                    <p class="text-gray-600 text-sm mb-2"><?php echo e($related->seller->name); ?></p>
+                    <h3 class="font-bold truncate group-hover:text-primary"><?php echo e($related->name); ?></h3>
+                    <p class="text-neutral-600 text-sm mb-2"><?php echo e($related->seller->name); ?></p>
                     <div class="flex justify-between items-center">
                         <span class="font-bold">$<?php echo e(number_format($related->getDiscountedPrice(), 2)); ?></span>
-                        <span class="text-blue-600 group-hover:text-blue-800">
+                        <span class="text-primary group-hover:text-blue-800">
                             <i class="fas fa-arrow-right"></i>
                         </span>
                     </div>
@@ -325,7 +325,7 @@ unset($__errorArgs, $__bag); ?>
     <div id="image-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
         <div class="relative max-w-2xl w-full mx-4">
             <img id="modal-image" src="" class="w-full h-auto">
-            <button onclick="closeImageModal()" class="absolute top-4 right-4 bg-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-200">
+            <button onclick="closeImageModal()" class="absolute top-4 right-4 bg-white rounded-md-full w-10 h-10 flex items-center justify-center hover:bg-neutral-200">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -355,10 +355,10 @@ unset($__errorArgs, $__bag); ?>
                 mainImage.src = newSrc;
                 
                 // Update border styling
-                thumbnails.forEach(t => t.classList.remove('border-blue-600'));
-                thumbnails.forEach(t => t.classList.add('border-gray-300'));
-                this.classList.remove('border-gray-300');
-                this.classList.add('border-blue-600');
+                thumbnails.forEach(t => t.classList.remove('border-gold'));
+                thumbnails.forEach(t => t.classList.add('border-neutral-200'));
+                this.classList.remove('border-neutral-200');
+                this.classList.add('border-gold');
             });
         });
     }
@@ -402,10 +402,10 @@ unset($__errorArgs, $__bag); ?>
                     const div = document.createElement('div');
                     div.className = `mb-3 ${isOwn ? 'text-right' : 'text-left'}`;
                     div.innerHTML = `
-                        <div class="${isOwn ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'} rounded-lg px-3 py-2 inline-block max-w-xs">
+                        <div class="${isOwn ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'} rounded-md-lg px-3 py-2 inline-block max-w-xs">
                             ${msg.message}
                         </div>
-                        <div class="text-xs text-gray-600 mt-1">
+                        <div class="text-xs text-neutral-600 mt-1">
                             ${new Date(msg.created_at).toLocaleTimeString()}
                         </div>
                     `;

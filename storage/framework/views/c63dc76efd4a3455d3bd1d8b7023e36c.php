@@ -9,11 +9,11 @@
     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <a href="<?php echo e(route('categories.show', $category)); ?>" 
-            class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition text-center">
-            <i class="fas fa-folder text-6xl text-blue-600 mb-4"></i>
+            class="bg-white p-6 rounded-md-lg shadow-sm hover:shadow-sm-lg transition text-center">
+            <i class="fas fa-folder text-6xl text-primary mb-4"></i>
             <h3 class="font-bold text-lg"><?php echo e($category->name); ?></h3>
             <?php if($category->children->count() > 0): ?>
-            <p class="text-sm text-gray-600"><?php echo e($category->children->count()); ?> subcategories</p>
+            <p class="text-sm text-neutral-600"><?php echo e($category->children->count()); ?> subcategories</p>
             <?php endif; ?>
         </a>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

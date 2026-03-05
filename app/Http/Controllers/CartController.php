@@ -35,6 +35,10 @@ class CartController extends Controller
             return back()->with('error', 'Product not available');
         }
 
+        if ($product->seller_id === Auth::id()) {
+            return back()->with('error', 'You cannot purchase your own products.');
+        }
+
         $cart = Auth::user()->cart ?? Cart::create(['customer_id' => Auth::id()]);
 
         $cartItem = $cart->items()->where('product_id', $product->id)->first();

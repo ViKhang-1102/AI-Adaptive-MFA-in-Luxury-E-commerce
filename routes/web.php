@@ -22,6 +22,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
+    
+    // Google Auth Routes
+    Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('google.login');
+    Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('google.callback');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
@@ -55,6 +59,9 @@ Route::middleware(['auth', \App\Http\Middleware\CustomerMiddleware::class])->gro
     Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('/orders/{order}/payment', [OrderController::class, 'payment'])->name('orders.payment');
     Route::post('/orders/{order}/buy-again', [OrderController::class, 'buyAgain'])->name('orders.buyAgain');
+    Route::get('/order/success', function () {
+        return view('orders.success');
+    })->name('orders.success');
 
     // Wishlist Routes
     Route::get('/wishlist', [ProductController::class, 'wishlist'])->name('wishlist');
@@ -64,6 +71,7 @@ Route::middleware(['auth', \App\Http\Middleware\CustomerMiddleware::class])->gro
     // Addresses Routes
     Route::get('/addresses', [ProfileController::class, 'addresses'])->name('addresses.index');
     Route::post('/addresses', [ProfileController::class, 'storeAddress'])->name('addresses.store');
+    Route::get('/addresses/{address}/edit', [ProfileController::class, 'editAddress'])->name('addresses.edit');
     Route::put('/addresses/{address}', [ProfileController::class, 'updateAddress'])->name('addresses.update');
     Route::delete('/addresses/{address}', [ProfileController::class, 'destroyAddress'])->name('addresses.destroy');
 
@@ -73,11 +81,11 @@ Route::middleware(['auth', \App\Http\Middleware\CustomerMiddleware::class])->gro
 
     // Message Routes
     Route::get('/messages', [App\Http\Controllers\MessageController::class, 'customerInbox'])->name('customer.messages.index');
+    Route::get('/messages/unread/count', [App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unread-count');
     Route::get('/messages/{product}/{other}', [App\Http\Controllers\MessageController::class, 'customerConversation'])->name('customer.messages.conversation');
     Route::get('/products/{product}/messages', [App\Http\Controllers\MessageController::class, 'getMessages'])->name('messages.get');
     Route::post('/products/{product}/messages', [App\Http\Controllers\MessageController::class, 'sendMessage'])->name('messages.send');
     Route::post('/messages/{message}/read', [App\Http\Controllers\MessageController::class, 'markAsRead'])->name('messages.read');
-    Route::get('/messages/unread/count', [App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unread-count');
 });
 
 // Seller Routes
@@ -90,10 +98,10 @@ Route::middleware(['auth', \App\Http\Middleware\SellerMiddleware::class])->prefi
     
     // Seller message inbox & conversation
     Route::get('/messages', [App\Http\Controllers\MessageController::class, 'sellerInbox'])->name('messages.index');
+    Route::get('/messages/unread/count', [App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unread-count');
     Route::get('/messages/api/customers', [App\Http\Controllers\MessageController::class, 'getCustomersList'])->name('messages.api.customers');
     Route::get('/messages/api/customers/{customerId}/products', [App\Http\Controllers\MessageController::class, 'getCustomerProducts'])->name('messages.api.customer-products');
     Route::get('/messages/{product}/{other}', [App\Http\Controllers\MessageController::class, 'sellerConversation'])->name('messages.conversation');
-    Route::get('/messages/unread/count', [App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unread-count');
     Route::post('/orders/{order}/confirm', [App\Http\Controllers\Seller\OrderController::class, 'confirm'])->name('orders.confirm');
     Route::post('/orders/{order}/cancel', [App\Http\Controllers\Seller\OrderController::class, 'cancel'])->name('orders.cancel');
     Route::delete('/orders/{order}', [App\Http\Controllers\Seller\OrderController::class, 'destroy'])->name('orders.destroy');
@@ -114,6 +122,7 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix
     Route::resource('/fees', App\Http\Controllers\Admin\FeeController::class);
     Route::post('/fees/commission/update', [App\Http\Controllers\Admin\FeeController::class, 'updatePlatformCommission'])->name('fees.commission.update');
     Route::get('/wallet', [App\Http\Controllers\Admin\WalletController::class, 'index'])->name('wallet');
+    Route::post('/wallet/withdraw', [App\Http\Controllers\Admin\WalletController::class, 'withdrawPlatformFee'])->name('wallet.withdraw');
     Route::post('/transactions/{transaction}/approve', [App\Http\Controllers\Admin\TransactionController::class, 'approve'])->name('transaction.approve');
     Route::post('/transactions/{transaction}/reject', [App\Http\Controllers\Admin\TransactionController::class, 'reject'])->name('transaction.reject');
     Route::get('/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');

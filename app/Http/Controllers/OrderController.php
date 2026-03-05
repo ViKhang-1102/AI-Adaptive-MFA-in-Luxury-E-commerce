@@ -68,6 +68,11 @@ class OrderController extends Controller
         // Check if this is "Buy Now" from product page
         if (request()->has('product_id')) {
             $product = \App\Models\Product::findOrFail(request('product_id'));
+            
+            if ($product->seller_id === Auth::id()) {
+                return redirect()->route('products.index')->with('error', 'You cannot purchase your own products.');
+            }
+            
             $quantity = request('quantity', 1);
 
             // Create temporary cart item data for checkout
@@ -154,11 +159,25 @@ class OrderController extends Controller
             $recipientName = $validated['recipient_name'];
             $recipientPhone = $validated['recipient_phone'];
             $deliveryAddress = $validated['delivery_address'];
+
+            // Store this organically new address into global Customer Addresses
+            \App\Models\CustomerAddress::create([
+                'customer_id' => $user->id,
+                'recipient_name' => $recipientName,
+                'recipient_phone' => $recipientPhone,
+                'address' => $deliveryAddress,
+                'is_default' => $user->addresses()->count() === 0,
+            ]);
         }
 
         // Check if this is "Buy Now" from product page
         if (request()->has('product_id')) {
             $product = \App\Models\Product::findOrFail(request('product_id'));
+            
+            if ($product->seller_id === Auth::id()) {
+                return back()->with('error', 'You cannot purchase your own products.');
+            }
+            
             $quantity = request('quantity', 1);
 
             // Create order directly without cart
@@ -218,7 +237,23 @@ class OrderController extends Controller
             return back()->with('error', 'Cart is empty');
         }
 
-        $items = $cart->items()->with('product')->get();
+        $selectedItemIds = $request->input('item_ids', []);
+
+        if (empty($selectedItemIds)) {
+            $items = $cart->items()->with('product')->get();
+        } else {
+            $items = $cart->items()->whereIn('id', $selectedItemIds)->with('product')->get();
+        }
+
+        if ($items->isEmpty()) {
+            return back()->with('error', 'No items selected for checkout');
+        }
+
+        foreach ($items as $item) {
+            if ($item->product->seller_id === Auth::id()) {
+                return back()->with('error', 'You cannot purchase your own products: ' . $item->product->name);
+            }
+        }
 
         // Group items by seller
         $groupedItems = [];
@@ -281,8 +316,12 @@ class OrderController extends Controller
             ]);
         }
 
-        // Clear cart
-        $cart->items()->delete();
+        // Clear selected items from cart
+        if (!empty($selectedItemIds)) {
+            $cart->items()->whereIn('id', $selectedItemIds)->delete();
+        } else {
+            $cart->items()->delete();
+        }
 
         // For first order in multi-seller, redirect to PayPal if online payment
         if ($validated['payment_method'] === 'online') {
@@ -296,7 +335,7 @@ class OrderController extends Controller
             }
         }
 
-        return redirect()->route('orders.index')->with('success', 'Order placed successfully');
+        return redirect()->route('orders.success')->with('success', 'Order placed successfully');
     }
 
     public function cancel(Request $request, Order $order)

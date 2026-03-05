@@ -10,8 +10,11 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
+        $month = $request->input('month');
+        $year = $request->input('year');
+
         /** @var \App\Models\User $seller */
         $seller = Auth::user();
         
@@ -19,17 +22,27 @@ class DashboardController extends Controller
         $totalProducts = $seller->products()->count();
         
         // Total orders (any non-pending statuses for this seller)
-        // previously we relied on order_items.product_id which stopped matching when
-        // the product was deleted; use seller_id directly so history stays visible.
         $validStatuses = ['confirmed', 'processing', 'shipped', 'delivered'];
-        $totalOrders = Order::whereIn('status', $validStatuses)
-            ->where('seller_id', $seller->id)
-            ->count();
+        
+        $ordersQuery = Order::whereIn('status', $validStatuses)
+            ->where('seller_id', $seller->id);
+            
+        if ($month && $year) {
+            $ordersQuery->whereYear('created_at', $year)
+                        ->whereMonth('created_at', $month);
+        }
+
+        $totalOrders = (clone $ordersQuery)->count();
         
         // Total revenue (from those same orders for this seller)
-        $totalRevenue = OrderItem::whereHas('order', function($query) use ($seller, $validStatuses) {
+        $totalRevenue = OrderItem::whereHas('order', function($query) use ($seller, $validStatuses, $month, $year) {
                 $query->whereIn('status', $validStatuses)
                       ->where('seller_id', $seller->id);
+                      
+                if ($month && $year) {
+                    $query->whereYear('created_at', $year)
+                          ->whereMonth('created_at', $month);
+                }
             })
             ->sum(DB::raw('quantity * product_price'));
         
@@ -48,7 +61,9 @@ class DashboardController extends Controller
             'totalOrders',
             'totalRevenue',
             'pendingOrders',
-            'unreadMessages'
+            'unreadMessages',
+            'month',
+            'year'
         ));
     }
 }

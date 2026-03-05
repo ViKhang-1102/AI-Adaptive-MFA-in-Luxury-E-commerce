@@ -77,15 +77,30 @@ class ProfileController extends Controller
             'recipient_name' => 'required|string|max:255',
             'recipient_phone' => 'required|string|max:20',
             'address' => 'required|string',
-            'is_default' => 'boolean',
         ]);
+
+        $isDefault = $request->boolean('is_default');
+
+        if ($isDefault) {
+            CustomerAddress::where('customer_id', Auth::id())->update(['is_default' => false]);
+        }
 
         CustomerAddress::create([
             'customer_id' => Auth::id(),
             ...$validated,
+            'is_default' => $isDefault,
         ]);
 
         return back()->with('success', 'Address added successfully');
+    }
+
+    public function editAddress(CustomerAddress $address)
+    {
+        if ($address->customer_id !== Auth::id()) {
+            abort(403);
+        }
+
+        return view('addresses.edit', compact('address'));
     }
 
     public function updateAddress(Request $request, CustomerAddress $address)
@@ -99,10 +114,15 @@ class ProfileController extends Controller
             'recipient_name' => 'required|string|max:255',
             'recipient_phone' => 'required|string|max:20',
             'address' => 'required|string',
-            'is_default' => 'boolean',
         ]);
 
-        $address->update($validated);
+        $isDefault = $request->boolean('is_default');
+
+        if ($isDefault && !$address->is_default) {
+            CustomerAddress::where('customer_id', Auth::id())->update(['is_default' => false]);
+        }
+
+        $address->update(array_merge($validated, ['is_default' => $isDefault]));
 
         return back()->with('success', 'Address updated successfully');
     }

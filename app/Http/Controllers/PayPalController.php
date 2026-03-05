@@ -103,6 +103,12 @@ class PayPalController extends Controller
             $order->seller_amount = $sellerAmount;
             $order->save();
 
+            \App\Models\OrderNotification::create([
+                'order_id' => $order->id,
+                'customer_id' => $order->customer_id,
+                'message' => "Payment for order {$order->order_number} was successful.",
+            ]);
+
             // Record payment details in database
             $payment = Payment::create([
                 'order_id' => $order->id,

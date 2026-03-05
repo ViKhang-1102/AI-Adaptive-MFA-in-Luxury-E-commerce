@@ -7,10 +7,10 @@
     <h1 class="text-3xl font-bold mb-8">Shopping Cart</h1>
 
     @if($items->isEmpty())
-    <div class="bg-white p-8 rounded-lg shadow text-center">
+    <div class="bg-white p-8 rounded-md-lg shadow-sm text-center">
         <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
-        <p class="text-gray-600 text-lg mb-4">Your cart is empty</p>
-        <a href="{{ route('products.index') }}" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+        <p class="text-neutral-600 text-lg mb-4">Your cart is empty</p>
+        <a href="{{ route('products.index') }}" class="bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 px-6 py-2 rounded-md hover:bg-primary-light hover:-translate-y-0.5">
             Continue Shopping
         </a>
     </div>
@@ -18,10 +18,9 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Cart Items -->
         <div class="lg:col-span-2">
-            <form id="cart-form" action="{{ route('checkout') }}" method="GET">
-                <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="bg-white rounded-md-lg shadow-sm overflow-hidden">
                     <table class="w-full">
-                        <thead class="bg-gray-100 border-b">
+                        <thead class="bg-neutral-100 border-b">
                             <tr>
                                 <th class="px-6 py-3 text-left w-12">
                                     <input type="checkbox" id="select-all" checked>
@@ -37,16 +36,16 @@
                             @foreach($items as $item)
                             <tr class="border-b">
                                 <td class="px-6 py-4">
-                                    <input type="checkbox" name="item_ids[]" value="{{ $item->id }}" class="item-checkbox" checked>
+                                    <input type="checkbox" name="item_ids[]" value="{{ $item->id }}" data-price="{{ $item->product->getDiscountedPrice() }}" data-quantity="{{ $item->quantity }}" class="item-checkbox" checked>
                                 </td>
                                 <td class="px-6 py-4 flex items-center">
-                                    <a href="{{ route('products.show', $item->product) }}" class="flex items-center text-decoration-none hover:text-blue-600">
+                                    <a href="{{ route('products.show', $item->product) }}" class="flex items-center text-decoration-none hover:text-primary">
                                         @if($item->product->images->first())
-                                        <img src="{{ asset('storage/' . $item->product->images->first()->image) }}" class="w-16 h-16 rounded mr-4 object-cover">
+                                        <img src="{{ asset('storage/' . $item->product->images->first()->image) }}" class="w-16 h-16 rounded-md mr-4 object-cover">
                                         @endif
                                         <div>
                                             <strong>{{ $item->product->name }}</strong>
-                                            <p class="text-sm text-gray-600">{{ $item->product->seller->name }}</p>
+                                            <p class="text-sm text-neutral-600">{{ $item->product->seller->name }}</p>
                                         </div>
                                     </a>
                                 </td>
@@ -54,8 +53,8 @@
                                 <td class="px-6 py-4">
                                     <form action="{{ route('cart.update', $item) }}" method="POST" class="flex justify-center">
                                         @csrf
-                                        <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" max="{{ $item->product->stock }}" class="w-16 px-2 py-1 border rounded">
-                                        <button type="submit" class="ml-2 text-blue-600 hover:text-blue-800">Update</button>
+                                        <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" max="{{ $item->product->stock }}" class="w-16 px-2 py-1 border rounded-md">
+                                        <button type="submit" class="ml-2 text-primary hover:text-blue-800">Update</button>
                                     </form>
                                 </td>
                                 <td class="px-6 py-4 text-center font-bold">${{ number_format(($item->product->getDiscountedPrice() * $item->quantity), 2) }}</td>
@@ -71,16 +70,15 @@
                         </tbody>
                     </table>
                 </div>
-            </form>
         </div>
 
         <!-- Order Summary -->
-        <div class="bg-white rounded-lg shadow p-6 h-fit">
+        <div class="bg-white rounded-md-lg shadow-sm p-6 h-fit">
             <h3 class="font-bold text-lg mb-4">Order Summary</h3>
             <div class="space-y-3 border-b pb-4 mb-4">
                 <div class="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>${{ number_format($subtotal, 2) }}</span>
+                    <span id="summary-subtotal">${{ number_format($subtotal, 2) }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span>Shipping:</span>
@@ -93,12 +91,12 @@
             </div>
             <div class="flex justify-between font-bold text-xl mb-6">
                 <span>Total:</span>
-                <span>${{ number_format($subtotal, 2) }}</span>
+                <span id="summary-total">${{ number_format($subtotal, 2) }}</span>
             </div>
-            <button id="checkout-btn" type="button" class="block w-full text-center bg-green-600 text-white py-3 rounded hover:bg-green-700 font-bold">
+            <button id="checkout-btn" type="button" class="block w-full text-center bg-green-600 text-white py-3 rounded-md hover:bg-green-700 font-bold">
                 Proceed to Checkout
             </button>
-            <a href="{{ route('products.index') }}" class="block w-full text-center border-2 border-gray-300 text-gray-700 py-2 mt-3 rounded hover:bg-gray-50">
+            <a href="{{ route('products.index') }}" class="block w-full text-center border-2 border-neutral-200 text-neutral-700 py-2 mt-3 rounded-md hover:bg-neutral-50">
                 Continue Shopping
             </a>
         </div>
@@ -129,6 +127,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update order summary based on selected items
     function updateOrderSummary() {
         const selectedCheckboxes = Array.from(itemCheckboxes).filter(cb => cb.checked);
+        let subtotal = 0;
+        
+        selectedCheckboxes.forEach(cb => {
+            const price = parseFloat(cb.getAttribute('data-price'));
+            const quantity = parseInt(cb.getAttribute('data-quantity'));
+            subtotal += (price * quantity);
+        });
+        
+        const formattedSubtotal = '$' + subtotal.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        document.getElementById('summary-subtotal').textContent = formattedSubtotal;
+        document.getElementById('summary-total').textContent = formattedSubtotal;
         
         if (selectedCheckboxes.length === 0) {
             document.getElementById('checkout-btn').disabled = true;
@@ -150,7 +159,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            document.getElementById('cart-form').submit();
+            // Create a dynamic form to submit the selected item IDs
+            const form = document.createElement('form');
+            form.method = 'GET';
+            form.action = "{{ route('checkout') }}";
+            
+            selectedCheckboxes.forEach(cb => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'item_ids[]';
+                input.value = cb.value;
+                form.appendChild(input);
+            });
+            
+            document.body.appendChild(form);
+            form.submit();
         });
     }
 });

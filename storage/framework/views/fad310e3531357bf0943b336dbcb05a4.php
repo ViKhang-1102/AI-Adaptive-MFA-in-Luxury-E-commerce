@@ -4,24 +4,24 @@
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-8">
         <div class="flex items-center gap-4">
-            <a href="<?php echo e(route('admin.dashboard')); ?>" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 font-semibold">
+            <a href="<?php echo e(route('admin.dashboard')); ?>" class="px-4 py-2 bg-neutral-500 text-white rounded-md hover:bg-gray-600 font-semibold">
                 ← Dashboard
             </a>
             <h1 class="text-3xl font-bold">Categories Management</h1>
         </div>
-        <a href="<?php echo e(route('admin.categories.create')); ?>" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-semibold">
+        <a href="<?php echo e(route('admin.categories.create')); ?>" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 font-semibold">
             <i class="fas fa-plus"></i> Add Category
         </a>
     </div>
 
     <?php if($categories->isEmpty()): ?>
-        <div class="bg-white p-6 rounded-lg shadow text-center text-gray-500">
-            No categories found. <a href="<?php echo e(route('admin.categories.create')); ?>" class="text-blue-600 hover:underline">Create one</a>
+        <div class="bg-white p-6 rounded-md-lg shadow-sm text-center text-neutral-500">
+            No categories found. <a href="<?php echo e(route('admin.categories.create')); ?>" class="text-primary hover:underline">Create one</a>
         </div>
     <?php else: ?>
-        <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="bg-white rounded-md-lg shadow-sm overflow-hidden">
             <table class="w-full">
-                <thead class="bg-gray-100 border-b">
+                <thead class="bg-neutral-100 border-b">
                     <tr>
                         <th class="px-6 py-3 text-left">Category Name</th>
                         <th class="px-6 py-3 text-left">Parent</th>
@@ -31,17 +31,17 @@
                 </thead>
                 <tbody>
                     <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <tr class="border-b hover:bg-gray-50">
+                    <tr class="border-b hover:bg-neutral-50">
                         <td class="px-6 py-3 font-semibold"><?php echo e($category->name); ?></td>
                         <td class="px-6 py-3"><?php echo e($category->parent->name ?? 'Root'); ?></td>
                         <td class="px-6 py-3"><?php echo e($category->products_count ?? 0); ?></td>
                         <td class="px-6 py-3 flex gap-2">
-                            <a href="<?php echo e(route('admin.categories.edit', $category)); ?>" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-semibold">
+                            <a href="<?php echo e(route('admin.categories.edit', $category)); ?>" class="px-3 py-1 bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 rounded-md hover:bg-primary-light hover:-translate-y-0.5 text-sm font-semibold">
                                 <i class="fas fa-edit"></i> Edit
                             </a>
                             <form method="POST" action="<?php echo e(route('admin.categories.destroy', $category)); ?>" class="inline" onsubmit="return confirm('Delete this category and all its products?')">
                                 <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
-                                <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-semibold">
+                                <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-semibold">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
                             </form>

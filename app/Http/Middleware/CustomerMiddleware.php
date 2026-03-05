@@ -10,7 +10,7 @@ class CustomerMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!Auth::check() || Auth::user()->role !== 'customer') {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['customer', 'seller'])) {
             abort(403, 'Unauthorized access');
         }
 

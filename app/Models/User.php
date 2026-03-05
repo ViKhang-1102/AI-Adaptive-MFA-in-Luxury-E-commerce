@@ -21,6 +21,7 @@ class User extends Authenticatable
         'bio',
         'paypal_email',
         'is_active',
+        'google_id',
     ];
 
     protected $hidden = [

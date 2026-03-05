@@ -2,31 +2,31 @@
 @section('title', $product->name)
 @section('content')
 <div class="max-w-4xl mx-auto px-4 py-8">
-    <a href="{{ route('seller.products.index') }}" class="text-blue-600 hover:underline mb-6 inline-block">&larr; Back to Products</a>
+    <a href="{{ route('seller.products.index') }}" class="text-primary hover:underline mb-6 inline-block">&larr; Back to Products</a>
     
-    <div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="bg-white rounded-md-lg shadow-sm overflow-hidden">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
             <!-- Product Images -->
             <div>
                 @if($product->images->count() > 0)
                     <!-- Main Image -->
-                    <div class="bg-gray-100 rounded-lg overflow-hidden mb-4">
-                        <img id="main-image" src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-full h-auto object-cover rounded-lg" alt="{{ $product->name }}">
+                    <div class="bg-neutral-100 rounded-md-lg overflow-hidden mb-4">
+                        <img id="main-image" src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-full h-auto object-cover rounded-md-lg" alt="{{ $product->name }}">
                     </div>
                     
                     <!-- Thumbnails Grid -->
                     @if($product->images->count() > 1)
                     <div class="grid grid-cols-4 gap-2">
                         @foreach($product->images as $key => $image)
-                        <button class="image-thumbnail relative overflow-hidden rounded-lg border-2 aspect-square {{ $key === 0 ? 'border-blue-600' : 'border-gray-300' }} hover:border-blue-600 transition" data-index="{{ $key }}" data-src="{{ asset('storage/' . $image->image) }}">
+                        <button class="image-thumbnail relative overflow-hidden rounded-md-lg border-2 aspect-square {{ $key === 0 ? 'border-gold' : 'border-neutral-200' }} hover:border-gold transition" data-index="{{ $key }}" data-src="{{ asset('storage/' . $image->image) }}">
                             <img src="{{ asset('storage/' . $image->image) }}" class="w-full h-full object-cover" alt="Thumbnail {{ $key + 1 }}">
                         </button>
                         @endforeach
                     </div>
                     @endif
                 @else
-                    <div class="bg-gray-200 rounded-lg flex items-center justify-center aspect-square">
-                        <div class="text-center text-gray-500">
+                    <div class="bg-neutral-200 rounded-md-lg flex items-center justify-center aspect-square">
+                        <div class="text-center text-neutral-500">
                             <i class="fas fa-image text-4xl mb-2"></i>
                             <p>No images available</p>
                         </div>
@@ -39,18 +39,18 @@
                 <h1 class="text-3xl font-bold mb-4">{{ $product->name }}</h1>
                 
                 <div class="mb-4">
-                    <p class="text-gray-600">Category: <span class="font-semibold">{{ $product->category->name }}</span></p>
+                    <p class="text-neutral-600">Category: <span class="font-semibold">{{ $product->category->name }}</span></p>
                 </div>
 
                 <!-- Price Section -->
-                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                <div class="mb-6 p-4 bg-neutral-50 rounded-md-lg">
                     @if($product->hasDiscount())
                         <div class="flex items-center gap-3">
                             <span class="text-3xl font-bold text-red-600">${{ number_format($product->getDiscountedPrice(), 2) }}</span>
                             <span class="text-xl text-gray-400 line-through">${{ number_format($product->price, 2) }}</span>
-                            <span class="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">-{{ $product->discount_percent }}%</span>
+                            <span class="bg-red-600 text-white px-3 py-1 rounded-md-full text-sm font-bold">-{{ $product->discount_percent }}%</span>
                         </div>
-                        <p class="text-sm text-gray-600 mt-2">
+                        <p class="text-sm text-neutral-600 mt-2">
                             Valid from {{ $product->discount_start_date->format('M d, Y') }} to {{ $product->discount_end_date->format('M d, Y') }}
                         </p>
                     @else
@@ -71,14 +71,14 @@
                 <!-- Description -->
                 <div class="mb-8">
                     <h3 class="text-lg font-bold mb-3">Description</h3>
-                    <p class="text-gray-700 leading-relaxed">{{ $product->description }}</p>
+                    <p class="text-neutral-700 leading-relaxed">{{ $product->description }}</p>
                 </div>
 
                 <!-- Status -->
-                <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+                <div class="mb-6 p-4 bg-blue-50 rounded-md-lg">
                     <p class="text-sm">
                         <span class="font-semibold">Status:</span>
-                        <span class="ml-2 {{ $product->is_active ? 'text-green-600' : 'text-gray-600' }}">
+                        <span class="ml-2 {{ $product->is_active ? 'text-green-600' : 'text-neutral-600' }}">
                             {{ $product->is_active ? 'Active' : 'Inactive' }}
                         </span>
                     </p>
@@ -86,12 +86,12 @@
 
                 <!-- Actions -->
                 <div class="flex gap-3">
-                    <a href="{{ route('seller.products.edit', $product) }}" class="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-center font-semibold">
+                    <a href="{{ route('seller.products.edit', $product) }}" class="flex-1 px-4 py-3 bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 rounded-md-lg hover:bg-primary-light hover:-translate-y-0.5 transition text-center font-semibold">
                         <i class="fas fa-edit mr-2"></i> Edit
                     </a>
                     <form action="{{ route('seller.products.destroy', $product) }}" method="POST" class="flex-1" onsubmit="return confirm('Are you sure?')">
                         @csrf @method('DELETE')
-                        <button type="submit" class="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold">
+                        <button type="submit" class="w-full px-4 py-3 bg-red-600 text-white rounded-md-lg hover:bg-red-700 transition font-semibold">
                             <i class="fas fa-trash mr-2"></i> Delete
                         </button>
                     </form>
@@ -113,10 +113,10 @@
                 mainImage.src = newSrc;
                 
                 // Update border styling
-                thumbnails.forEach(t => t.classList.remove('border-blue-600'));
-                thumbnails.forEach(t => t.classList.add('border-gray-300'));
-                this.classList.remove('border-gray-300');
-                this.classList.add('border-blue-600');
+                thumbnails.forEach(t => t.classList.remove('border-gold'));
+                thumbnails.forEach(t => t.classList.add('border-neutral-200'));
+                this.classList.remove('border-neutral-200');
+                this.classList.add('border-gold');
             });
         });
     }

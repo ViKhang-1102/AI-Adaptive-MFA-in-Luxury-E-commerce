@@ -2,17 +2,17 @@
 @section('title', 'Create Product')
 @section('content')
 <div class="max-w-2xl mx-auto px-4 py-8">
-    <a href="{{ route('seller.products.index') }}" class="text-blue-600 hover:underline mb-6 inline-block">&larr; Back to Products</a>
+    <a href="{{ route('seller.products.index') }}" class="text-primary hover:underline mb-6 inline-block">&larr; Back to Products</a>
     <h1 class="text-3xl font-bold mb-8">Create Product</h1>
     
-    <div class="bg-white p-6 rounded-lg shadow">
+    <div class="bg-white p-6 rounded-md-lg shadow-sm">
         <form action="{{ route('seller.products.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
             <!-- Product Name -->
             <div class="mb-6">
-                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
-                <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('name') border-red-500 @enderror" 
+                <label for="name" class="block text-sm font-medium text-neutral-700 mb-2">Product Name *</label>
+                <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-neutral-200 rounded-md-lg focus:ring-2 focus:ring-gold focus:border-transparent @error('name') border-red-500 @enderror" 
                     value="{{ old('name') }}" required>
                 @error('name')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -21,8 +21,8 @@
 
             <!-- Description -->
             <div class="mb-6">
-                <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description *</label>
-                <textarea id="description" name="description" rows="5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror" 
+                <label for="description" class="block text-sm font-medium text-neutral-700 mb-2">Description *</label>
+                <textarea id="description" name="description" rows="5" class="w-full px-4 py-2 border border-neutral-200 rounded-md-lg focus:ring-2 focus:ring-gold focus:border-transparent @error('description') border-red-500 @enderror" 
                     required>{{ old('description') }}</textarea>
                 @error('description')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -31,8 +31,8 @@
 
             <!-- Category -->
             <div class="mb-6">
-                <label for="category_id" class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
-                <select id="category_id" name="category_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('category_id') border-red-500 @enderror" 
+                <label for="category_id" class="block text-sm font-medium text-neutral-700 mb-2">Category *</label>
+                <select id="category_id" name="category_id" class="w-full px-4 py-2 border border-neutral-200 rounded-md-lg focus:ring-2 focus:ring-gold focus:border-transparent @error('category_id') border-red-500 @enderror" 
                     required>
                     <option value="">-- Select Category --</option>
                     @foreach($categories as $category)
@@ -49,9 +49,9 @@
             <!-- Price -->
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div>
-                    <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Price (USD) *</label>
+                    <label for="price" class="block text-sm font-medium text-neutral-700 mb-2">Price (USD) *</label>
                     <input type="number" id="price" name="price" step="any" min="1" max="999999999" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('price') border-red-500 @enderror" 
+                        class="w-full px-4 py-2 border border-neutral-200 rounded-md-lg focus:ring-2 focus:ring-gold focus:border-transparent @error('price') border-red-500 @enderror" 
                         value="{{ old('price') }}" placeholder="Enter USD price (integer only)" required>
                     @error('price')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -60,8 +60,8 @@
 
                 <!-- Stock -->
                 <div>
-                    <label for="stock" class="block text-sm font-medium text-gray-700 mb-2">Stock *</label>
-                    <input type="number" id="stock" name="stock" min="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('stock') border-red-500 @enderror" 
+                    <label for="stock" class="block text-sm font-medium text-neutral-700 mb-2">Stock *</label>
+                    <input type="number" id="stock" name="stock" min="0" class="w-full px-4 py-2 border border-neutral-200 rounded-md-lg focus:ring-2 focus:ring-gold focus:border-transparent @error('stock') border-red-500 @enderror" 
                         value="{{ old('stock') }}" required>
                     @error('stock')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -72,33 +72,33 @@
             <!-- Discount -->
             <div class="grid grid-cols-3 gap-4 mb-6">
                 <div>
-                    <label for="discount_percent" class="block text-sm font-medium text-gray-700 mb-2">Discount % (1-100)</label>
+                    <label for="discount_percent" class="block text-sm font-medium text-neutral-700 mb-2">Discount % (1-100)</label>
                     <input type="number" id="discount_percent" name="discount_percent" min="1" max="100" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('discount_percent') border-red-500 @enderror" 
+                        class="w-full px-4 py-2 border border-neutral-200 rounded-md-lg focus:ring-2 focus:ring-gold focus:border-transparent @error('discount_percent') border-red-500 @enderror" 
                         value="{{ old('discount_percent') }}" placeholder="Leave blank if no discount">
-                    <p class="text-xs text-gray-500 mt-1">Requires both start and end dates</p>
+                    <p class="text-xs text-neutral-500 mt-1">Requires both start and end dates</p>
                     @error('discount_percent')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div>
-                    <label for="discount_start_date" class="block text-sm font-medium text-gray-700 mb-2">Discount Start Date</label>
+                    <label for="discount_start_date" class="block text-sm font-medium text-neutral-700 mb-2">Discount Start Date</label>
                     <input type="date" id="discount_start_date" name="discount_start_date" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('discount_start_date') border-red-500 @enderror" 
+                        class="w-full px-4 py-2 border border-neutral-200 rounded-md-lg focus:ring-2 focus:ring-gold focus:border-transparent @error('discount_start_date') border-red-500 @enderror" 
                         value="{{ old('discount_start_date') }}">
-                    <p class="text-xs text-gray-500 mt-1">Cannot be in the past</p>
+                    <p class="text-xs text-neutral-500 mt-1">Cannot be in the past</p>
                     @error('discount_start_date')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div>
-                    <label for="discount_end_date" class="block text-sm font-medium text-gray-700 mb-2">Discount End Date</label>
+                    <label for="discount_end_date" class="block text-sm font-medium text-neutral-700 mb-2">Discount End Date</label>
                     <input type="date" id="discount_end_date" name="discount_end_date" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('discount_end_date') border-red-500 @enderror" 
+                        class="w-full px-4 py-2 border border-neutral-200 rounded-md-lg focus:ring-2 focus:ring-gold focus:border-transparent @error('discount_end_date') border-red-500 @enderror" 
                         value="{{ old('discount_end_date') }}">
-                    <p class="text-xs text-gray-500 mt-1">Must be after start date</p>
+                    <p class="text-xs text-neutral-500 mt-1">Must be after start date</p>
                     @error('discount_end_date')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -107,11 +107,11 @@
 
             <!-- Images Upload -->
             <div class="mb-6">
-                <label for="images" class="block text-sm font-medium text-gray-700 mb-2">Product Images *</label>
-                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition" id="drop-zone">
+                <label for="images" class="block text-sm font-medium text-neutral-700 mb-2">Product Images *</label>
+                <div class="border-2 border-dashed border-neutral-200 rounded-md-lg p-6 text-center cursor-pointer hover:border-gold transition" id="drop-zone">
                     <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
-                    <p class="text-gray-600 mb-1">Drag and drop images here or click to select</p>
-                    <p class="text-sm text-gray-500">Supported formats: JPG, PNG, GIF (Max 10 images)</p>
+                    <p class="text-neutral-600 mb-1">Drag and drop images here or click to select</p>
+                    <p class="text-sm text-neutral-500">Supported formats: JPG, PNG, GIF (Max 10 images)</p>
                     <input type="file" id="images" name="images[]" multiple accept="image/jpeg,image/png,image/gif" class="hidden" required>
                 </div>
                 @error('images')
@@ -127,10 +127,10 @@
 
             <!-- Actions -->
             <div class="flex gap-4">
-                <button type="submit" class="flex-1 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                <button type="submit" class="flex-1 px-6 py-2 bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 rounded-md-lg hover:bg-primary-light hover:-translate-y-0.5 transition">
                     Create Product
                 </button>
-                <a href="{{ route('seller.products.index') }}" class="flex-1 px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition text-center">
+                <a href="{{ route('seller.products.index') }}" class="flex-1 px-6 py-2 bg-neutral-500 text-white rounded-md-lg hover:bg-gray-600 transition text-center">
                     Cancel
                 </a>
             </div>
@@ -210,14 +210,14 @@
             const reader = new FileReader();
             reader.onload = (e) => {
                 const div = document.createElement('div');
-                div.className = 'relative bg-gray-100 rounded-lg overflow-hidden';
+                div.className = 'relative bg-neutral-100 rounded-md-lg overflow-hidden';
                 div.style.aspectRatio = '1';
                 div.innerHTML = `
                     <img src="${e.target.result}" class="w-full h-full object-cover">
-                    <button type="button" class="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700" data-index="${index}">
+                    <button type="button" class="absolute top-2 right-2 bg-red-600 text-white rounded-md-full w-6 h-6 flex items-center justify-center hover:bg-red-700" data-index="${index}">
                         <i class="fas fa-times text-sm"></i>
                     </button>
-                    <div class="absolute top-2 left-2 bg-blue-600 text-white rounded px-2 py-1 text-xs font-bold">${index + 1}</div>
+                    <div class="absolute top-2 left-2 bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 rounded-md px-2 py-1 text-xs font-bold">${index + 1}</div>
                 `;
                 
                 // Add remove event listener

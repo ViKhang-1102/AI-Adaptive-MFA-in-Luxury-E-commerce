@@ -2,8 +2,8 @@
 
 @section('content')
 <div class="container">
-    <h3>Thanh toán bị hủy</h3>
-    <p>Giao dịch PayPal đã bị hủy. Vui lòng thử lại.</p>
-    <a href="{{ url('/') }}" class="btn btn-secondary">Trở lại </a>
+    <h3>Payment Cancelled</h3>
+    <p>PayPal transaction was cancelled. Please try again.</p>
+    <a href="{{ url('/') }}" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition">Return to Home</a>
 </div>
 @endsection

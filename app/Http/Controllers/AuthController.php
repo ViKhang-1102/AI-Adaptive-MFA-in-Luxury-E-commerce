@@ -8,9 +8,52 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function handleGoogleCallback()
+    {
+        try {
+            $googleUser = Socialite::driver('google')->user();
+            
+            $user = User::where('email', $googleUser->getEmail())->first();
+
+            if ($user) {
+                // If user exists, just update their google_id if missing and log them in
+                $user->update([
+                    'google_id' => $googleUser->getId(),
+                    'last_login' => now(),
+                ]);
+            } else {
+                // Determine random role or assume customer?
+                // For a marketplace, maybe we assume customer first
+                $user = User::create([
+                    'name' => $googleUser->getName(),
+                    'email' => $googleUser->getEmail(),
+                    'google_id' => $googleUser->getId(),
+                    'password' => null, // No password for Google users
+                    'role' => 'customer', // Default role
+                    'is_active' => true,
+                    'last_login' => now(),
+                    'avatar' => $googleUser->getAvatar(),
+                ]);
+            }
+
+            Auth::login($user);
+            return redirect()->intended(route('home'))->with('success', 'Logged in with Google successfully!');
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Google Auth Error', ['error' => $e->getMessage()]);
+            return redirect()->route('login')->with('error', 'Google Authentication Failed.');
+        }
+    }
+
     public function showLogin()
     {
         return view('auth.login');

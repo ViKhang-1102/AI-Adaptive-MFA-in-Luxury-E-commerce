@@ -5,16 +5,16 @@
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-8">
         <div>
-            <a href="<?php echo e(route('seller.dashboard')); ?>" class="text-blue-600 hover:underline mb-4 inline-block">&larr; Back to Dashboard</a>
+            <a href="<?php echo e(route('seller.dashboard')); ?>" class="text-primary hover:underline mb-4 inline-block">&larr; Back to Dashboard</a>
             <h1 class="text-3xl font-bold">My Products</h1>
         </div>
-        <a href="<?php echo e(route('seller.products.create')); ?>" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+        <a href="<?php echo e(route('seller.products.create')); ?>" class="bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 px-6 py-2 rounded-md hover:bg-primary-light hover:-translate-y-0.5 transition">
             <i class="fas fa-plus mr-2"></i> Add Product
         </a>
     </div>
-    <div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="bg-white rounded-md-lg shadow-sm overflow-hidden">
         <table class="w-full">
-            <thead class="bg-gray-100 border-b">
+            <thead class="bg-neutral-100 border-b">
                 <tr>
                     <th class="px-6 py-3 text-left">Image</th>
                     <th class="px-6 py-3 text-left">Name</th>
@@ -26,12 +26,12 @@
             </thead>
             <tbody>
                 <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <tr class="border-b hover:bg-gray-50">
+                <tr class="border-b hover:bg-neutral-50">
                     <td class="px-6 py-3">
                         <?php if($product->images->first()): ?>
-                        <img src="<?php echo e(asset('storage/' . $product->images->first()->image)); ?>" class="w-16 h-16 object-cover rounded" alt="<?php echo e($product->name); ?>">
+                        <img src="<?php echo e(asset('storage/' . $product->images->first()->image)); ?>" class="w-16 h-16 object-cover rounded-md" alt="<?php echo e($product->name); ?>">
                         <?php else: ?>
-                        <div class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
+                        <div class="w-16 h-16 bg-neutral-200 rounded-md flex items-center justify-center">
                             <i class="fas fa-image text-gray-400"></i>
                         </div>
                         <?php endif; ?>
@@ -42,12 +42,12 @@
                     <td class="px-6 py-3 text-right">$<?php echo e(number_format($product->price, 2)); ?></td>
                     <td class="px-6 py-3 text-center">
                         <div class="flex gap-2 justify-center">
-                            <a href="<?php echo e(route('seller.products.edit', $product)); ?>" class="inline-block px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
+                            <a href="<?php echo e(route('seller.products.edit', $product)); ?>" class="inline-block px-3 py-1 bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 text-sm rounded-md hover:bg-primary-light hover:-translate-y-0.5 transition">
                                 <i class="fas fa-edit mr-1"></i> Edit
                             </a>
                             <form action="<?php echo e(route('seller.products.destroy', $product)); ?>" method="POST" class="inline" onsubmit="return confirm('Are you sure?')">
                                 <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
-                                <button type="submit" class="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition">
+                                <button type="submit" class="px-3 py-1 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transition">
                                     <i class="fas fa-trash mr-1"></i> Delete
                                 </button>
                             </form>

@@ -9,14 +9,14 @@
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <!-- Filters Sidebar -->
         <div class="lg:col-span-1">
-            <div class="bg-white p-6 rounded-lg shadow">
+            <div class="bg-white p-6 rounded-md-lg shadow-sm">
                 <h3 class="font-bold text-lg mb-4">Filters</h3>
                 
                 <form action="{{ route('products.index') }}" method="GET" class="space-y-4">
                     <!-- Category Filter -->
                     <div>
                         <label class="block text-sm font-bold mb-2">Category</label>
-                        <select name="category" class="w-full px-3 py-2 border rounded">
+                        <select name="category" class="w-full px-3 py-2 border rounded-md">
                             <option value="">All Categories</option>
                             @foreach($categories as $cat)
                             <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
@@ -29,7 +29,7 @@
                     <!-- Sort -->
                     <div>
                         <label class="block text-sm font-bold mb-2">Sort By</label>
-                        <select name="sort" class="w-full px-3 py-2 border rounded">
+                        <select name="sort" class="w-full px-3 py-2 border rounded-md">
                             <option value="">Newest</option>
                             <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
                             <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
@@ -37,7 +37,7 @@
                         </select>
                     </div>
 
-                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                    <button type="submit" class="w-full bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 py-2 rounded-md hover:bg-primary-light hover:-translate-y-0.5">
                         Apply Filters
                     </button>
                 </form>
@@ -48,15 +48,15 @@
         <div class="lg:col-span-3">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($products as $product)
-                <a href="{{ route('products.show', $product) }}" class="block bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden text-decoration-none group">
+                <a href="{{ route('products.show', $product) }}" class="block bg-white rounded-md-lg shadow-sm hover:shadow-sm-lg transition overflow-hidden text-decoration-none group">
                     @if($product->images->first())
                     <img src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-full h-48 object-cover group-hover:opacity-90 transition" alt="{{ $product->name }}">
                     @else
                     <img src="https://via.placeholder.com/300x200?text=No+Image" class="w-full h-48 object-cover" alt="No image">
                     @endif
                     <div class="p-4">
-                        <h3 class="font-bold truncate group-hover:text-blue-600">{{ $product->name }}</h3>
-                        <p class="text-gray-600 text-sm mb-2">{{ $product->seller->name }}</p>
+                        <h3 class="font-bold truncate group-hover:text-primary">{{ $product->name }}</h3>
+                        <p class="text-neutral-600 text-sm mb-2">{{ $product->seller->name }}</p>
                         <div class="flex justify-between items-center mb-3">
                             <div>
                                 <span class="font-bold">${{ number_format($product->getDiscountedPrice(), 2) }}</span>
@@ -64,7 +64,7 @@
                                 <span class="text-gray-400 line-through text-sm">${{ number_format($product->price, 2) }}</span>
                                 @endif
                             </div>
-                            <span class="text-blue-600 group-hover:text-blue-800">
+                            <span class="text-primary group-hover:text-blue-800">
                                 <i class="fas fa-arrow-right"></i>
                             </span>
                         </div>

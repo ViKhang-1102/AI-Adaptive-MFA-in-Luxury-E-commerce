@@ -11,14 +11,27 @@ use App\Models\Product;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
+        $month = $request->input('month');
+        $year = $request->input('year');
+
         $totalCustomers = User::customers()->count();
         $totalSellers = User::sellers()->count();
         // count any order that has progressed past initial pending state
         $validStatuses = ['confirmed', 'processing', 'shipped', 'delivered'];
-        $totalOrders = Order::whereIn('status', $validStatuses)->count();
-        $totalRevenue = Order::whereIn('status', $validStatuses)->sum('total_amount');
+
+        $ordersQuery = Order::whereIn('status', $validStatuses);
+        
+        if ($month && $year) {
+            $ordersQuery->whereYear('created_at', $year)
+                        ->whereMonth('created_at', $month);
+        }
+
+        $totalOrders = (clone $ordersQuery)->count();
+        $totalRevenue = (clone $ordersQuery)->sum('total_amount');
+        
+        // Today orders logic remains independent of the month/year filter 
         $todayOrders = Order::whereIn('status', $validStatuses)
             ->whereDate('created_at', today())
             ->count();
@@ -43,6 +56,11 @@ class DashboardController extends Controller
             ->with('product')
             ->get();
 
+        // Wallet Statistics
+        $adminWallet = auth()->user()->wallet;
+        $totalPlatformBalance = $adminWallet ? $adminWallet->balance : 0;
+        
+
         return view('admin.dashboard', compact(
             'totalCustomers',
             'totalSellers',
@@ -52,7 +70,10 @@ class DashboardController extends Controller
             'totalCategories',
             'totalProducts',
             'topProducts',
-            'bottomProducts'
+            'bottomProducts',
+            'totalPlatformBalance',
+            'month',
+            'year'
         ));
     }
 }
