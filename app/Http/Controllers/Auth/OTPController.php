@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Session;
 use App\Models\SecurityAudit;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Services\FaceVerificationService;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class OTPController extends Controller
 {
@@ -32,25 +35,53 @@ class OTPController extends Controller
         $identityImagePath = $user?->identity_image;
         $hasIdentityImage = !empty($identityImagePath);
 
+        // Determine if we have a cached face descriptor for this enrolled user.
+        $faceCacheMissing = false;
+        if ($hasIdentityImage) {
+            $faceService = app(FaceVerificationService::class);
+            if (!$faceService->hasCachedFaceDescriptor($identityImagePath)) {
+                $faceCacheMissing = true;
+            }
+        }
+
+        // --- Enrollment Redirection for Legacy Users ---
+        // If logged in but missing digital identity cache, force enrollment
+        if (Auth::check() && $hasIdentityImage && $faceCacheMissing) {
+            return redirect()->route('face.enrollment.show')->with('info', 'Please update your biometric data for secure transactions.');
+        }
+
         // Evaluate the risk score from the pending audit (if available)
         $audit = null;
         $riskScore = null;
         $scanRequired = false;
+        
         if (Session::has('pending_audit_id')) {
             $audit = SecurityAudit::find(Session::get('pending_audit_id'));
             $riskScore = $audit?->risk_score;
-            // Adaptive logic: require face scan for high risk events
-            if ($riskScore !== null && $riskScore >= 70) {
+            
+            // Adaptive logic:
+            // 1. Force FaceID if risk is high (>= 70)
+            // 2. Force FaceID if user hasn't enrolled yet (identity_image is null)
+            // 3. Force FaceID if cached face fingerprints are missing (cache build required)
+            if (($riskScore !== null && $riskScore >= 65) || !$hasIdentityImage || $faceCacheMissing) {
+                $scanRequired = true;
+            }
+        } else {
+            // Default behavior for generic OTP flows (like login)
+            if (!$hasIdentityImage || $faceCacheMissing) {
                 $scanRequired = true;
             }
         }
 
         // Face scan should be shown for users who have an identity profile
         $scanEnabled = $hasIdentityImage;
-        $scanDurationMs = $scanRequired ? 3200 : ($scanEnabled ? 1200 : 0);
+        $scanDurationMs = $scanRequired ? 3500 : ($scanEnabled ? 1500 : 0);
 
-        // If user does not yet have an identity profile, we require an upload first
-        $needsIdentityUpload = !$hasIdentityImage;
+        // We no longer require manual upload, we use the live scan for enrollment
+        // But if user has NO identity image AND it's a high risk, we show enrollment UI
+        if (!$hasIdentityImage && $scanRequired) {
+            $scanEnabled = true;
+        }
 
         return view('auth.verify-otp', [
             'scanEnabled' => $scanEnabled,
@@ -58,7 +89,9 @@ class OTPController extends Controller
             'scanDurationMs' => $scanDurationMs,
             'riskScore' => $riskScore,
             'identityImage' => $identityImagePath,
-            'needsIdentityUpload' => $needsIdentityUpload,
+            'needsIdentityUpload' => false,
+            'isEnrollment' => !$hasIdentityImage,
+            'faceCacheMissing' => $faceCacheMissing,
         ]);
     }
 
@@ -102,6 +135,65 @@ class OTPController extends Controller
     public function verify(Request $request)
     {
         $isFaceVerified = $request->input('face_verified') === 'true';
+        $faceData = $request->input('face_data'); // Base64 snapshot from frontend
+
+        // Determine the subject user
+        $user = null;
+        if (Session::has('pending_login_user_id')) {
+            $user = User::find(Session::get('pending_login_user_id'));
+        }
+        if (!$user && Auth::check()) {
+            $user = Auth::user();
+        }
+
+        // --- Server-Side Face Verification / Enrollment ---
+        if ($isFaceVerified && $faceData && $user) {
+            $faceService = app(FaceVerificationService::class);
+            
+            // Check if we need to force enrollment (new user OR missing cache for legacy user)
+            $faceCacheMissing = false;
+            if ($user->identity_image) {
+                $faceCacheMissing = !$faceService->hasCachedFaceDescriptor($user->identity_image);
+            }
+
+            if (!$user->identity_image || $faceCacheMissing) {
+                // Enrollment Flow: First time FaceID or Re-enrollment for missing cache
+                $snapshotData = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $faceData));
+                $newIdentityPath = 'identity_images/user_' . $user->id . '_' . time() . '.jpg';
+                Storage::disk('public')->put($newIdentityPath, $snapshotData);
+                
+                // Trích xuất Landmarks ngay lập tức để lưu cache JSON (Digital Identity)
+                $enrollResult = $faceService->verify($faceData, $newIdentityPath, true);
+                
+                if (!$enrollResult['success']) {
+                    Storage::disk('public')->delete($newIdentityPath);
+                    return back()->with('error', 'Face Enrollment failed: ' . $enrollResult['reason'] . '. Please ensure good lighting and look straight.');
+                }
+
+                $user->identity_image = $newIdentityPath;
+                $user->save();
+                $user->refresh();
+                
+                Log::info("FaceID Digital Identity Enrolled: " . $user->id, ['path' => $newIdentityPath]);
+                Session::flash('success', $faceCacheMissing ? 'Biometric data updated for secure verification.' : 'Biometric identity registered successfully.');
+            } else {
+                // Comparison Flow: User already has an identity image and cache
+                $comparison = $faceService->verify($faceData, $user->identity_image);
+
+                if (!$comparison['success']) {
+                    if (Session::has('pending_audit_id')) {
+                        SecurityAudit::where('id', Session::get('pending_audit_id'))->update([
+                            'result' => 'failed',
+                            'metadata->face_verification_error' => $comparison['reason']
+                        ]);
+                    }
+                    return back()->with('error', $comparison['reason']);
+                }
+            }
+        } elseif ($isFaceVerified && !$faceData) {
+            // Suspicious: face_verified is true but no image data sent
+            return back()->with('error', 'Face data missing. Please try scanning again.');
+        }
 
         if (!$isFaceVerified) {
             $request->validate([

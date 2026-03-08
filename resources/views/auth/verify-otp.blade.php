@@ -56,6 +56,13 @@
                     </div>
                 @endif
 
+                @if(isset($faceCacheMissing) && $faceCacheMissing)
+                    <div class="bg-amber-50 border-l-4 border-amber-500 rounded p-4 flex items-start gap-3 mb-6">
+                        <i class="fas fa-exclamation-triangle text-amber-500 mt-1"></i>
+                        <p class="text-sm text-amber-800">FaceID cache is missing or stale; please rescan your face to rebuild local verification data.</p>
+                    </div>
+                @endif
+
                 @if($needsIdentityUpload)
                     <div class="bg-neutral-50 border border-gold/30 rounded-lg p-6 mb-6">
                         <div class="flex items-start gap-4">
@@ -148,7 +155,7 @@
                         </p>
                     </form>
                 @else
-                    @if($scanEnabled && $scanRequired)
+                    @if($scanEnabled)
                         <style>
                             @keyframes scan_vertical {
                                 0% { top: 0%; opacity: 0; }
@@ -160,7 +167,7 @@
                                 animation: scan_vertical 2.5s ease-in-out infinite;
                             }
                         </style>
-                        <div id="face-scan-container" class="relative rounded-xl overflow-hidden border border-gold mb-6 bg-primary-dark shadow-2xl">
+                        <div id="face-scan-container" class="relative rounded-xl overflow-hidden border border-gold mb-6 bg-primary-dark shadow-2xl" @if(!$scanRequired) style="display: none;" @endif>
                             <!-- Privacy Check: Oval mask overlays EVERYTHING except the center -->
                             <div class="absolute inset-0 z-10 pointer-events-none" style="background: radial-gradient(ellipse 55% 70% at 50% 50%, transparent 40%, #0A192F 100%); mix-blend-mode: normal;"></div>
                             
@@ -176,10 +183,12 @@
                             
                             <!-- Smart Instructions Hub -->
                             <div class="px-6 pb-6 text-center relative z-20">
-                                <h4 id="liveness-title" class="text-xl font-bold text-gold mb-2 tracking-wide uppercase">Liveness Detection</h4>
+                                <h4 id="liveness-title" class="text-xl font-bold text-gold mb-2 tracking-wide uppercase">
+                                    @if(isset($isEnrollment) && $isEnrollment) FaceID Enrollment @else Identity Verification @endif
+                                </h4>
                                 <div id="liveness-message-box" class="inline-flex flex-col items-center gap-2 bg-primary/95 border border-gold/30 py-3 px-6 rounded-xl shadow-lg mb-3">
                                     <button type="button" id="start-liveness-btn" class="py-2 px-6 bg-gold text-primary-dark font-bold rounded-full shadow-md hover:bg-yellow-400 transition flex items-center justify-center gap-2 animate-pulse">
-                                        <i class="fas fa-video"></i> Start FaceID Scan
+                                        <i class="fas fa-video"></i> @if(isset($isEnrollment) && $isEnrollment) Start Identity Scan @else Start FaceID Scan @endif
                                     </button>
                                     <div id="liveness-status-box" class="hidden flex items-center gap-2 mt-2">
                                         <i id="liveness-icon" class="fas fa-expand text-gold"></i>
@@ -187,6 +196,7 @@
                                     </div>
                                 </div>
                                 <p id="liveness-detail" class="text-xs text-neutral-300 h-8">Click 'Start' to allow camera access.</p>
+                                <p id="liveness-tip" class="text-xs text-neutral-300 mt-2">Hãy giữ mặt thẳng, cách camera 30cm và đảm bảo đủ ánh sáng.</p>
                             </div>
                             
                             <!-- Progress Bar -->
@@ -194,6 +204,20 @@
                                 <div id="liveness-progress" class="h-full bg-gold w-0 transition-all duration-300 ease-out shadow-[0_0_10px_#D4AF37]"></div>
                             </div>
                         </div>
+
+                        @if(!$scanRequired)
+                            <div class="mb-6 text-center">
+                                <button type="button" id="switch-to-faceid" class="text-gold text-sm font-bold hover:text-yellow-400 transition flex items-center justify-center gap-2 mx-auto">
+                                    <i class="fas fa-id-card"></i> Or Verify with FaceID
+                                </button>
+                            </div>
+                        @else
+                            <div class="mb-6 text-center">
+                                <button type="button" id="backup-otp-btn" class="hidden text-gold text-sm font-bold hover:text-yellow-400 transition flex items-center justify-center gap-2 mx-auto">
+                                    <i class="fas fa-key"></i> Sử dụng mã OTP dự phòng
+                                </button>
+                            </div>
+                        @endif
                     @endif
 
                     <form method="POST" action="{{ route('otp.verify.submit') }}" class="space-y-8" id="otp-form" @if($scanEnabled && $scanRequired) style="display: none;" @endif>
@@ -204,7 +228,7 @@
                                 <input id="otp" type="text" 
                                        class="block w-full text-center bg-neutral-50 border border-neutral-300 rounded-lg text-neutral-900 focus:ring-gold focus:border-gold placeholder:text-neutral-300 transition-colors @error('otp') border-red-500 ring-1 ring-red-500 @enderror" 
                                        name="otp" 
-                                       required autofocus 
+                                       @if(!$scanRequired) required autofocus @endif
                                        placeholder="&middot; &middot; &middot; &middot; &middot; &middot;"
                                        maxlength="6"
                                        style="letter-spacing: 0.8em; font-size: 1.75rem; padding: 1rem 0; font-family: monospace;">
@@ -230,7 +254,7 @@
                         </div>
                     </form>
 
-                    @if($scanEnabled && $scanRequired)
+                    @if($scanEnabled)
                         <script>
                             document.addEventListener('DOMContentLoaded', function () {
                                 const otpForm = document.getElementById('otp-form');
@@ -244,26 +268,66 @@
                                 const progressBar = document.getElementById('liveness-progress');
                                 const titleEl = document.getElementById('liveness-title');
                                 const iconEl = document.getElementById('liveness-icon');
+                                const switchBtn = document.getElementById('switch-to-faceid');
                                 
                                 let videoStream = null;
 
-                                otpForm.style.display = 'none';
+                                if (switchBtn) {
+                                    switchBtn.addEventListener('click', function() {
+                                        otpForm.style.display = 'none';
+                                        faceScanContainer.style.display = 'block';
+                                        switchBtn.parentElement.style.display = 'none';
+                                    });
+                                }
+
+                                const backupOtpBtn = document.getElementById('backup-otp-btn');
+                                let scanFailCount = 0;
+
+                                function showBackupOtpOption() {
+                                    if (backupOtpBtn) {
+                                        backupOtpBtn.classList.remove('hidden');
+                                    }
+                                }
+
+                                if (backupOtpBtn) {
+                                    backupOtpBtn.addEventListener('click', function() {
+                                        otpForm.style.display = 'block';
+                                        faceScanContainer.style.display = 'none';
+                                        if (switchBtn) {
+                                            switchBtn.parentElement.style.display = 'none';
+                                        }
+                                    });
+                                }
                                 
                                 async function startLivenessDetection() {
                                     startBtn.style.display = 'none';
                                     statusBox.classList.remove('hidden');
                                     statusBox.classList.add('flex');
-                                    detailEl.innerText = "Checking environmental conditions for 3D landmarks mapping.";
+                                    detailEl.innerText = "Accessing secure biometric hardware...";
 
                                     try {
-                                        videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+                                        videoStream = await navigator.mediaDevices.getUserMedia({ 
+                                            video: { 
+                                                facingMode: 'user',
+                                                width: { ideal: 1280 },
+                                                height: { ideal: 720 }
+                                            }, 
+                                            audio: false 
+                                        });
                                         videoElement.srcObject = videoStream;
                                         
-                                        // Wait for video metadata to have width/height
-                                        videoElement.onloadedmetadata = () => {
-                                            runLivenessSequence();
+                                        // Ensure the video is ready and playing before starting logic
+                                        videoElement.oncanplay = async () => {
+                                            try {
+                                                await videoElement.play();
+                                                runLivenessSequence();
+                                            } catch (playErr) {
+                                                console.error("Playback failed:", playErr);
+                                                detailEl.innerText = "Playback error. Refresh page.";
+                                            }
                                         };
                                     } catch (err) {
+                                        console.error("Camera Error:", err);
                                         instructionEl.innerText = "Camera Access Denied";
                                         instructionEl.classList.replace('text-white', 'text-red-500');
                                         detailEl.innerText = "Please allow camera access in your browser to verify your identity.";
@@ -280,89 +344,115 @@
                                 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
                                 async function runLivenessSequence() {
-                                    // 1. Lighting Analysis (Native JS canvas processing)
-                                    instructionEl.innerText = "Analyzing lighting...";
-                                    detailEl.innerText = "Keep your face fully inside the oval frame.";
-                                    iconEl.className = "fas fa-sun text-gold animate-spin";
-                                    
-                                    await sleep(1500);
-                                    
-                                    const canvas = document.createElement('canvas');
-                                    const context = canvas.getContext('2d', { willReadFrequently: true });
-                                    canvas.width = videoElement.videoWidth;
-                                    canvas.height = videoElement.videoHeight;
-                                    context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-                                    
-                                    const imgData = context.getImageData(0, 0, canvas.width, canvas.height).data;
-                                    let sum = 0;
-                                    for(let i=0; i<imgData.length; i+=4) {
-                                        // average of RGB
-                                        sum += (imgData[i] + imgData[i+1] + imgData[i+2]) / 3;
-                                    }
-                                    const brightness = sum / (canvas.width * canvas.height);
-                                    
-                                    if(brightness < 80) {
-                                        detailEl.innerText = "Low light detected. Adjusting contrast...";
-                                        videoElement.style.filter = "contrast(1.4) brightness(1.5)";
+                                    try {
+                                        // 1. Lighting Analysis (Native JS canvas processing)
+                                        instructionEl.innerText = "Analyzing environment...";
+                                        detailEl.innerText = "Optimizing sensor contrast for 3D landmarks...";
+                                        iconEl.className = "fas fa-adjust text-gold animate-spin";
+                                        
                                         await sleep(1500);
+                                        
+                                        const canvas = document.createElement('canvas');
+                                        const context = canvas.getContext('2d', { willReadFrequently: true });
+                                        canvas.width = videoElement.videoWidth;
+                                        canvas.height = videoElement.videoHeight;
+                                        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                                        
+                                        const imgData = context.getImageData(0, 0, canvas.width, canvas.height).data;
+                                        let sum = 0;
+                                        for(let i=0; i<imgData.length; i+=4) {
+                                            sum += (imgData[i] + imgData[i+1] + imgData[i+2]) / 3;
+                                        }
+                                        const brightness = sum / (canvas.width * canvas.height);
+                                        
+                                        if(brightness < 80) {
+                                            detailEl.innerText = "Low light detected. Boosting brightness...";
+                                            videoElement.style.filter = "contrast(1.4) brightness(1.5)";
+                                            await sleep(1500);
+                                        }
+
+                                        updateProgress(15);
+
+                                        // 2. Start Sequence (Straight -> Left -> Right -> Center Capture)
+                                        instructionEl.innerText = "Look STRAIGHT at the camera";
+                                        detailEl.innerText = "Align your face in the oval frame...";
+                                        iconEl.className = "fas fa-user-check text-gold animate-pulse";
+                                        updateProgress(30);
+                                        await sleep(2500);
+
+                                        instructionEl.innerText = "Turn your head to the LEFT";
+                                        detailEl.innerText = "Scanning 3D left profile...";
+                                        iconEl.className = "fas fa-arrow-left text-gold animate-bounce";
+                                        updateProgress(55);
+                                        await sleep(3000);
+                                        
+                                        instructionEl.innerText = "Turn your head to the RIGHT";
+                                        detailEl.innerText = "Scanning 3D right profile...";
+                                        iconEl.className = "fas fa-arrow-right text-gold animate-bounce";
+                                        updateProgress(80);
+                                        await sleep(3000);
+
+                                        instructionEl.innerText = "Look CENTER & HOLD STILL";
+                                        detailEl.innerText = "Capturing high-resolution biometric snapshot...";
+                                        iconEl.className = "fas fa-camera text-emerald-400 animate-ping";
+                                        updateProgress(95);
+                                        await sleep(2000);
+
+                                        // 3. Final Capture for Identity
+                                        const captureCanvas = document.createElement('canvas');
+                                        captureCanvas.width = videoElement.videoWidth;
+                                        captureCanvas.height = videoElement.videoHeight;
+                                        const captureContext = captureCanvas.getContext('2d');
+                                        captureContext.drawImage(videoElement, 0, 0, captureCanvas.width, captureCanvas.height);
+                                        const faceData = captureCanvas.toDataURL('image/jpeg', 0.95);
+
+                                        updateProgress(100);
+
+                                        // 4. Verification UI
+                                        instructionEl.innerText = "Processing Data...";
+                                        detailEl.innerText = "Sending secure biometric data to AI Guard Agent...";
+                                        iconEl.className = "fas fa-shield-alt text-gold animate-spin";
+                                        
+                                        await sleep(1000);
+                                        
+                                        // Stop video and transition
+                                        if (videoStream) {
+                                            videoStream.getTracks().forEach(track => track.stop());
+                                        }
+                                        faceScanContainer.style.transition = 'opacity 0.6s ease';
+                                        faceScanContainer.style.opacity = '0';
+                                        
+                                        await sleep(600);
+                                        faceScanContainer.style.display = 'none';
+                                        
+                                        // Create hidden inputs for face verification
+                                        const faceVerifiedInput = document.createElement('input');
+                                        faceVerifiedInput.type = 'hidden';
+                                        faceVerifiedInput.name = 'face_verified';
+                                        faceVerifiedInput.value = 'true';
+                                        otpForm.appendChild(faceVerifiedInput);
+
+                                        const faceDataInput = document.createElement('input');
+                                        faceDataInput.type = 'hidden';
+                                        faceDataInput.name = 'face_data';
+                                        faceDataInput.value = faceData;
+                                        otpForm.appendChild(faceDataInput);
+                                        
+                                        // Submit automatically
+                                        otpForm.submit();
+                                    } catch (seqErr) {
+                                        console.error("Sequence Error:", seqErr);
+                                        scanFailCount += 1;
+                                        if (scanFailCount >= 3) {
+                                            showBackupOtpOption();
+                                        }
+                                        instructionEl.innerText = "Scan Failed";
+                                        detailEl.innerText = `Scan failed (${scanFailCount}/3). Please adjust lighting and try again.`;
+                                        startBtn.style.display = 'flex';
                                     }
-
-                                    updateProgress(30);
-
-                                    // 2. Head Turn (Depth/3D Space Simulation via UI pacing)
-                                    instructionEl.innerText = "Look straight at the camera";
-                                    detailEl.innerText = "Mapping face landmarks...";
-                                    iconEl.className = "fas fa-crosshairs text-gold animate-pulse";
-                                    
-                                    await sleep(2000);
-                                    updateProgress(50);
-                                    
-                                    instructionEl.innerText = "Please turn your head to the LEFT";
-                                    detailEl.innerText = "Collecting 3D measurement parameters...";
-                                    iconEl.className = "fas fa-undo pb-1 text-gold";
-                                    
-                                    await sleep(2500);
-                                    updateProgress(75);
-                                    
-                                    instructionEl.innerText = "Please turn your head to the RIGHT";
-                                    iconEl.className = "fas fa-redo pb-1 text-gold";
-                                    
-                                    await sleep(2500);
-                                    updateProgress(100);
-
-                                    // 3. Success
-                                    instructionEl.innerText = "Liveness verification successful";
-                                    instructionEl.parentElement.classList.replace('bg-primary/95', 'bg-emerald-900');
-                                    iconEl.className = "fas fa-check-circle text-emerald-400";
-                                    detailEl.innerText = "FaceID matches profile. Unlocking secure transaction...";
-                                    document.getElementById('scan-line').style.display = 'none';
-                                    titleEl.classList.replace('text-gold', 'text-emerald-400');
-                                    progressBar.classList.replace('bg-gold', 'bg-emerald-400');
-                                    
-                                    await sleep(1500);
-                                    
-                                    // Stop video and transition
-                                    if (videoStream) {
-                                        videoStream.getTracks().forEach(track => track.stop());
-                                    }
-                                    faceScanContainer.style.transition = 'opacity 0.6s ease';
-                                    faceScanContainer.style.opacity = '0';
-                                    
-                                    await sleep(600);
-                                    faceScanContainer.style.display = 'none';
-                                    
-                                    // Create hidden input for face verification
-                                    const faceVerifiedInput = document.createElement('input');
-                                    faceVerifiedInput.type = 'hidden';
-                                    faceVerifiedInput.name = 'face_verified';
-                                    faceVerifiedInput.value = 'true';
-                                    otpForm.appendChild(faceVerifiedInput);
-                                    
-                                    // Submit automatically
-                                    otpForm.submit();
-                                });
+                                }
                                 
-                                startLivenessDetection();
+                                startBtn.addEventListener('click', startLivenessDetection);
                             });
                         </script>
                     @endif

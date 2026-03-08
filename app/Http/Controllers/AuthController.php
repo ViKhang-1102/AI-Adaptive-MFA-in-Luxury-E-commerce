@@ -12,6 +12,8 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Services\RiskAssessmentService;
 use App\Models\SecurityAudit;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use App\Services\FaceVerificationService;
 
 class AuthController extends Controller
 {
@@ -165,22 +167,35 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users',
             'password' => ['required', 'confirmed', Password::min(6)],
             'role' => 'required|in:customer,seller',
-            'identity_image' => 'nullable|image|max:4096',
+            'face_data' => 'required|string', // Live scan is now mandatory
         ]);
 
-        // Handle identity profile image upload (optional)
-        if ($request->hasFile('identity_image')) {
-            $validated['identity_image'] = $request->file('identity_image')->store('identities', 'public');
-        }
+        // 1. Save Physical Identity (.jpg)
+        $faceData = $validated['face_data'];
+        $snapshotData = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $faceData));
+        $identityPath = 'identities/' . uniqid('user_') . '.jpg';
+        Storage::disk('public')->put($identityPath, $snapshotData);
 
+        // 2. Create User
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
             'is_active' => true,
-            'identity_image' => $validated['identity_image'] ?? null,
+            'identity_image' => $identityPath,
         ]);
+
+        // 3. Extract Landmarks and Save Digital Identity (.json cache)
+        $faceService = app(FaceVerificationService::class);
+        $enrollResult = $faceService->verify($faceData, $identityPath, true);
+
+        if (!$enrollResult['success']) {
+            // Fail registration if AI cannot extract landmarks from the live scan
+            $user->delete();
+            Storage::disk('public')->delete($identityPath);
+            return back()->with('error', 'Biometric extraction failed: ' . $enrollResult['reason'] . '. Please ensure good lighting and look straight at the camera.');
+        }
 
         // Create wallet for user
         EWallet::create([
@@ -192,7 +207,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('home')->with('success', 'Account created successfully');
+        return redirect()->route('home')->with('success', 'Account created successfully with Digital Identity secured.');
     }
 
     public function logout(Request $request)

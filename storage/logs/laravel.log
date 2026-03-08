@@ -16854,3 +16854,1076 @@ Content-Transfer-Encoding: quoted-printable
 [2026-03-07 22:12:34] local.ERROR: Risk Scoring API Connection Failed {"message":"cURL error 7: Failed to connect to localhost port 5000 after 2223 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score"} 
 [2026-03-07 22:12:34] local.INFO: Login MFA Requested for User [1]. OTP Code: [828557]  
 [2026-03-07 22:27:47] local.INFO: MFA Requested for User [22]. OTP Code: [955208]  
+[2026-03-08 21:35:17] local.ERROR: Risk Scoring API Connection Failed {"message":"cURL error 7: Failed to connect to localhost port 5000 after 2217 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score"} 
+[2026-03-08 21:35:17] local.INFO: Login MFA Requested for User [1]. OTP Code: [816488]  
+[2026-03-08 21:36:58] local.ERROR: Risk Scoring API Connection Failed {"message":"cURL error 7: Failed to connect to localhost port 5000 after 2247 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score"} 
+[2026-03-08 21:36:58] local.INFO: Login MFA Requested for User [22]. OTP Code: [488764]  
+[2026-03-08 21:38:21] local.ERROR: Risk Scoring API Connection Failed {"message":"cURL error 7: Failed to connect to localhost port 5000 after 2240 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score"} 
+[2026-03-08 21:38:21] local.ERROR: Risk Scoring API Offline or Timeout. Defaulting to Static MFA Fallback.  
+[2026-03-08 21:38:21] local.INFO: MFA Requested for User [22]. OTP Code: [216416]  
+[2026-03-08 21:39:08] local.ERROR: Risk Scoring API Connection Failed {"message":"cURL error 7: Failed to connect to localhost port 5000 after 2235 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score"} 
+[2026-03-08 21:39:08] local.INFO: Login MFA Requested for User [1]. OTP Code: [151828]  
+[2026-03-08 21:51:38] local.INFO: Login MFA Requested for User [22]. OTP Code: [373140]  
+[2026-03-08 21:53:24] local.INFO: MFA Requested for User [22]. OTP Code: [691193]  
+[2026-03-08 21:56:36] local.INFO: Login MFA Requested for User [1]. OTP Code: [333242]  
+[2026-03-08 21:56:52] local.INFO: Login MFA Requested for User [1]. OTP Code: [738336]  
+[2026-03-08 22:42:37] local.INFO: Login MFA Requested for User [19]. OTP Code: [829117]  
+[2026-03-08 22:43:25] local.INFO: Login MFA Requested for User [22]. OTP Code: [520306]  
+[2026-03-08 22:46:35] local.INFO: Login MFA Requested for User [1]. OTP Code: [540300]  
+[2026-03-08 22:49:15] local.INFO: Login MFA Requested for User [22]. OTP Code: [749648]  
+[2026-03-08 22:50:42] local.INFO: Login MFA Requested for User [23]. OTP Code: [108328]  
+[2026-03-08 22:51:05] local.INFO: MFA Requested for User [23]. OTP Code: [265815]  
+[2026-03-08 22:55:07] local.INFO: MFA Requested for User [23]. OTP Code: [921771]  
+[2026-03-08 22:55:25] local.INFO: Login MFA Requested for User [1]. OTP Code: [964196]  
+[2026-03-08 23:05:31] local.INFO: Login MFA Requested for User [23]. OTP Code: [438656]  
+[2026-03-08 23:06:18] local.INFO: MFA Requested for User [23]. OTP Code: [816407]  
+[2026-03-08 23:07:05] local.INFO: Login MFA Requested for User [1]. OTP Code: [364455]  
+[2026-03-08 23:10:21] local.INFO: Login MFA Requested for User [23]. OTP Code: [623013]  
+[2026-03-08 23:12:28] local.INFO: MFA Requested for User [23]. OTP Code: [885910]  
+[2026-03-08 23:20:01] local.ERROR: Risk Scoring API Connection Failed {"message":"cURL error 28: Operation timed out after 3015 milliseconds with 0 bytes received (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score"} 
+[2026-03-08 23:20:01] local.ERROR: Risk Scoring API Offline or Timeout. Defaulting to Static MFA Fallback.  
+[2026-03-08 23:20:01] local.INFO: MFA Requested for User [23]. OTP Code: [277267]  
+[2026-03-08 23:20:21] local.INFO: Login MFA Requested for User [22]. OTP Code: [591357]  
+[2026-03-08 23:22:02] local.INFO: MFA Requested for User [22]. OTP Code: [953618]  
+[2026-03-08 23:22:23] local.ERROR: OpenAI Face Comparison Failed {"status":401,"body":"{
+  \"error\": {
+    \"message\": \"Incorrect API key provided: sk-ijklm*******************************mnop. You can find your API key at https://platform.openai.com/account/api-keys.\",
+    \"type\": \"invalid_request_error\",
+    \"code\": \"invalid_api_key\",
+    \"param\": null
+  },
+  \"status\": 401
+}"} 
+[2026-03-08 23:23:00] local.ERROR: OpenAI Face Comparison Failed {"status":401,"body":"{
+  \"error\": {
+    \"message\": \"Incorrect API key provided: sk-abcd1*******************************1234. You can find your API key at https://platform.openai.com/account/api-keys.\",
+    \"type\": \"invalid_request_error\",
+    \"code\": \"invalid_api_key\",
+    \"param\": null
+  },
+  \"status\": 401
+}"} 
+[2026-03-08 23:23:21] local.ERROR: OpenAI Face Comparison Failed {"status":401,"body":"{
+  \"error\": {
+    \"message\": \"Incorrect API key provided: sk-qrst5*******************************5678. You can find your API key at https://platform.openai.com/account/api-keys.\",
+    \"type\": \"invalid_request_error\",
+    \"code\": \"invalid_api_key\",
+    \"param\": null
+  },
+  \"status\": 401
+}"} 
+[2026-03-08 23:23:39] local.ERROR: OpenAI Face Comparison Failed {"status":401,"body":"{
+  \"error\": {
+    \"message\": \"Incorrect API key provided: sk-efgh5*******************************5678. You can find your API key at https://platform.openai.com/account/api-keys.\",
+    \"type\": \"invalid_request_error\",
+    \"code\": \"invalid_api_key\",
+    \"param\": null
+  },
+  \"status\": 401
+}"} 
+[2026-03-08 23:25:08] local.INFO: Login MFA Requested for User [1]. OTP Code: [741544]  
+[2026-03-08 23:34:02] local.INFO: Login MFA Requested for User [22]. OTP Code: [363480]  
+[2026-03-08 23:35:20] local.INFO: MFA Requested for User [22]. OTP Code: [288017]  
+[2026-03-08 23:35:40] local.ERROR: OpenAI Face Comparison Retry 1 Failed {"status":401,"body":{"error":{"message":"Incorrect API key provided: sk-abcde*****************************ef12. You can find your API key at https://platform.openai.com/account/api-keys.","type":"invalid_request_error","code":"invalid_api_key","param":null},"status":401}} 
+[2026-03-08 23:35:42] local.ERROR: OpenAI Face Comparison Retry 2 Failed {"status":401,"body":{"error":{"message":"Incorrect API key provided: sk-abcde*******************************ef12. You can find your API key at https://platform.openai.com/account/api-keys.","type":"invalid_request_error","code":"invalid_api_key","param":null},"status":401}} 
+[2026-03-08 23:35:43] local.ERROR: OpenAI Face Comparison Retry 3 Failed {"status":401,"body":{"error":{"message":"Incorrect API key provided: sk-ijkl1*******************************1234. You can find your API key at https://platform.openai.com/account/api-keys.","type":"invalid_request_error","code":"invalid_api_key","param":null},"status":401}} 
+[2026-03-08 23:36:13] local.ERROR: OpenAI Face Comparison Retry 1 Failed {"status":401,"body":{"error":{"message":"Incorrect API key provided: sk-abcd1*******************************1234. You can find your API key at https://platform.openai.com/account/api-keys.","type":"invalid_request_error","code":"invalid_api_key","param":null},"status":401}} 
+[2026-03-08 23:36:14] local.ERROR: OpenAI Face Comparison Retry 2 Failed {"status":401,"body":{"error":{"message":"Incorrect API key provided: sk-abcde*****************************ef12. You can find your API key at https://platform.openai.com/account/api-keys.","type":"invalid_request_error","code":"invalid_api_key","param":null},"status":401}} 
+[2026-03-08 23:36:15] local.ERROR: OpenAI Face Comparison Retry 3 Failed {"status":401,"body":{"error":{"message":"Incorrect API key provided: sk-12345*******************************5678. You can find your API key at https://platform.openai.com/account/api-keys.","type":"invalid_request_error","code":"invalid_api_key","param":null},"status":401}} 
+[2026-03-08 23:36:32] local.ERROR: OpenAI Face Comparison Retry 1 Failed {"status":401,"body":{"error":{"message":"Incorrect API key provided: sk-abcdi*******************************ijkl. You can find your API key at https://platform.openai.com/account/api-keys.","type":"invalid_request_error","code":"invalid_api_key","param":null},"status":401}} 
+[2026-03-08 23:36:33] local.ERROR: OpenAI Face Comparison Retry 2 Failed {"status":401,"body":{"error":{"message":"Incorrect API key provided: sk-5678m*******************************mnop. You can find your API key at https://platform.openai.com/account/api-keys.","type":"invalid_request_error","code":"invalid_api_key","param":null},"status":401}} 
+[2026-03-08 23:36:34] local.ERROR: OpenAI Face Comparison Retry 3 Failed {"status":401,"body":{"error":{"message":"Incorrect API key provided: sk-efgh5*******************************5678. You can find your API key at https://platform.openai.com/account/api-keys.","type":"invalid_request_error","code":"invalid_api_key","param":null},"status":401}} 
+[2026-03-09 00:18:56] local.INFO: MFA Requested for User [22]. OTP Code: [779049]  
+[2026-03-09 00:19:18] local.ERROR: Face Comparison Retry 1 Failed with key sk-mnop567 {"error":"Incorrect API key provided: sk-mnop5*******************************5678. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:19:19] local.ERROR: Face Comparison Retry 2 Failed with key sk-ijklmno {"error":"Incorrect API key provided: sk-ijklm*******************************mnop. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:19:20] local.ERROR: Face Comparison Retry 3 Failed with key sk-1234abc {"error":"Incorrect API key provided: sk-1234a*******************************abcd. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:19:22] local.ERROR: Face Comparison Retry 4 Failed with key sk-qrst123 {"error":"Incorrect API key provided: sk-qrst1*******************************1234. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:19:23] local.ERROR: Face Comparison Retry 5 Failed with key sk-abcdefa {"error":"Incorrect API key provided: sk-abcde*****************************ef12. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:19:43] local.ERROR: Face Comparison Retry 1 Failed with key sk-abcdef1 {"error":"Incorrect API key provided: sk-abcde*******************************ef12. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:19:44] local.ERROR: Face Comparison Retry 2 Failed with key sk-ijklmno {"error":"Incorrect API key provided: sk-ijklm*******************************mnop. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:19:45] local.ERROR: Face Comparison Retry 3 Failed with key sk-qrst123 {"error":"Incorrect API key provided: sk-qrst1*******************************1234. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:19:46] local.ERROR: Face Comparison Retry 4 Failed with key sk-efgh567 {"error":"Incorrect API key provided: sk-efgh5*******************************5678. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:19:47] local.ERROR: Face Comparison Retry 5 Failed with key sk-uvwxijk {"error":"Incorrect API key provided: sk-uvwxi*******************************ijkl. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:20:11] local.ERROR: Face Comparison Retry 1 Failed with key sk-1234uvw {"error":"Incorrect API key provided: sk-1234u*******************************uvwx. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:20:12] local.ERROR: Face Comparison Retry 2 Failed with key sk-abcdqrs {"error":"Incorrect API key provided: sk-abcdq*******************************qrst. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:20:13] local.ERROR: Face Comparison Retry 3 Failed with key sk-ijklmno {"error":"Incorrect API key provided: sk-ijklm*******************************mnop. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:20:14] local.ERROR: Face Comparison Retry 4 Failed with key sk-ijkl123 {"error":"Incorrect API key provided: sk-ijkl1*******************************1234. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:20:16] local.ERROR: Face Comparison Retry 5 Failed with key sk-abcdef1 {"error":"Incorrect API key provided: sk-abcde*******************************ef12. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:40:47] local.ERROR: Risk Scoring API Connection Failed {"message":"cURL error 28: Operation timed out after 3013 milliseconds with 0 bytes received (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score"} 
+[2026-03-09 00:40:47] local.INFO: Login MFA Requested for User [1]. OTP Code: [683657]  
+[2026-03-09 00:41:52] local.INFO: Login MFA Requested for User [19]. OTP Code: [280399]  
+[2026-03-09 00:42:20] local.INFO: Login MFA Requested for User [22]. OTP Code: [690990]  
+[2026-03-09 00:43:02] local.INFO: MFA Requested for User [22]. OTP Code: [758756]  
+[2026-03-09 00:43:26] local.ERROR: Face Comparison Retry 1 Failed with key sk-qrstefg {"error":"Incorrect API key provided: sk-qrste*******************************efgh. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:43:27] local.ERROR: Face Comparison Retry 2 Failed with key sk-1234ijk {"error":"Incorrect API key provided: sk-1234i*******************************ijkl. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:43:28] local.ERROR: Face Comparison Retry 3 Failed with key sk-1234qrs {"error":"Incorrect API key provided: sk-1234q*******************************qrst. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:43:29] local.ERROR: Face Comparison Retry 4 Failed with key sk-ijklmno {"error":"Incorrect API key provided: sk-ijklm*******************************mnop. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:43:30] local.ERROR: Face Comparison Retry 5 Failed with key sk-mnopqrs {"error":"Incorrect API key provided: sk-mnopq*******************************qrst. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:43:51] local.ERROR: Face Comparison Retry 1 Failed with key sk-abcdijk {"error":"Incorrect API key provided: sk-abcdi*******************************ijkl. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:43:52] local.ERROR: Face Comparison Retry 2 Failed with key sk-1234abc {"error":"Incorrect API key provided: sk-1234a*******************************abcd. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:43:53] local.ERROR: Face Comparison Retry 3 Failed with key sk-abcd123 {"error":"Incorrect API key provided: sk-abcd1*******************************1234. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:43:54] local.ERROR: Face Comparison Retry 4 Failed with key sk-abcd123 {"error":"Incorrect API key provided: sk-abcd1*******************************1234. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:43:55] local.ERROR: Face Comparison Retry 5 Failed with key sk-qrstefg {"error":"Incorrect API key provided: sk-qrste*******************************efgh. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:44:14] local.ERROR: Face Comparison Retry 1 Failed with key sk-efghijk {"error":"Incorrect API key provided: sk-efghi*******************************ijkl. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:44:15] local.ERROR: Face Comparison Retry 2 Failed with key sk-abcdijk {"error":"Incorrect API key provided: sk-abcdi*******************************ijkl. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:44:16] local.ERROR: Face Comparison Retry 3 Failed with key sk-ijklmno {"error":"Incorrect API key provided: sk-ijklm*******************************mnop. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:44:17] local.ERROR: Face Comparison Retry 4 Failed with key sk-abcd567 {"error":"Incorrect API key provided: sk-abcd5*******************************5678. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:44:18] local.ERROR: Face Comparison Retry 5 Failed with key sk-efgh567 {"error":"Incorrect API key provided: sk-efgh5*******************************5678. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:44:38] local.ERROR: Face Comparison Retry 1 Failed with key sk-qrst567 {"error":"Incorrect API key provided: sk-qrst5*******************************5678. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:44:39] local.ERROR: Face Comparison Retry 2 Failed with key sk-7890abc {"error":"Incorrect API key provided: sk-7890a*****************************abcd. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:44:40] local.ERROR: Face Comparison Retry 3 Failed with key sk-uvwx567 {"error":"Incorrect API key provided: sk-uvwx5*******************************5678. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:44:41] local.ERROR: Face Comparison Retry 4 Failed with key sk-ijklqrs {"error":"Incorrect API key provided: sk-ijklq*******************************qrst. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 00:44:42] local.ERROR: Face Comparison Retry 5 Failed with key sk-abcdefa {"error":"Incorrect API key provided: sk-abcde*****************************ef12. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 01:06:05] local.INFO: MFA Requested for User [22]. OTP Code: [831995]  
+[2026-03-09 01:06:24] local.ERROR: Face Comparison Retry 1 Failed with key sk-ijklmno {"error":"Incorrect API key provided: sk-ijklm*******************************mnop. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 01:06:25] local.ERROR: Face Comparison Retry 2 Failed with key sk-efghijk {"error":"Incorrect API key provided: sk-efghi*******************************mnop. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 01:06:26] local.ERROR: Face Comparison Retry 3 Failed with key sk-5678mno {"error":"Incorrect API key provided: sk-5678m*******************************mnop. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 01:06:27] local.ERROR: Face Comparison Retry 4 Failed with key sk-ijkl123 {"error":"Incorrect API key provided: sk-ijkl1*******************************1234. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 01:06:28] local.ERROR: Face Comparison Retry 5 Failed with key sk-abcd123 {"error":"Incorrect API key provided: sk-abcd1*******************************1234. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 01:08:57] local.ERROR: Face Comparison Retry 1 Failed with key sk-ijklmno {"error":"Incorrect API key provided: sk-ijklm*******************************mnop. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 01:08:58] local.ERROR: Face Comparison Retry 2 Failed with key sk-abcdijk {"error":"Incorrect API key provided: sk-abcdi*******************************ijkl. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 01:08:59] local.ERROR: Face Comparison Retry 3 Failed with key sk-qrst567 {"error":"Incorrect API key provided: sk-qrst5*******************************5678. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 01:09:00] local.ERROR: Face Comparison Retry 4 Failed with key sk-1234ijk {"error":"Incorrect API key provided: sk-1234i*******************************5678. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 01:09:01] local.ERROR: Face Comparison Retry 5 Failed with key sk-1234efg {"error":"Incorrect API key provided: sk-1234e*******************************efgh. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 01:19:23] local.ERROR: Face Comparison Retry 1 Failed with key sk-abcd123 {"error":"Incorrect API key provided: sk-abcd1*******************************1234. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 01:19:24] local.ERROR: Face Comparison Retry 2 Failed with key sk-1234567 {"error":"Incorrect API key provided: sk-12345*******************************5678. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 01:19:24] local.ERROR: Face Comparison Retry 3 Failed with key sk-abcdqrs {"error":"Incorrect API key provided: sk-abcdq*******************************qrst. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 01:19:25] local.ERROR: Face Comparison Retry 4 Failed with key sk-abcdef1 {"error":"Incorrect API key provided: sk-abcde*******************************ef12. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 01:19:26] local.ERROR: Face Comparison Retry 5 Failed with key sk-abcdijk {"error":"Incorrect API key provided: sk-abcdi*******************************ijkl. You can find your API key at https://platform.openai.com/account/api-keys."} 
+[2026-03-09 01:23:53] local.ERROR: Call to undefined function App\Services\imagecreatefromstring() {"exception":"[object] (Error(code: 0): Call to undefined function App\\Services\\imagecreatefromstring() at C:/laragon/www/E-commerce2026/app/Services/FaceVerificationService.php:78)
+[stacktrace]
+#0 C:/laragon/www/E-commerce2026/app/Services/FaceVerificationService.php(35): App/Services/FaceVerificationService->computeAverageHash('/x89PNG/r/n/x1A/n/x00/x00/x00/rIHD...')
+#1 C:/laragon/www/E-commerce2026/scripts/run_face_verify_test.php(23): App/Services/FaceVerificationService->verify('data:image/png;...', 'face_test.png')
+#2 {main}
+"} 
+[2026-03-09 01:25:51] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.0,"reason":"Failed to load one or both images."} 
+[2026-03-09 01:30:03] local.INFO: Local Face Comparison Result {"match":true,"confidence":1.0,"reason":"Local ORB feature match score=1.00 (threshold=0.20)"} 
+[2026-03-09 01:31:29] local.ERROR: Risk Scoring API Connection Failed {"message":"cURL error 7: Failed to connect to localhost port 5000 after 2231 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score"} 
+[2026-03-09 01:31:29] local.ERROR: Risk Scoring API Offline or Timeout. Defaulting to Static MFA Fallback.  
+[2026-03-09 01:31:29] local.INFO: MFA Requested for User [22]. OTP Code: [810425]  
+[2026-03-09 01:31:53] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.06048387096774194,"reason":"Local ORB feature match score=0.06 (threshold=0.20)"} 
+[2026-03-09 01:32:27] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.06048387096774194,"reason":"Local ORB feature match score=0.06 (threshold=0.20)"} 
+[2026-03-09 01:36:42] local.INFO: Local Face Comparison Result {"match":true,"confidence":1.0,"reason":"Local LBPH match score=1.00 (raw=0.0, threshold=0.30)"} 
+[2026-03-09 01:37:19] local.INFO: Local Face Comparison Best Result {"best_file":"face_test.png","match":true,"confidence":1.0,"reason":"Local LBPH match score=1.00 (raw=0.0, threshold=0.30)"} 
+[2026-03-09 01:38:45] local.ERROR: Risk Scoring API Connection Failed {"message":"cURL error 7: Failed to connect to localhost port 5000 after 2236 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score"} 
+[2026-03-09 01:38:45] local.ERROR: Risk Scoring API Offline or Timeout. Defaulting to Static MFA Fallback.  
+[2026-03-09 01:38:45] local.INFO: MFA Requested for User [22]. OTP Code: [486732]  
+[2026-03-09 01:39:05] local.INFO: Local Face Comparison Best Result {"best_file":"identity_images/user_22_1772991758.jpg","match":true,"confidence":0.7293267380168551,"reason":"Local LBPH match score=0.73 (raw=54.1, threshold=0.30)"} 
+[2026-03-09 01:39:48] local.ERROR: Risk Scoring API Connection Failed {"message":"cURL error 7: Failed to connect to localhost port 5000 after 2231 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score"} 
+[2026-03-09 01:39:48] local.ERROR: Risk Scoring API Offline or Timeout. Defaulting to Static MFA Fallback.  
+[2026-03-09 01:39:48] local.INFO: MFA Requested for User [22]. OTP Code: [994860]  
+[2026-03-09 01:40:12] local.INFO: Local Face Comparison Best Result {"best_file":"identity_images/user_22_1772991758.jpg","match":true,"confidence":0.44324633107285916,"reason":"Local LBPH match score=0.44 (raw=111.4, threshold=0.30)"} 
+[2026-03-09 01:43:18] local.INFO: Local Face Comparison Best Result {"best_file":"face_test.png","match":true,"confidence":1.0,"reason":"Local LBPH raw=0.0 (threshold=70.0); confidence=1.00; no face detected in candidate image; no face detected in reference images"} 
+[2026-03-09 01:44:27] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.0,"reason":"No face detected in the scanned image. Please retake the scan."} 
+[2026-03-09 01:46:40] local.ERROR: Risk Scoring API Connection Failed {"message":"cURL error 7: Failed to connect to localhost port 5000 after 2229 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score"} 
+[2026-03-09 01:46:40] local.ERROR: Risk Scoring API Offline or Timeout. Defaulting to Static MFA Fallback.  
+[2026-03-09 01:46:40] local.INFO: MFA Requested for User [22]. OTP Code: [391743]  
+[2026-03-09 01:47:00] local.INFO: Local Face Comparison Result {"match":true,"confidence":0.7592889788053043,"reason":"Local LBPH raw=48.1 (threshold=50.0); confidence=0.76 (threshold=0.55)"} 
+[2026-03-09 01:47:32] local.ERROR: Risk Scoring API Connection Failed {"message":"cURL error 7: Failed to connect to localhost port 5000 after 2231 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score"} 
+[2026-03-09 01:47:32] local.ERROR: Risk Scoring API Offline or Timeout. Defaulting to Static MFA Fallback.  
+[2026-03-09 01:47:32] local.INFO: MFA Requested for User [22]. OTP Code: [892593]  
+[2026-03-09 01:47:52] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.5894582655624423,"reason":"Local LBPH raw=82.1 (threshold=50.0); confidence=0.59 (threshold=0.55)"} 
+[2026-03-09 01:48:17] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.5931556403912079,"reason":"Local LBPH raw=81.4 (threshold=50.0); confidence=0.59 (threshold=0.55)"} 
+[2026-03-09 01:48:40] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.6875242138041919,"reason":"Local LBPH raw=62.5 (threshold=50.0); confidence=0.69 (threshold=0.55)"} 
+[2026-03-09 01:49:03] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.670765917757004,"reason":"Local LBPH raw=65.8 (threshold=50.0); confidence=0.67 (threshold=0.55)"} 
+[2026-03-09 01:52:08] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.0,"reason":"Face detection failed via Google Vision. Ensure the face is visible and clear."} 
+[2026-03-09 01:53:42] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.0,"reason":"No face detected in the scanned image. Please retake the scan."} 
+[2026-03-09 01:56:26] local.ERROR: Risk Scoring API Connection Failed {"message":"cURL error 7: Failed to connect to localhost port 5000 after 2230 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score"} 
+[2026-03-09 01:56:26] local.INFO: Login MFA Requested for User [22]. OTP Code: [745490]  
+[2026-03-09 01:57:02] local.ERROR: Risk Scoring API Connection Failed {"message":"cURL error 7: Failed to connect to localhost port 5000 after 2232 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score"} 
+[2026-03-09 01:57:02] local.INFO: Login MFA Requested for User [1]. OTP Code: [371943]  
+[2026-03-09 01:57:22] local.ERROR: Face Verification helper failed {"error":"Traceback (most recent call last):
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\connection.py\", line 204, in _new_conn
+
+    sock = connection.create_connection(
+
+        (self._dns_host, self.port),
+
+    ...<2 lines>...
+
+        socket_options=self.socket_options,
+
+    )
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\util\\connection.py\", line 60, in create_connection
+
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+
+               ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\socket.py\", line 983, in getaddrinfo
+
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+socket.gaierror: [Errno 11001] getaddrinfo failed
+
+
+
+The above exception was the direct cause of the following exception:
+
+
+
+Traceback (most recent call last):
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 787, in urlopen
+
+    response = self._make_request(
+
+        conn,
+
+    ...<10 lines>...
+
+        **response_kw,
+
+    )
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 488, in _make_request
+
+    raise new_e
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request
+
+    self._validate_conn(conn)
+
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1093, in _validate_conn
+
+    conn.connect()
+
+    ~~~~~~~~~~~~^^
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\connection.py\", line 759, in connect
+
+    self.sock = sock = self._new_conn()
+
+                       ~~~~~~~~~~~~~~^^
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\connection.py\", line 211, in _new_conn
+
+    raise NameResolutionError(self.host, self, e) from e
+
+urllib3.exceptions.NameResolutionError: HTTPSConnection(host='vision.googleapis.com', port=443): Failed to resolve 'vision.googleapis.com' ([Errno 11001] getaddrinfo failed)
+
+
+
+The above exception was the direct cause of the following exception:
+
+
+
+Traceback (most recent call last):
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\requests\\adapters.py\", line 644, in send
+
+    resp = conn.urlopen(
+
+        method=request.method,
+
+    ...<9 lines>...
+
+        chunked=chunked,
+
+    )
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 841, in urlopen
+
+    retries = retries.increment(
+
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+
+    )
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\util\\retry.py\", line 535, in increment
+
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='vision.googleapis.com', port=443): Max retries exceeded with url: /v1/images:annotate?key=AIzaSyBAC9BzkXkMT_6yuzE6dfCkSmJz9U1aBVE (Caused by NameResolutionError(\"HTTPSConnection(host='vision.googleapis.com', port=443): Failed to resolve 'vision.googleapis.com' ([Errno 11001] getaddrinfo failed)\"))
+
+
+
+During handling of the above exception, another exception occurred:
+
+
+
+Traceback (most recent call last):
+
+  File \"C:\\laragon\\www\\E-commerce2026\\scripts/face_verify.py\", line 218, in <module>
+
+    desc = get_cached_descriptor(b64)
+
+  File \"C:\\laragon\\www\\E-commerce2026\\scripts/face_verify.py\", line 205, in get_cached_descriptor
+
+    desc = get_face_descriptor_via_vision(b64_str, google_key)
+
+  File \"C:\\laragon\\www\\E-commerce2026\\scripts/face_verify.py\", line 92, in get_face_descriptor_via_vision
+
+    resp = requests.post(url, json=payload, timeout=15)
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\requests\\api.py\", line 115, in post
+
+    return request(\"post\", url, data=data, json=json, **kwargs)
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\requests\\api.py\", line 59, in request
+
+    return session.request(method=method, url=url, **kwargs)
+
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\requests\\sessions.py\", line 589, in request
+
+    resp = self.send(prep, **send_kwargs)
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\requests\\sessions.py\", line 703, in send
+
+    r = adapter.send(request, **kwargs)
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\requests\\adapters.py\", line 677, in send
+
+    raise ConnectionError(e, request=request)
+
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='vision.googleapis.com', port=443): Max retries exceeded with url: /v1/images:annotate?key=AIzaSyBAC9BzkXkMT_6yuzE6dfCkSmJz9U1aBVE (Caused by NameResolutionError(\"HTTPSConnection(host='vision.googleapis.com', port=443): Failed to resolve 'vision.googleapis.com' ([Errno 11001] getaddrinfo failed)\"))
+
+"} 
+[2026-03-09 01:57:51] local.ERROR: Face Verification helper failed {"error":"Traceback (most recent call last):
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\connection.py\", line 204, in _new_conn
+
+    sock = connection.create_connection(
+
+        (self._dns_host, self.port),
+
+    ...<2 lines>...
+
+        socket_options=self.socket_options,
+
+    )
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\util\\connection.py\", line 60, in create_connection
+
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+
+               ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\socket.py\", line 983, in getaddrinfo
+
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+socket.gaierror: [Errno 11001] getaddrinfo failed
+
+
+
+The above exception was the direct cause of the following exception:
+
+
+
+Traceback (most recent call last):
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 787, in urlopen
+
+    response = self._make_request(
+
+        conn,
+
+    ...<10 lines>...
+
+        **response_kw,
+
+    )
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 488, in _make_request
+
+    raise new_e
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request
+
+    self._validate_conn(conn)
+
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1093, in _validate_conn
+
+    conn.connect()
+
+    ~~~~~~~~~~~~^^
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\connection.py\", line 759, in connect
+
+    self.sock = sock = self._new_conn()
+
+                       ~~~~~~~~~~~~~~^^
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\connection.py\", line 211, in _new_conn
+
+    raise NameResolutionError(self.host, self, e) from e
+
+urllib3.exceptions.NameResolutionError: HTTPSConnection(host='vision.googleapis.com', port=443): Failed to resolve 'vision.googleapis.com' ([Errno 11001] getaddrinfo failed)
+
+
+
+The above exception was the direct cause of the following exception:
+
+
+
+Traceback (most recent call last):
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\requests\\adapters.py\", line 644, in send
+
+    resp = conn.urlopen(
+
+        method=request.method,
+
+    ...<9 lines>...
+
+        chunked=chunked,
+
+    )
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 841, in urlopen
+
+    retries = retries.increment(
+
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+
+    )
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\urllib3\\util\\retry.py\", line 535, in increment
+
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='vision.googleapis.com', port=443): Max retries exceeded with url: /v1/images:annotate?key=AIzaSyBAC9BzkXkMT_6yuzE6dfCkSmJz9U1aBVE (Caused by NameResolutionError(\"HTTPSConnection(host='vision.googleapis.com', port=443): Failed to resolve 'vision.googleapis.com' ([Errno 11001] getaddrinfo failed)\"))
+
+
+
+During handling of the above exception, another exception occurred:
+
+
+
+Traceback (most recent call last):
+
+  File \"C:\\laragon\\www\\E-commerce2026\\scripts/face_verify.py\", line 218, in <module>
+
+    desc = get_cached_descriptor(b64)
+
+  File \"C:\\laragon\\www\\E-commerce2026\\scripts/face_verify.py\", line 205, in get_cached_descriptor
+
+    desc = get_face_descriptor_via_vision(b64_str, google_key)
+
+  File \"C:\\laragon\\www\\E-commerce2026\\scripts/face_verify.py\", line 92, in get_face_descriptor_via_vision
+
+    resp = requests.post(url, json=payload, timeout=15)
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\requests\\api.py\", line 115, in post
+
+    return request(\"post\", url, data=data, json=json, **kwargs)
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\requests\\api.py\", line 59, in request
+
+    return session.request(method=method, url=url, **kwargs)
+
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\requests\\sessions.py\", line 589, in request
+
+    resp = self.send(prep, **send_kwargs)
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\requests\\sessions.py\", line 703, in send
+
+    r = adapter.send(request, **kwargs)
+
+  File \"C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\requests\\adapters.py\", line 677, in send
+
+    raise ConnectionError(e, request=request)
+
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='vision.googleapis.com', port=443): Max retries exceeded with url: /v1/images:annotate?key=AIzaSyBAC9BzkXkMT_6yuzE6dfCkSmJz9U1aBVE (Caused by NameResolutionError(\"HTTPSConnection(host='vision.googleapis.com', port=443): Failed to resolve 'vision.googleapis.com' ([Errno 11001] getaddrinfo failed)\"))
+
+"} 
+[2026-03-09 02:00:30] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.0,"reason":"No face detected in the scanned image. Please retake the scan."} 
+[2026-03-09 02:09:47] local.ERROR: Risk Scoring API Connection Failed {"message":"cURL error 7: Failed to connect to localhost port 5000 after 2232 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score"} 
+[2026-03-09 02:09:47] local.INFO: Login MFA Requested for User [1]. OTP Code: [274764]  
+[2026-03-09 02:10:05] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.7211923851535045,"reason":"Local LBPH raw=55.8 (threshold=50.0); confidence=0.72 (threshold=0.55); Google Vision did not detect a face; falling back to local LBPH matching."} 
+[2026-03-09 02:11:42] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.7418109694252752,"reason":"Local LBPH raw=51.6 (threshold=50.0); confidence=0.74 (threshold=0.55); Google Vision did not detect a face; falling back to local LBPH matching."} 
+[2026-03-09 02:18:24] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.0,"reason":"No face detected in the scanned image. Please retake the scan."} 
+[2026-03-09 02:27:27] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.0,"reason":"No face detected in the scanned image. Please retake the scan."} 
+[2026-03-09 02:28:29] local.INFO: Local Face Comparison Result {"match":true,"confidence":1.0,"reason":"Local LBPH raw=0.0 (threshold=65.0); confidence=1.00 (threshold=0.45); Google Vision did not detect a face; falling back to local LBPH matching."} 
+[2026-03-09 02:29:48] local.ERROR: Cannot use try without catch or finally {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use try without catch or finally at C:/laragon/www/E-commerce2026/app/Services/RiskAssessmentService.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2026-03-09 02:29:56] local.ERROR: Cannot use try without catch or finally {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use try without catch or finally at C:/laragon/www/E-commerce2026/app/Services/RiskAssessmentService.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2026-03-09 02:37:55] local.ERROR: Risk Scoring Exception {"exception":"cURL error 7: Failed to connect to localhost port 5000 after 2233 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score","trace":"#0 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Support\\helpers.php(338): Illuminate\\Http\\Client\\PendingRequest->Illuminate\\Http\\Client\\{closure}(3)
+#1 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Client\\PendingRequest.php(905): retry(0, Object(Closure), 100, Object(Closure))
+#2 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Client\\PendingRequest.php(804): Illuminate\\Http\\Client\\PendingRequest->send('POST', 'http://localhos...', Array)
+#3 C:\\laragon\\www\\E-commerce2026\\app\\Services\\RiskAssessmentService.php(59): Illuminate\\Http\\Client\\PendingRequest->post('http://localhos...', Array)
+#4 C:\\laragon\\www\\E-commerce2026\\app\\Http\\Controllers\\AuthController.php(87): App\\Services\\RiskAssessmentService->analyze(Object(App\\Models\\User), 0.0)
+#5 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Controller.php(54): App\\Http\\Controllers\\AuthController->login(Object(Illuminate\\Http\\Request))
+#6 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\ControllerDispatcher.php(44): Illuminate\\Routing\\Controller->callAction('login', Array)
+#7 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(266): Illuminate\\Routing\\ControllerDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(App\\Http\\Controllers\\AuthController), 'login')
+#8 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(212): Illuminate\\Routing\\Route->runController()
+#9 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(808): Illuminate\\Routing\\Route->run()
+#10 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#11 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Auth\\Middleware\\RedirectIfAuthenticated.php(35): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#12 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Auth\\Middleware\\RedirectIfAuthenticated->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#13 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\SubstituteBindings.php(51): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#14 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#15 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken.php(88): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#16 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#17 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\View\\Middleware\\ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#18 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#19 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#20 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest(Object(Illuminate\\Http\\Request), Object(Illuminate\\Session\\Store), Object(Closure))
+#21 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Session\\Middleware\\StartSession->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#22 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#23 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#24 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\EncryptCookies.php(75): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#25 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#26 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#27 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(807): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#28 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(786): Illuminate\\Routing\\Router->runRouteWithinStack(Object(Illuminate\\Routing\\Route), Object(Illuminate\\Http\\Request))
+#29 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(750): Illuminate\\Routing\\Router->runRoute(Object(Illuminate\\Http\\Request), Object(Illuminate\\Routing\\Route))
+#30 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(739): Illuminate\\Routing\\Router->dispatchToRoute(Object(Illuminate\\Http\\Request))
+#31 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(201): Illuminate\\Routing\\Router->dispatch(Object(Illuminate\\Http\\Request))
+#32 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}(Object(Illuminate\\Http\\Request))
+#33 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#34 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#35 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#36 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#37 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TrimStrings.php(51): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#38 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#39 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#40 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\ValidatePostSize->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#41 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance.php(110): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#42 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#43 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#44 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\HandleCors->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#45 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\TrustProxies.php(58): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#46 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\TrustProxies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#47 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks.php(22): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#48 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#49 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#50 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(176): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#51 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#52 C:\\laragon\\www\\E-commerce2026\\public\\index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#53 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('C:\\\\laragon\\\\www\\\\...')
+#54 {main}"} 
+[2026-03-09 02:37:55] local.INFO: Login MFA Requested for User [1]. OTP Code: [478110]  
+[2026-03-09 02:43:22] local.ERROR: Risk Scoring Exception {"exception":"cURL error 7: Failed to connect to localhost port 5000 after 2232 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score","trace":"#0 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Support\\helpers.php(338): Illuminate\\Http\\Client\\PendingRequest->Illuminate\\Http\\Client\\{closure}(3)
+#1 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Client\\PendingRequest.php(905): retry(0, Object(Closure), 100, Object(Closure))
+#2 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Client\\PendingRequest.php(804): Illuminate\\Http\\Client\\PendingRequest->send('POST', 'http://localhos...', Array)
+#3 C:\\laragon\\www\\E-commerce2026\\app\\Services\\RiskAssessmentService.php(59): Illuminate\\Http\\Client\\PendingRequest->post('http://localhos...', Array)
+#4 C:\\laragon\\www\\E-commerce2026\\app\\Http\\Controllers\\AuthController.php(87): App\\Services\\RiskAssessmentService->analyze(Object(App\\Models\\User), 0.0)
+#5 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Controller.php(54): App\\Http\\Controllers\\AuthController->login(Object(Illuminate\\Http\\Request))
+#6 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\ControllerDispatcher.php(44): Illuminate\\Routing\\Controller->callAction('login', Array)
+#7 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(266): Illuminate\\Routing\\ControllerDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(App\\Http\\Controllers\\AuthController), 'login')
+#8 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(212): Illuminate\\Routing\\Route->runController()
+#9 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(808): Illuminate\\Routing\\Route->run()
+#10 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#11 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Auth\\Middleware\\RedirectIfAuthenticated.php(35): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#12 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Auth\\Middleware\\RedirectIfAuthenticated->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#13 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\SubstituteBindings.php(51): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#14 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#15 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken.php(88): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#16 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#17 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\View\\Middleware\\ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#18 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#19 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#20 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest(Object(Illuminate\\Http\\Request), Object(Illuminate\\Session\\Store), Object(Closure))
+#21 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Session\\Middleware\\StartSession->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#22 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#23 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#24 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\EncryptCookies.php(75): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#25 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#26 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#27 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(807): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#28 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(786): Illuminate\\Routing\\Router->runRouteWithinStack(Object(Illuminate\\Routing\\Route), Object(Illuminate\\Http\\Request))
+#29 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(750): Illuminate\\Routing\\Router->runRoute(Object(Illuminate\\Http\\Request), Object(Illuminate\\Routing\\Route))
+#30 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(739): Illuminate\\Routing\\Router->dispatchToRoute(Object(Illuminate\\Http\\Request))
+#31 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(201): Illuminate\\Routing\\Router->dispatch(Object(Illuminate\\Http\\Request))
+#32 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}(Object(Illuminate\\Http\\Request))
+#33 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#34 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#35 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#36 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#37 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TrimStrings.php(51): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#38 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#39 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#40 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\ValidatePostSize->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#41 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance.php(110): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#42 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#43 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#44 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\HandleCors->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#45 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\TrustProxies.php(58): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#46 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\TrustProxies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#47 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks.php(22): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#48 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#49 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#50 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(176): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#51 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#52 C:\\laragon\\www\\E-commerce2026\\public\\index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#53 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('C:\\\\laragon\\\\www\\\\...')
+#54 {main}"} 
+[2026-03-09 02:43:22] local.INFO: Login MFA Requested for User [1]. OTP Code: [403676]  
+[2026-03-09 02:43:41] local.ERROR: Face Verification helper failed {"error":"Traceback (most recent call last):
+
+  File \"C:\\laragon\\www\\E-commerce2026\\scripts/face_verify.py\", line 7, in <module>
+
+    import cv2
+
+ModuleNotFoundError: No module named 'cv2'
+
+"} 
+[2026-03-09 02:44:02] local.ERROR: Face Verification helper failed {"error":"Traceback (most recent call last):
+
+  File \"C:\\laragon\\www\\E-commerce2026\\scripts/face_verify.py\", line 7, in <module>
+
+    import cv2
+
+ModuleNotFoundError: No module named 'cv2'
+
+"} 
+[2026-03-09 02:44:40] local.ERROR: Face Verification helper failed {"error":"Traceback (most recent call last):
+
+  File \"C:\\laragon\\www\\E-commerce2026\\scripts/face_verify.py\", line 7, in <module>
+
+    import cv2
+
+ModuleNotFoundError: No module named 'cv2'
+
+"} 
+[2026-03-09 02:45:08] local.ERROR: Face Verification helper failed {"error":"Traceback (most recent call last):
+
+  File \"C:\\laragon\\www\\E-commerce2026\\scripts/face_verify.py\", line 7, in <module>
+
+    import cv2
+
+ModuleNotFoundError: No module named 'cv2'
+
+"} 
+[2026-03-09 02:46:15] local.INFO: Local Face Comparison Result {"match":true,"confidence":1.0,"reason":"Local LBPH raw=0.0 (threshold=65.0); confidence=1.00 (threshold=0.45); Google Vision did not detect a face; falling back to local LBPH matching."} 
+[2026-03-09 02:48:08] local.ERROR: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'db-ecommerce.cache' doesn't exist (Connection: mysql, SQL: delete from `cache`) {"exception":"[object] (Illuminate\\Database\\QueryException(code: 42S02): SQLSTATE[42S02]: Base table or view not found: 1146 Table 'db-ecommerce.cache' doesn't exist (Connection: mysql, SQL: delete from `cache`) at C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Database/Connection.php:825)
+[stacktrace]
+#0 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Database/Connection.php(779): Illuminate/Database/Connection->runQueryCallback('delete from `ca...', Array, Object(Closure))
+#1 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Database/Connection.php(584): Illuminate/Database/Connection->run('delete from `ca...', Array, Object(Closure))
+#2 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Database/Connection.php(548): Illuminate/Database/Connection->affectingStatement('delete from `ca...', Array)
+#3 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(4024): Illuminate/Database/Connection->delete('delete from `ca...', Array)
+#4 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Cache/DatabaseStore.php(422): Illuminate/Database/Query/Builder->delete()
+#5 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Cache/Repository.php(792): Illuminate/Cache/DatabaseStore->flush()
+#6 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Cache/Console/ClearCommand.php(69): Illuminate/Cache/Repository->__call('flush', Array)
+#7 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate/Cache/Console/ClearCommand->handle()
+#8 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate/Container/BoundMethod::Illuminate/Container/{closure}()
+#9 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(95): Illuminate/Container/Util::unwrapIfClosure(Object(Closure))
+#10 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate/Container/BoundMethod::callBoundMethod(Object(Illuminate/Foundation/Application), Array, Object(Closure))
+#11 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Container/Container.php(696): Illuminate/Container/BoundMethod::call(Object(Illuminate/Foundation/Application), Array, Array, NULL)
+#12 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Console/Command.php(213): Illuminate/Container/Container->call(Array)
+#13 C:/laragon/www/E-commerce2026/vendor/symfony/console/Command/Command.php(341): Illuminate/Console/Command->execute(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#14 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Console/Command.php(182): Symfony/Component/Console/Command/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#15 C:/laragon/www/E-commerce2026/vendor/symfony/console/Application.php(1102): Illuminate/Console/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#16 C:/laragon/www/E-commerce2026/vendor/symfony/console/Application.php(356): Symfony/Component/Console/Application->doRunCommand(Object(Illuminate/Cache/Console/ClearCommand), Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#17 C:/laragon/www/E-commerce2026/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#18 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#19 C:/laragon/www/E-commerce2026/artisan(12): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#20 {main}
+
+[previous exception] [object] (PDOException(code: 42S02): SQLSTATE[42S02]: Base table or view not found: 1146 Table 'db-ecommerce.cache' doesn't exist at C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Database/Connection.php:592)
+[stacktrace]
+#0 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Database/Connection.php(592): PDO->prepare('delete from `ca...')
+#1 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Database/Connection.php(812): Illuminate/Database/Connection->Illuminate/Database/{closure}('delete from `ca...', Array)
+#2 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Database/Connection.php(779): Illuminate/Database/Connection->runQueryCallback('delete from `ca...', Array, Object(Closure))
+#3 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Database/Connection.php(584): Illuminate/Database/Connection->run('delete from `ca...', Array, Object(Closure))
+#4 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Database/Connection.php(548): Illuminate/Database/Connection->affectingStatement('delete from `ca...', Array)
+#5 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(4024): Illuminate/Database/Connection->delete('delete from `ca...', Array)
+#6 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Cache/DatabaseStore.php(422): Illuminate/Database/Query/Builder->delete()
+#7 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Cache/Repository.php(792): Illuminate/Cache/DatabaseStore->flush()
+#8 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Cache/Console/ClearCommand.php(69): Illuminate/Cache/Repository->__call('flush', Array)
+#9 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate/Cache/Console/ClearCommand->handle()
+#10 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate/Container/BoundMethod::Illuminate/Container/{closure}()
+#11 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(95): Illuminate/Container/Util::unwrapIfClosure(Object(Closure))
+#12 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate/Container/BoundMethod::callBoundMethod(Object(Illuminate/Foundation/Application), Array, Object(Closure))
+#13 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Container/Container.php(696): Illuminate/Container/BoundMethod::call(Object(Illuminate/Foundation/Application), Array, Array, NULL)
+#14 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Console/Command.php(213): Illuminate/Container/Container->call(Array)
+#15 C:/laragon/www/E-commerce2026/vendor/symfony/console/Command/Command.php(341): Illuminate/Console/Command->execute(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#16 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Console/Command.php(182): Symfony/Component/Console/Command/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#17 C:/laragon/www/E-commerce2026/vendor/symfony/console/Application.php(1102): Illuminate/Console/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#18 C:/laragon/www/E-commerce2026/vendor/symfony/console/Application.php(356): Symfony/Component/Console/Application->doRunCommand(Object(Illuminate/Cache/Console/ClearCommand), Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#19 C:/laragon/www/E-commerce2026/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#20 C:/laragon/www/E-commerce2026/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#21 C:/laragon/www/E-commerce2026/artisan(12): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#22 {main}
+"} 
+[2026-03-09 02:51:17] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.0,"reason":"Face verification helper error: module 'cv2' has no attribute 'face'"} 
+[2026-03-09 02:51:42] local.INFO: Local Face Comparison Result {"match":true,"confidence":1.0,"reason":"Local LBPH raw=0.0 (threshold=65.0); confidence=1.00 (threshold=0.45); Google Vision did not detect a face; falling back to local LBPH matching."} 
+[2026-03-09 02:52:47] local.ERROR: Risk Scoring Exception {"exception":"cURL error 7: Failed to connect to localhost port 5000 after 2232 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score","trace":"#0 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Support\\helpers.php(338): Illuminate\\Http\\Client\\PendingRequest->Illuminate\\Http\\Client\\{closure}(3)
+#1 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Client\\PendingRequest.php(905): retry(0, Object(Closure), 100, Object(Closure))
+#2 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Client\\PendingRequest.php(804): Illuminate\\Http\\Client\\PendingRequest->send('POST', 'http://localhos...', Array)
+#3 C:\\laragon\\www\\E-commerce2026\\app\\Services\\RiskAssessmentService.php(59): Illuminate\\Http\\Client\\PendingRequest->post('http://localhos...', Array)
+#4 C:\\laragon\\www\\E-commerce2026\\app\\Http\\Controllers\\AuthController.php(87): App\\Services\\RiskAssessmentService->analyze(Object(App\\Models\\User), 0.0)
+#5 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Controller.php(54): App\\Http\\Controllers\\AuthController->login(Object(Illuminate\\Http\\Request))
+#6 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\ControllerDispatcher.php(44): Illuminate\\Routing\\Controller->callAction('login', Array)
+#7 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(266): Illuminate\\Routing\\ControllerDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(App\\Http\\Controllers\\AuthController), 'login')
+#8 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(212): Illuminate\\Routing\\Route->runController()
+#9 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(808): Illuminate\\Routing\\Route->run()
+#10 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#11 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Auth\\Middleware\\RedirectIfAuthenticated.php(35): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#12 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Auth\\Middleware\\RedirectIfAuthenticated->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#13 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\SubstituteBindings.php(51): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#14 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#15 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken.php(88): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#16 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#17 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\View\\Middleware\\ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#18 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#19 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#20 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest(Object(Illuminate\\Http\\Request), Object(Illuminate\\Session\\Store), Object(Closure))
+#21 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Session\\Middleware\\StartSession->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#22 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#23 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#24 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\EncryptCookies.php(75): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#25 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#26 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#27 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(807): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#28 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(786): Illuminate\\Routing\\Router->runRouteWithinStack(Object(Illuminate\\Routing\\Route), Object(Illuminate\\Http\\Request))
+#29 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(750): Illuminate\\Routing\\Router->runRoute(Object(Illuminate\\Http\\Request), Object(Illuminate\\Routing\\Route))
+#30 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(739): Illuminate\\Routing\\Router->dispatchToRoute(Object(Illuminate\\Http\\Request))
+#31 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(201): Illuminate\\Routing\\Router->dispatch(Object(Illuminate\\Http\\Request))
+#32 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}(Object(Illuminate\\Http\\Request))
+#33 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#34 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#35 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#36 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#37 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TrimStrings.php(51): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#38 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#39 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#40 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\ValidatePostSize->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#41 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance.php(110): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#42 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#43 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#44 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\HandleCors->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#45 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\TrustProxies.php(58): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#46 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\TrustProxies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#47 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks.php(22): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#48 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#49 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#50 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(176): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#51 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#52 C:\\laragon\\www\\E-commerce2026\\public\\index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#53 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('C:\\\\laragon\\\\www\\\\...')
+#54 {main}"} 
+[2026-03-09 02:52:47] local.INFO: Login MFA Requested for User [1]. OTP Code: [865117]  
+[2026-03-09 02:53:06] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.6188135197223857,"reason":"Local LBPH raw=76.2 (threshold=65.0); confidence=0.62 (threshold=0.45); Google Vision did not detect a face; falling back to local LBPH matching."} 
+[2026-03-09 02:58:35] local.ERROR: Risk Scoring Exception {"exception":"cURL error 7: Failed to connect to localhost port 5000 after 2231 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score","trace":"#0 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Support\\helpers.php(338): Illuminate\\Http\\Client\\PendingRequest->Illuminate\\Http\\Client\\{closure}(3)
+#1 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Client\\PendingRequest.php(905): retry(0, Object(Closure), 100, Object(Closure))
+#2 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Client\\PendingRequest.php(804): Illuminate\\Http\\Client\\PendingRequest->send('POST', 'http://localhos...', Array)
+#3 C:\\laragon\\www\\E-commerce2026\\app\\Services\\RiskAssessmentService.php(59): Illuminate\\Http\\Client\\PendingRequest->post('http://localhos...', Array)
+#4 C:\\laragon\\www\\E-commerce2026\\app\\Http\\Controllers\\AuthController.php(87): App\\Services\\RiskAssessmentService->analyze(Object(App\\Models\\User), 0.0)
+#5 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Controller.php(54): App\\Http\\Controllers\\AuthController->login(Object(Illuminate\\Http\\Request))
+#6 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\ControllerDispatcher.php(44): Illuminate\\Routing\\Controller->callAction('login', Array)
+#7 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(266): Illuminate\\Routing\\ControllerDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(App\\Http\\Controllers\\AuthController), 'login')
+#8 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(212): Illuminate\\Routing\\Route->runController()
+#9 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(808): Illuminate\\Routing\\Route->run()
+#10 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#11 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Auth\\Middleware\\RedirectIfAuthenticated.php(35): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#12 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Auth\\Middleware\\RedirectIfAuthenticated->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#13 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\SubstituteBindings.php(51): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#14 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#15 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken.php(88): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#16 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#17 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\View\\Middleware\\ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#18 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#19 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#20 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest(Object(Illuminate\\Http\\Request), Object(Illuminate\\Session\\Store), Object(Closure))
+#21 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Session\\Middleware\\StartSession->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#22 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#23 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#24 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\EncryptCookies.php(75): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#25 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#26 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#27 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(807): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#28 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(786): Illuminate\\Routing\\Router->runRouteWithinStack(Object(Illuminate\\Routing\\Route), Object(Illuminate\\Http\\Request))
+#29 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(750): Illuminate\\Routing\\Router->runRoute(Object(Illuminate\\Http\\Request), Object(Illuminate\\Routing\\Route))
+#30 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(739): Illuminate\\Routing\\Router->dispatchToRoute(Object(Illuminate\\Http\\Request))
+#31 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(201): Illuminate\\Routing\\Router->dispatch(Object(Illuminate\\Http\\Request))
+#32 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}(Object(Illuminate\\Http\\Request))
+#33 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#34 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#35 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#36 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#37 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TrimStrings.php(51): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#38 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#39 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#40 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\ValidatePostSize->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#41 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance.php(110): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#42 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#43 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#44 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\HandleCors->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#45 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\TrustProxies.php(58): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#46 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\TrustProxies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#47 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks.php(22): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#48 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#49 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#50 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(176): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#51 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#52 C:\\laragon\\www\\E-commerce2026\\public\\index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#53 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('C:\\\\laragon\\\\www\\\\...')
+#54 {main}"} 
+[2026-03-09 02:58:35] local.INFO: Login MFA Requested for User [1]. OTP Code: [516220]  
+[2026-03-09 02:58:54] local.INFO: Local Face Comparison Result {"match":false,"confidence":0.6203691925488352,"reason":"Local LBPH raw=75.9 (threshold=65.0); confidence=0.62 (threshold=0.45); Google Vision did not detect a face; falling back to local LBPH matching."} 
+[2026-03-09 03:11:34] local.ERROR: Risk Scoring Exception {"exception":"cURL error 7: Failed to connect to localhost port 5000 after 2237 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score","trace":"#0 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Support\\helpers.php(338): Illuminate\\Http\\Client\\PendingRequest->Illuminate\\Http\\Client\\{closure}(3)
+#1 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Client\\PendingRequest.php(905): retry(0, Object(Closure), 100, Object(Closure))
+#2 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Client\\PendingRequest.php(804): Illuminate\\Http\\Client\\PendingRequest->send('POST', 'http://localhos...', Array)
+#3 C:\\laragon\\www\\E-commerce2026\\app\\Services\\RiskAssessmentService.php(59): Illuminate\\Http\\Client\\PendingRequest->post('http://localhos...', Array)
+#4 C:\\laragon\\www\\E-commerce2026\\app\\Http\\Controllers\\AuthController.php(89): App\\Services\\RiskAssessmentService->analyze(Object(App\\Models\\User), 0.0)
+#5 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Controller.php(54): App\\Http\\Controllers\\AuthController->login(Object(Illuminate\\Http\\Request))
+#6 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\ControllerDispatcher.php(44): Illuminate\\Routing\\Controller->callAction('login', Array)
+#7 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(266): Illuminate\\Routing\\ControllerDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(App\\Http\\Controllers\\AuthController), 'login')
+#8 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(212): Illuminate\\Routing\\Route->runController()
+#9 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(808): Illuminate\\Routing\\Route->run()
+#10 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#11 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Auth\\Middleware\\RedirectIfAuthenticated.php(35): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#12 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Auth\\Middleware\\RedirectIfAuthenticated->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#13 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\SubstituteBindings.php(51): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#14 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#15 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken.php(88): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#16 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#17 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\View\\Middleware\\ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#18 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#19 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#20 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest(Object(Illuminate\\Http\\Request), Object(Illuminate\\Session\\Store), Object(Closure))
+#21 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Session\\Middleware\\StartSession->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#22 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#23 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#24 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\EncryptCookies.php(75): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#25 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#26 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#27 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(807): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#28 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(786): Illuminate\\Routing\\Router->runRouteWithinStack(Object(Illuminate\\Routing\\Route), Object(Illuminate\\Http\\Request))
+#29 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(750): Illuminate\\Routing\\Router->runRoute(Object(Illuminate\\Http\\Request), Object(Illuminate\\Routing\\Route))
+#30 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(739): Illuminate\\Routing\\Router->dispatchToRoute(Object(Illuminate\\Http\\Request))
+#31 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(201): Illuminate\\Routing\\Router->dispatch(Object(Illuminate\\Http\\Request))
+#32 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}(Object(Illuminate\\Http\\Request))
+#33 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#34 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#35 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#36 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#37 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TrimStrings.php(51): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#38 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#39 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#40 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\ValidatePostSize->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#41 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance.php(110): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#42 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#43 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#44 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\HandleCors->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#45 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\TrustProxies.php(58): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#46 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\TrustProxies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#47 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks.php(22): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#48 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#49 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#50 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(176): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#51 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#52 C:\\laragon\\www\\E-commerce2026\\public\\index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#53 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('C:\\\\laragon\\\\www\\\\...')
+#54 {main}"} 
+[2026-03-09 03:11:34] local.INFO: Login MFA Requested for User [1]. OTP Code: [205120]  
+[2026-03-09 03:11:52] local.ERROR: Face Verification helper returned invalid JSON {"output":"{\"match\": false, \"reason\": \"Image loading failed\"}"} 
+[2026-03-09 03:12:25] local.ERROR: Face Verification helper returned invalid JSON {"output":"{\"match\": false, \"reason\": \"Image loading failed\"}"} 
+[2026-03-09 03:17:31] local.ERROR: Risk Scoring Exception {"exception":"cURL error 7: Failed to connect to localhost port 5000 after 2246 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score","trace":"#0 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Support\\helpers.php(338): Illuminate\\Http\\Client\\PendingRequest->Illuminate\\Http\\Client\\{closure}(3)
+#1 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Client\\PendingRequest.php(905): retry(0, Object(Closure), 100, Object(Closure))
+#2 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Client\\PendingRequest.php(804): Illuminate\\Http\\Client\\PendingRequest->send('POST', 'http://localhos...', Array)
+#3 C:\\laragon\\www\\E-commerce2026\\app\\Services\\RiskAssessmentService.php(59): Illuminate\\Http\\Client\\PendingRequest->post('http://localhos...', Array)
+#4 C:\\laragon\\www\\E-commerce2026\\app\\Http\\Controllers\\AuthController.php(89): App\\Services\\RiskAssessmentService->analyze(Object(App\\Models\\User), 0.0)
+#5 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Controller.php(54): App\\Http\\Controllers\\AuthController->login(Object(Illuminate\\Http\\Request))
+#6 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\ControllerDispatcher.php(44): Illuminate\\Routing\\Controller->callAction('login', Array)
+#7 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(266): Illuminate\\Routing\\ControllerDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(App\\Http\\Controllers\\AuthController), 'login')
+#8 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(212): Illuminate\\Routing\\Route->runController()
+#9 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(808): Illuminate\\Routing\\Route->run()
+#10 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#11 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Auth\\Middleware\\RedirectIfAuthenticated.php(35): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#12 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Auth\\Middleware\\RedirectIfAuthenticated->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#13 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\SubstituteBindings.php(51): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#14 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#15 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken.php(88): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#16 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#17 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\View\\Middleware\\ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#18 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#19 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#20 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest(Object(Illuminate\\Http\\Request), Object(Illuminate\\Session\\Store), Object(Closure))
+#21 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Session\\Middleware\\StartSession->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#22 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#23 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#24 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\EncryptCookies.php(75): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#25 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#26 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#27 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(807): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#28 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(786): Illuminate\\Routing\\Router->runRouteWithinStack(Object(Illuminate\\Routing\\Route), Object(Illuminate\\Http\\Request))
+#29 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(750): Illuminate\\Routing\\Router->runRoute(Object(Illuminate\\Http\\Request), Object(Illuminate\\Routing\\Route))
+#30 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(739): Illuminate\\Routing\\Router->dispatchToRoute(Object(Illuminate\\Http\\Request))
+#31 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(201): Illuminate\\Routing\\Router->dispatch(Object(Illuminate\\Http\\Request))
+#32 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}(Object(Illuminate\\Http\\Request))
+#33 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#34 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#35 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#36 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#37 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TrimStrings.php(51): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#38 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#39 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#40 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\ValidatePostSize->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#41 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance.php(110): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#42 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#43 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#44 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\HandleCors->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#45 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\TrustProxies.php(58): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#46 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\TrustProxies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#47 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks.php(22): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#48 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#49 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#50 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(176): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#51 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#52 C:\\laragon\\www\\E-commerce2026\\public\\index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#53 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('C:\\\\laragon\\\\www\\\\...')
+#54 {main}"} 
+[2026-03-09 03:17:31] local.INFO: Login MFA Requested for User [1]. OTP Code: [968875]  
+[2026-03-09 03:17:51] local.ERROR: Face Verification helper returned invalid JSON {"output":"{\"match\": false, \"reason\": \"Image loading failed\"}","error":"[ WARN:0@0.102] global loadsave.cpp:278 cv::findDecoder imread_('C:\\laragon\\www\\E-commerce2026\\storage\\app/face_verify_tmp/stored_69add96ebd254'): can't open/read file: check file path/integrity
+
+"} 
+[2026-03-09 03:18:16] local.ERROR: Face Verification helper returned invalid JSON {"output":"{\"match\": false, \"reason\": \"Image loading failed\"}","error":"[ WARN:0@0.106] global loadsave.cpp:278 cv::findDecoder imread_('C:\\laragon\\www\\E-commerce2026\\storage\\app/face_verify_tmp/stored_69add987cb99e'): can't open/read file: check file path/integrity
+
+"} 
+[2026-03-09 03:28:28] local.ERROR: Risk Scoring Exception {"exception":"cURL error 7: Failed to connect to localhost port 5000 after 2231 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score","trace":"#0 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Support\\helpers.php(338): Illuminate\\Http\\Client\\PendingRequest->Illuminate\\Http\\Client\\{closure}(3)
+#1 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Client\\PendingRequest.php(905): retry(0, Object(Closure), 100, Object(Closure))
+#2 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Client\\PendingRequest.php(804): Illuminate\\Http\\Client\\PendingRequest->send('POST', 'http://localhos...', Array)
+#3 C:\\laragon\\www\\E-commerce2026\\app\\Services\\RiskAssessmentService.php(59): Illuminate\\Http\\Client\\PendingRequest->post('http://localhos...', Array)
+#4 C:\\laragon\\www\\E-commerce2026\\app\\Http\\Controllers\\AuthController.php(89): App\\Services\\RiskAssessmentService->analyze(Object(App\\Models\\User), 0.0)
+#5 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Controller.php(54): App\\Http\\Controllers\\AuthController->login(Object(Illuminate\\Http\\Request))
+#6 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\ControllerDispatcher.php(44): Illuminate\\Routing\\Controller->callAction('login', Array)
+#7 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(266): Illuminate\\Routing\\ControllerDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(App\\Http\\Controllers\\AuthController), 'login')
+#8 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(212): Illuminate\\Routing\\Route->runController()
+#9 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(808): Illuminate\\Routing\\Route->run()
+#10 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#11 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Auth\\Middleware\\RedirectIfAuthenticated.php(35): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#12 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Auth\\Middleware\\RedirectIfAuthenticated->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#13 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\SubstituteBindings.php(51): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#14 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#15 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken.php(88): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#16 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#17 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\View\\Middleware\\ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#18 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#19 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#20 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest(Object(Illuminate\\Http\\Request), Object(Illuminate\\Session\\Store), Object(Closure))
+#21 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Session\\Middleware\\StartSession->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#22 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#23 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#24 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\EncryptCookies.php(75): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#25 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#26 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#27 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(807): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#28 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(786): Illuminate\\Routing\\Router->runRouteWithinStack(Object(Illuminate\\Routing\\Route), Object(Illuminate\\Http\\Request))
+#29 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(750): Illuminate\\Routing\\Router->runRoute(Object(Illuminate\\Http\\Request), Object(Illuminate\\Routing\\Route))
+#30 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(739): Illuminate\\Routing\\Router->dispatchToRoute(Object(Illuminate\\Http\\Request))
+#31 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(201): Illuminate\\Routing\\Router->dispatch(Object(Illuminate\\Http\\Request))
+#32 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}(Object(Illuminate\\Http\\Request))
+#33 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#34 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#35 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#36 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#37 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TrimStrings.php(51): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#38 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#39 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#40 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\ValidatePostSize->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#41 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance.php(110): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#42 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#43 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#44 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\HandleCors->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#45 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\TrustProxies.php(58): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#46 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\TrustProxies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#47 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks.php(22): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#48 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#49 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#50 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(176): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#51 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#52 C:\\laragon\\www\\E-commerce2026\\public\\index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#53 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('C:\\\\laragon\\\\www\\\\...')
+#54 {main}"} 
+[2026-03-09 03:28:28] local.INFO: Login MFA Requested for User [1]. OTP Code: [858880]  
+[2026-03-09 03:28:54] local.DEBUG: Python Debug Logs: {"stderr":"[ WARN:0@0.454] global loadsave.cpp:278 cv::findDecoder imread_('C:\\laragon\\www\\E-commerce2026\\storage\\app/face_verify_tmp/stored_69addc03145d2'): can't open/read file: check file path/integrity
+
+"} 
+[2026-03-09 03:28:54] local.INFO: Local Face Comparison Result {"match":false,"confidence":0,"reason":"Image loading failed"} 
+[2026-03-09 03:29:58] local.DEBUG: Python Debug Logs: {"stderr":"[ WARN:0@0.145] global loadsave.cpp:278 cv::findDecoder imread_('C:\\laragon\\www\\E-commerce2026\\storage\\app/face_verify_tmp/stored_69addc45b171b'): can't open/read file: check file path/integrity
+
+"} 
+[2026-03-09 03:29:58] local.INFO: Local Face Comparison Result {"match":false,"confidence":0,"reason":"Image loading failed"} 
+[2026-03-09 03:32:19] local.ERROR: Risk Scoring Exception {"exception":"cURL error 7: Failed to connect to localhost port 5000 after 2263 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://localhost:5000/risk-score","trace":"#0 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Support\\helpers.php(338): Illuminate\\Http\\Client\\PendingRequest->Illuminate\\Http\\Client\\{closure}(3)
+#1 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Client\\PendingRequest.php(905): retry(0, Object(Closure), 100, Object(Closure))
+#2 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Client\\PendingRequest.php(804): Illuminate\\Http\\Client\\PendingRequest->send('POST', 'http://localhos...', Array)
+#3 C:\\laragon\\www\\E-commerce2026\\app\\Services\\RiskAssessmentService.php(59): Illuminate\\Http\\Client\\PendingRequest->post('http://localhos...', Array)
+#4 C:\\laragon\\www\\E-commerce2026\\app\\Http\\Controllers\\AuthController.php(89): App\\Services\\RiskAssessmentService->analyze(Object(App\\Models\\User), 0.0)
+#5 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Controller.php(54): App\\Http\\Controllers\\AuthController->login(Object(Illuminate\\Http\\Request))
+#6 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\ControllerDispatcher.php(44): Illuminate\\Routing\\Controller->callAction('login', Array)
+#7 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(266): Illuminate\\Routing\\ControllerDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(App\\Http\\Controllers\\AuthController), 'login')
+#8 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(212): Illuminate\\Routing\\Route->runController()
+#9 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(808): Illuminate\\Routing\\Route->run()
+#10 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#11 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Auth\\Middleware\\RedirectIfAuthenticated.php(35): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#12 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Auth\\Middleware\\RedirectIfAuthenticated->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#13 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Middleware\\SubstituteBindings.php(51): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#14 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#15 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken.php(88): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#16 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#17 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\View\\Middleware\\ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#18 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#19 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#20 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Session\\Middleware\\StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest(Object(Illuminate\\Http\\Request), Object(Illuminate\\Session\\Store), Object(Closure))
+#21 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Session\\Middleware\\StartSession->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#22 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#23 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#24 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Cookie\\Middleware\\EncryptCookies.php(75): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#25 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#26 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#27 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(807): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#28 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(786): Illuminate\\Routing\\Router->runRouteWithinStack(Object(Illuminate\\Routing\\Route), Object(Illuminate\\Http\\Request))
+#29 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(750): Illuminate\\Routing\\Router->runRoute(Object(Illuminate\\Http\\Request), Object(Illuminate\\Routing\\Route))
+#30 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(739): Illuminate\\Routing\\Router->dispatchToRoute(Object(Illuminate\\Http\\Request))
+#31 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(201): Illuminate\\Routing\\Router->dispatch(Object(Illuminate\\Http\\Request))
+#32 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(170): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}(Object(Illuminate\\Http\\Request))
+#33 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#34 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#35 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#36 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#37 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TrimStrings.php(51): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#38 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#39 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#40 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\ValidatePostSize->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#41 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance.php(110): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#42 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#43 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#44 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\HandleCors->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#45 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\TrustProxies.php(58): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#46 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Http\\Middleware\\TrustProxies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#47 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks.php(22): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#48 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(209): Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#49 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(127): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#50 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(176): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#51 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#52 C:\\laragon\\www\\E-commerce2026\\public\\index.php(17): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#53 C:\\laragon\\www\\E-commerce2026\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(23): require_once('C:\\\\laragon\\\\www\\\\...')
+#54 {main}"} 
+[2026-03-09 03:32:19] local.INFO: Login MFA Requested for User [1]. OTP Code: [491319]  
+[2026-03-09 03:32:40] local.DEBUG: Python Debug Logs: {"stderr":"DEBUG: Average brightness: 108.37
+
+DEBUG: Average brightness: 108.37
+
+DEBUG: Vision API Exception: HTTPSConnectionPool(host='vision.googleapis.com', port=443): Max retries exceeded with url: /v1/images:annotate?key=AIzaSyBAC9BzkXkMT_6yuzE6dfCkSmJz9U1aBVE (Caused by NameResolutionError(\"HTTPSConnection(host='vision.googleapis.com', port=443): Failed to resolve 'vision.googleapis.com' ([Errno 11001] getaddrinfo failed)\"))
+
+SUCCESS: JSON descriptor saved to face_verify_cache/0a0a8b174d1ff862b5285ff62ec4eb6c6dbbdb234f6053d3bed534c2948d22ce.json
+
+"} 
+[2026-03-09 03:32:40] local.INFO: FaceID Digital Identity Enrolled: 1 {"path":"identity_images/user_1_1773001959.jpg"} 

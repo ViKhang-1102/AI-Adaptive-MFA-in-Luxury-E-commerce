@@ -203,7 +203,7 @@ class OrderController extends Controller
 
             if ($enableAiMfa) {
                 $riskService = app(RiskAssessmentService::class);
-                $riskResult = $riskService->analyze($user, $intentTotalAmount);
+                $riskResult = $riskService->analyze($user, $intentTotalAmount, $validated['payment_method']);
                 if ($riskResult) {
                     $suggestion = $riskResult['suggestion'] ?? 'allow';
                     $score = $riskResult['risk_score'] ?? 0;
