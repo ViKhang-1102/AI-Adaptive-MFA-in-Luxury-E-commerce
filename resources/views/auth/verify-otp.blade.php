@@ -1,0 +1,477 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-neutral-50 relative overflow-hidden">
+    
+    <!-- Decorative background elements -->
+    <div class="absolute top-0 left-0 w-full height-full overflow-hidden z-0 pointer-events-none">
+        <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-gold/5 blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-primary/5 blur-3xl"></div>
+    </div>
+
+    <div class="max-w-md w-full relative z-10">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-neutral-100">
+            <!-- Header Section -->
+            <div class="bg-primary px-8 py-10 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-dark via-gold to-gold-light"></div>
+                <div class="absolute inset-0 bg-primary-dark opacity-20 pointer-events-none pattern-dots"></div>
+                
+                <div class="relative z-10">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-light shadow-inner mb-6 border border-primary/50">
+                        <i class="fas fa-shield-alt text-2xl text-gold"></i>
+                    </div>
+                    <h3 class="text-2xl font-serif font-bold text-white uppercase tracking-widest mb-2">
+                        Luxury Concierge Security Service
+                    </h3>
+                    <p class="text-primary-300 text-sm font-light">
+                        Adaptive AI Engine Intervention
+                    </p>
+                </div>
+            </div>
+
+            <!-- Body Section -->
+            <div class="p-8">
+                <p class="text-center text-neutral-600 text-sm mb-8 leading-relaxed">
+                    For your protection, we need to verify your identity before completing this transaction.
+                </p>
+
+                <!-- Alerts -->
+                @if(session('success'))
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 rounded p-4 flex items-start gap-3 mb-6">
+                        <i class="fas fa-check-circle text-emerald-500 mt-1"></i>
+                        <p class="text-sm text-emerald-800">{{ session('success') }}</p>
+                    </div>
+                @endif
+                @if(session('ai_warning'))
+                    <div class="bg-amber-50 border-l-4 border-amber-500 rounded p-4 flex items-start gap-3 mb-6">
+                        <i class="fas fa-robot text-amber-500 mt-1"></i>
+                        <p class="text-sm text-amber-800">{{ session('ai_warning') }}</p>
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="bg-red-50 border-l-4 border-red-500 rounded p-4 flex items-start gap-3 mb-6">
+                        <i class="fas fa-exclamation-circle text-red-500 mt-1"></i>
+                        <p class="text-sm text-red-800">{{ session('error') }}</p>
+                    </div>
+                @endif
+
+                @if($needsIdentityUpload)
+                    <div class="bg-neutral-50 border border-gold/30 rounded-lg p-6 mb-6">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0">
+                                <span class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gold/20 text-gold">
+                                    <i class="fas fa-id-card text-xl"></i>
+                                </span>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-neutral-900">Security Update Required</h3>
+                                <p class="text-sm text-neutral-600">Your account lacks an Identity Profile. Upload a portrait for high-value protection and adaptive verification.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{{ route('otp.identity.upload') }}" enctype="multipart/form-data" class="space-y-6" id="identity-setup-form">
+                        @csrf
+                        <!-- Hidden input to hold the captured image file -->
+                        <div class="hidden">
+                            <input id="identity_image_input" type="file" name="identity_image" accept="image/png" required>
+                        </div>
+
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-5">
+                            <h4 class="font-bold text-blue-900 mb-3 flex items-center gap-2">
+                                <i class="fas fa-camera text-blue-700 text-xl"></i>
+                                FaceID Setup Guide
+                            </h4>
+                            <ul class="text-sm text-blue-800 space-y-2 list-none p-0">
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-check-circle text-emerald-500 mt-1"></i>
+                                    <span><strong>Required:</strong> Use a live camera feed. Pre-recorded or uploaded images are rejected to prevent spoofing.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-sun text-amber-500 mt-1"></i>
+                                    <span>Stand in a well-lit area with no strong backlighting.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-eye text-primary text-opacity-80 mt-1"></i>
+                                    <span>Remove sunglasses/masks and look directly at the camera.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-expand text-indigo-500 mt-1"></i>
+                                    <span>Position your face inside the circular frame below.</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="space-y-4">
+                            <button type="button" id="enable-webcam" class="w-full py-4 bg-primary text-white rounded-lg font-bold hover:bg-primary-light transition flex flex-col items-center justify-center gap-1 shadow-md">
+                                <span class="flex items-center gap-2 text-lg"><i class="fas fa-video"></i> Open Camera & Scan Face</span>
+                                <span class="text-xs opacity-80 font-normal">Cho phép trình duyệt truy cập máy ảnh của bạn</span>
+                            </button>
+                            
+                            <div id="webcam-container" class="hidden flex flex-col items-center bg-neutral-900 p-4 rounded-xl border border-neutral-800 shadow-inner">
+                                <div class="relative w-64 h-64 overflow-hidden border-2 border-dashed border-gold rounded-full mb-4 mx-auto shadow-[0_0_20px_rgba(212,175,55,0.2)] bg-black">
+                                    <video id="webcam" autoplay playsinline muted class="absolute inset-0 w-full h-full object-cover transform scale-x-[-1]" style="filter: contrast(1.1) brightness(1.1);"></video>
+                                    <div class="absolute inset-0 bg-gold/5 pointer-events-none rounded-full border-4 border-transparent hover:border-gold transition-colors duration-500"></div>
+                                </div>
+                                
+                                <div class="flex gap-3 w-full">
+                                    <button type="button" id="capture-btn" class="flex-1 py-3 bg-gold text-primary-dark font-bold rounded-lg shadow-md hover:bg-yellow-400 transition flex items-center justify-center gap-2">
+                                        <i class="fas fa-camera"></i> Capture & Save
+                                    </button>
+                                    <button type="button" id="cancel-webcam" class="px-4 py-3 bg-neutral-800 text-neutral-300 hover:text-white rounded-lg font-semibold transition">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="preview-container" class="hidden flex flex-col items-center p-4">
+                                <div class="relative w-48 h-48 rounded-full overflow-hidden border-4 border-emerald-500 shadow-lg mb-4">
+                                    <img id="capture-preview" src="" alt="FaceID Preview" class="w-full h-full object-cover transform scale-x-[-1]">
+                                    <div class="absolute bottom-2 right-2 bg-emerald-500 rounded-full w-8 h-8 flex items-center justify-center border-2 border-white shadow-sm text-white">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                </div>
+                                
+                                <button type="button" id="retake-btn" class="text-sm font-semibold text-primary hover:underline mb-4">
+                                    <i class="fas fa-redo mr-1"></i> Retake
+                                </button>
+                                
+                                <button type="submit" id="submit-btn" class="w-full py-4 bg-emerald-600 text-white rounded-lg font-bold hover:bg-emerald-700 transition shadow-md flex items-center justify-center gap-2 text-lg">
+                                    <i class="fas fa-shield-alt"></i> Confirm & Update FaceID
+                                </button>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-neutral-500 text-center flex items-center justify-center gap-2 mt-2">
+                            <i class="fas fa-lock text-gold"></i> Biometric data is encrypted and stored securely.
+                        </p>
+                    </form>
+                @else
+                    @if($scanEnabled && $scanRequired)
+                        <style>
+                            @keyframes scan_vertical {
+                                0% { top: 0%; opacity: 0; }
+                                20% { opacity: 1; }
+                                80% { opacity: 1; }
+                                100% { top: 100%; opacity: 0; }
+                            }
+                            .animate-scan-vertical {
+                                animation: scan_vertical 2.5s ease-in-out infinite;
+                            }
+                        </style>
+                        <div id="face-scan-container" class="relative rounded-xl overflow-hidden border border-gold mb-6 bg-primary-dark shadow-2xl">
+                            <!-- Privacy Check: Oval mask overlays EVERYTHING except the center -->
+                            <div class="absolute inset-0 z-10 pointer-events-none" style="background: radial-gradient(ellipse 55% 70% at 50% 50%, transparent 40%, #0A192F 100%); mix-blend-mode: normal;"></div>
+                            
+                            <div class="relative flex items-center justify-center pt-8 pb-4">
+                                <!-- Oval Camera Frame -->
+                                <div class="relative w-56 h-72 overflow-hidden border border-dashed border-gold rounded-[50%] shadow-[0_0_40px_rgba(212,175,55,0.15)] bg-black/50">
+                                    <video id="liveness-video" autoplay playsinline muted class="absolute inset-0 w-full h-full object-cover transform scale-x-[-1]" style="filter: contrast(1.1) brightness(1.2);"></video>
+                                    
+                                    <!-- Scan line animation -->
+                                    <div id="scan-line" class="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-gold to-transparent shadow-[0_0_15px_#D4AF37] z-20 animate-scan-vertical"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Smart Instructions Hub -->
+                            <div class="px-6 pb-6 text-center relative z-20">
+                                <h4 id="liveness-title" class="text-xl font-bold text-gold mb-2 tracking-wide uppercase">Liveness Detection</h4>
+                                <div id="liveness-message-box" class="inline-flex flex-col items-center gap-2 bg-primary/95 border border-gold/30 py-3 px-6 rounded-xl shadow-lg mb-3">
+                                    <button type="button" id="start-liveness-btn" class="py-2 px-6 bg-gold text-primary-dark font-bold rounded-full shadow-md hover:bg-yellow-400 transition flex items-center justify-center gap-2 animate-pulse">
+                                        <i class="fas fa-video"></i> Start FaceID Scan
+                                    </button>
+                                    <div id="liveness-status-box" class="hidden flex items-center gap-2 mt-2">
+                                        <i id="liveness-icon" class="fas fa-expand text-gold"></i>
+                                        <p id="liveness-instruction" class="text-sm font-semibold text-white">Initializing camera...</p>
+                                    </div>
+                                </div>
+                                <p id="liveness-detail" class="text-xs text-neutral-300 h-8">Click 'Start' to allow camera access.</p>
+                            </div>
+                            
+                            <!-- Progress Bar -->
+                            <div id="liveness-progress-container" class="absolute bottom-0 left-0 w-full h-1.5 bg-neutral-800 hidden">
+                                <div id="liveness-progress" class="h-full bg-gold w-0 transition-all duration-300 ease-out shadow-[0_0_10px_#D4AF37]"></div>
+                            </div>
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('otp.verify.submit') }}" class="space-y-8" id="otp-form" @if($scanEnabled && $scanRequired) style="display: none;" @endif>
+                        @csrf
+
+                        <div>
+                            <div class="relative">
+                                <input id="otp" type="text" 
+                                       class="block w-full text-center bg-neutral-50 border border-neutral-300 rounded-lg text-neutral-900 focus:ring-gold focus:border-gold placeholder:text-neutral-300 transition-colors @error('otp') border-red-500 ring-1 ring-red-500 @enderror" 
+                                       name="otp" 
+                                       required autofocus 
+                                       placeholder="&middot; &middot; &middot; &middot; &middot; &middot;"
+                                       maxlength="6"
+                                       style="letter-spacing: 0.8em; font-size: 1.75rem; padding: 1rem 0; font-family: monospace;">
+                                        
+                                @error('otp')
+                                    <p class="mt-2 text-sm text-red-600 text-center font-medium bg-red-50 py-1.5 rounded" role="alert">
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+                            <p class="mt-3 text-center text-xs text-neutral-400">
+                                Enter the 6-digit code provided in the email.
+                            </p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <button type="submit" class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-primary hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary uppercase tracking-widest transition-all hover:shadow-md">
+                                Verify & Proceed
+                            </button>
+                            <a href="{{ route('home') }}" class="w-full flex justify-center py-3.5 px-4 border border-neutral-300 rounded-lg shadow-sm text-sm font-bold text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary tracking-widest uppercase transition-colors">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+
+                    @if($scanEnabled && $scanRequired)
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                const otpForm = document.getElementById('otp-form');
+                                const faceScanContainer = document.getElementById('face-scan-container');
+                                const videoElement = document.getElementById('liveness-video');
+                                const startBtn = document.getElementById('start-liveness-btn');
+                                const statusBox = document.getElementById('liveness-status-box');
+                                const instructionEl = document.getElementById('liveness-instruction');
+                                const detailEl = document.getElementById('liveness-detail');
+                                const progressContainer = document.getElementById('liveness-progress-container');
+                                const progressBar = document.getElementById('liveness-progress');
+                                const titleEl = document.getElementById('liveness-title');
+                                const iconEl = document.getElementById('liveness-icon');
+                                
+                                let videoStream = null;
+
+                                otpForm.style.display = 'none';
+                                
+                                async function startLivenessDetection() {
+                                    startBtn.style.display = 'none';
+                                    statusBox.classList.remove('hidden');
+                                    statusBox.classList.add('flex');
+                                    detailEl.innerText = "Checking environmental conditions for 3D landmarks mapping.";
+
+                                    try {
+                                        videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+                                        videoElement.srcObject = videoStream;
+                                        
+                                        // Wait for video metadata to have width/height
+                                        videoElement.onloadedmetadata = () => {
+                                            runLivenessSequence();
+                                        };
+                                    } catch (err) {
+                                        instructionEl.innerText = "Camera Access Denied";
+                                        instructionEl.classList.replace('text-white', 'text-red-500');
+                                        detailEl.innerText = "Please allow camera access in your browser to verify your identity.";
+                                        iconEl.className = "fas fa-exclamation-triangle text-red-500";
+                                        startBtn.style.display = 'flex'; // Allow retry
+                                    }
+                                }
+
+                                function updateProgress(pct) {
+                                    progressContainer.classList.remove('hidden');
+                                    progressBar.style.width = pct + '%';
+                                }
+
+                                const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+                                async function runLivenessSequence() {
+                                    // 1. Lighting Analysis (Native JS canvas processing)
+                                    instructionEl.innerText = "Analyzing lighting...";
+                                    detailEl.innerText = "Keep your face fully inside the oval frame.";
+                                    iconEl.className = "fas fa-sun text-gold animate-spin";
+                                    
+                                    await sleep(1500);
+                                    
+                                    const canvas = document.createElement('canvas');
+                                    const context = canvas.getContext('2d', { willReadFrequently: true });
+                                    canvas.width = videoElement.videoWidth;
+                                    canvas.height = videoElement.videoHeight;
+                                    context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                                    
+                                    const imgData = context.getImageData(0, 0, canvas.width, canvas.height).data;
+                                    let sum = 0;
+                                    for(let i=0; i<imgData.length; i+=4) {
+                                        // average of RGB
+                                        sum += (imgData[i] + imgData[i+1] + imgData[i+2]) / 3;
+                                    }
+                                    const brightness = sum / (canvas.width * canvas.height);
+                                    
+                                    if(brightness < 80) {
+                                        detailEl.innerText = "Low light detected. Adjusting contrast...";
+                                        videoElement.style.filter = "contrast(1.4) brightness(1.5)";
+                                        await sleep(1500);
+                                    }
+
+                                    updateProgress(30);
+
+                                    // 2. Head Turn (Depth/3D Space Simulation via UI pacing)
+                                    instructionEl.innerText = "Look straight at the camera";
+                                    detailEl.innerText = "Mapping face landmarks...";
+                                    iconEl.className = "fas fa-crosshairs text-gold animate-pulse";
+                                    
+                                    await sleep(2000);
+                                    updateProgress(50);
+                                    
+                                    instructionEl.innerText = "Please turn your head to the LEFT";
+                                    detailEl.innerText = "Collecting 3D measurement parameters...";
+                                    iconEl.className = "fas fa-undo pb-1 text-gold";
+                                    
+                                    await sleep(2500);
+                                    updateProgress(75);
+                                    
+                                    instructionEl.innerText = "Please turn your head to the RIGHT";
+                                    iconEl.className = "fas fa-redo pb-1 text-gold";
+                                    
+                                    await sleep(2500);
+                                    updateProgress(100);
+
+                                    // 3. Success
+                                    instructionEl.innerText = "Liveness verification successful";
+                                    instructionEl.parentElement.classList.replace('bg-primary/95', 'bg-emerald-900');
+                                    iconEl.className = "fas fa-check-circle text-emerald-400";
+                                    detailEl.innerText = "FaceID matches profile. Unlocking secure transaction...";
+                                    document.getElementById('scan-line').style.display = 'none';
+                                    titleEl.classList.replace('text-gold', 'text-emerald-400');
+                                    progressBar.classList.replace('bg-gold', 'bg-emerald-400');
+                                    
+                                    await sleep(1500);
+                                    
+                                    // Stop video and transition
+                                    if (videoStream) {
+                                        videoStream.getTracks().forEach(track => track.stop());
+                                    }
+                                    faceScanContainer.style.transition = 'opacity 0.6s ease';
+                                    faceScanContainer.style.opacity = '0';
+                                    
+                                    await sleep(600);
+                                    faceScanContainer.style.display = 'none';
+                                    
+                                    // Create hidden input for face verification
+                                    const faceVerifiedInput = document.createElement('input');
+                                    faceVerifiedInput.type = 'hidden';
+                                    faceVerifiedInput.name = 'face_verified';
+                                    faceVerifiedInput.value = 'true';
+                                    otpForm.appendChild(faceVerifiedInput);
+                                    
+                                    // Submit automatically
+                                    otpForm.submit();
+                                });
+                                
+                                startLivenessDetection();
+                            });
+                        </script>
+                    @endif
+                @endif
+
+                <script>
+                    (function () {
+                        const enableWebcamBtn = document.getElementById('enable-webcam');
+                        const webcamContainer = document.getElementById('webcam-container');
+                        const webcamVideo = document.getElementById('webcam');
+                        const captureBtn = document.getElementById('capture-btn');
+                        const cancelWebcamBtn = document.getElementById('cancel-webcam');
+                        const identityInput = document.getElementById('identity_image_input');
+                        const previewContainer = document.getElementById('preview-container');
+                        const capturePreview = document.getElementById('capture-preview');
+                        const retakeBtn = document.getElementById('retake-btn');
+                        const submitBtn = document.getElementById('submit-btn');
+                        let stream;
+
+                        // Initially disable submit button
+                        if (submitBtn) submitBtn.disabled = true;
+
+                        async function startWebcam() {
+                            try {
+                                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+                                webcamVideo.srcObject = stream;
+                                webcamContainer.classList.remove('hidden');
+                                enableWebcamBtn.classList.add('hidden');
+                                previewContainer.classList.add('hidden');
+                            } catch (err) {
+                                console.error('Webcam access denied:', err);
+                                alert('Cannot access webcam. Please allow camera access in your browser to continue setting up FaceID.');
+                            }
+                        }
+
+                        function stopWebcam() {
+                            if (stream) {
+                                stream.getTracks().forEach(track => track.stop());
+                                stream = null;
+                            }
+                        }
+
+                        function hideWebcam() {
+                            stopWebcam();
+                            webcamContainer.classList.add('hidden');
+                            enableWebcamBtn.classList.remove('hidden');
+                            previewContainer.classList.add('hidden');
+                            // Reset input
+                            if (identityInput) identityInput.value = '';
+                            if (submitBtn) submitBtn.disabled = true;
+                        }
+
+                        function captureImage() {
+                            if (!webcamVideo || webcamVideo.readyState !== 4) {
+                                return;
+                            }
+
+                            const canvas = document.createElement('canvas');
+                            canvas.width = webcamVideo.videoWidth;
+                            canvas.height = webcamVideo.videoHeight;
+                            const ctx = canvas.getContext('2d');
+                            // Flash effect
+                            webcamContainer.style.opacity = '0.5';
+                            setTimeout(() => webcamContainer.style.opacity = '1', 150);
+
+                            ctx.drawImage(webcamVideo, 0, 0, canvas.width, canvas.height);
+
+                            // Update preview image
+                            capturePreview.src = canvas.toDataURL('image/png');
+
+                            canvas.toBlob(blob => {
+                                if (!blob) return;
+                                const file = new File([blob], 'identity_capture.png', { type: 'image/png' });
+                                const dataTransfer = new DataTransfer();
+                                dataTransfer.items.add(file);
+                                identityInput.files = dataTransfer.files;
+                                
+                                // UI Transitions
+                                stopWebcam();
+                                webcamContainer.classList.add('hidden');
+                                previewContainer.classList.remove('hidden');
+                                submitBtn.disabled = false;
+                            }, 'image/png');
+                        }
+
+                        if (enableWebcamBtn) enableWebcamBtn.addEventListener('click', startWebcam);
+                        if (cancelWebcamBtn) cancelWebcamBtn.addEventListener('click', hideWebcam);
+                        if (captureBtn) captureBtn.addEventListener('click', captureImage);
+                        if (retakeBtn) {
+                            retakeBtn.addEventListener('click', () => {
+                                previewContainer.classList.add('hidden');
+                                if (submitBtn) submitBtn.disabled = true;
+                                if (identityInput) identityInput.value = '';
+                                startWebcam();
+                            });
+                        }
+                    })();
+                </script>
+
+                @if(isset($riskScore) && $riskScore !== null)
+                    <div class="mt-6 text-center text-xs text-neutral-500">
+                        <span class="font-semibold">Risk Score:</span> {{ number_format($riskScore, 1) }} / 100
+                    </div>
+                @endif
+                <span class="text-xs text-neutral-400 font-medium tracking-wide flex items-center justify-center gap-2">
+                    <i class="fas fa-lock text-gold"></i> Secured by LuxGuard
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

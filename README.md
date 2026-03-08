@@ -12,6 +12,7 @@ A complete, production-ready multi-vendor e-commerce platform built with **Larav
 - **Shopping Cart**: Add/remove items, update quantities, persistent cart
 - **Wishlists**: Save favorite products for later
 - **Multi-Seller Checkout**: Buy from multiple sellers in one order
+- **Buyer–Seller Chat**: Direct messaging between customers and sellers for product questions
 - **Order Management**: Track orders, cancel pending orders, view history
 - **Delivery Addresses**: Manage multiple delivery addresses
 - **Payment Methods**: Cash on Delivery (COD) and VNPay online payment
@@ -68,7 +69,11 @@ Visit: `http://localhost:8000`
 
 **For detailed setup instructions**, see [INSTALLATION.md](INSTALLATION.md)
 
-## 📁 Project Structure
+## � Documentation & Quick Scripts
+- **Docs folder**: See `docs/` for deep dives (chat system, testing guides, deployment notes, etc.)
+- **Test scripts**: `run-tests.ps1`, `run-tests.sh`, `test-chat-system.php`, `verify-chat-system.*`
+
+## �📁 Project Structure
 
 ```
 E-commerce2026/

@@ -11,6 +11,10 @@ use App\Models\User;
 use App\Models\WalletTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\RiskAssessmentService;
+use App\Models\SecurityAudit;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -170,15 +174,121 @@ class OrderController extends Controller
             ]);
         }
 
+        // ==========================================
+        // AI Risk Scoring Perimeter (Applies to Both Buy Now & Cart)
+        // ==========================================
+        if (!Session::get('mfa_verified')) {
+            $enableAiMfa = env('ENABLE_AI_MFA', true);
+
+            // Calculate total amount intent to score
+            $intentTotalAmount = 0;
+            if ($request->has('product_id')) {
+                $product = \App\Models\Product::findOrFail($request->input('product_id'));
+                $quantity = $request->input('quantity', 1);
+                $subtotal = $product->getDiscountedPrice() * $quantity;
+                $shippingFee = SystemFee::first()?->shipping_fee_default ?? 0;
+                $intentTotalAmount = $subtotal + $shippingFee;
+            } else {
+                $cart = $user->cart;
+                if (!$cart || $cart->items->isEmpty()) { return back()->with('error', 'Cart is empty'); }
+                $selectedItemIds = $request->input('item_ids', []);
+                $items = empty($selectedItemIds) ? $cart->items()->with('product')->get() : $cart->items()->whereIn('id', $selectedItemIds)->with('product')->get();
+                if ($items->isEmpty()) { return back()->with('error', 'No items selected'); }
+                
+                $subtotal = $items->sum(function ($item) { return $item->product->getDiscountedPrice() * $item->quantity; });
+                // Note: Multi-seller shipping fees logic may be complex, but for risk assessment a rough estimate is fine
+                $shippingFee = SystemFee::first()?->shipping_fee_default ?? 0;
+                $intentTotalAmount = $subtotal + $shippingFee; 
+            }
+
+            if ($enableAiMfa) {
+                $riskService = app(RiskAssessmentService::class);
+                $riskResult = $riskService->analyze($user, $intentTotalAmount);
+                if ($riskResult) {
+                    $suggestion = $riskResult['suggestion'] ?? 'allow';
+                    $score = $riskResult['risk_score'] ?? 0;
+                    $level = $riskResult['level'] ?? 'low';
+                } else {
+                    Log::error("Risk Scoring API Offline or Timeout. Defaulting to Static MFA Fallback.");
+                    $suggestion = 'otp';
+                    $score = 50.0;
+                    $level = 'medium';
+                    $riskResult = [
+                        'explanation' => [
+                            'score_breakdown' => ['Risk scoring service unavailable; defaulting to static MFA risk score.'],
+                            'input' => ['amount' => $intentTotalAmount],
+                        ],
+                    ];
+                }
+            } else {
+                // Static MFA - Non AI branch
+                $suggestion = 'otp';
+                $score = 50.0;
+                $level = 'medium';
+                $riskResult = [
+                    'explanation' => [
+                        'score_breakdown' => ['Static (no-AI) MFA mode in use; default risk score applied.'],
+                        'input' => ['amount' => $intentTotalAmount],
+                    ],
+                ];
+            }
+
+            // Centralized Audit Log Create
+            $audit = SecurityAudit::create([
+                'user_id' => $user->id,
+                'action' => 'checkout',
+                'amount' => $intentTotalAmount,
+                'risk_score' => $score,
+                'level' => $level,
+                'suggestion' => $suggestion,
+                'result' => $suggestion === 'allow' ? 'success' : 'pending',
+                'metadata' => [
+                    'ai_enabled' => $enableAiMfa,
+                    'risk_explanation' => $riskResult['explanation'] ?? null,
+                    'engine_input' => [
+                        'amount' => $intentTotalAmount,
+                        'ip' => $request->ip(),
+                        'location' => $riskResult['explanation']['input']['location'] ?? 'Unknown',
+                        'device' => substr(md5($request->header('User-Agent')), 0, 16),
+                        'device_is_new' => Session::has('device_verified') ? false : true,
+                    ],
+                ],
+            ]);
+            Session::put('pending_audit_id', $audit->id);
+
+            if ($suggestion === 'block') {
+                Session::flash('error', "Transaction Blocked: Our AI engine detected a critical risk of unauthorized activity. Please contact our support team to verify your account.");
+                return redirect()->route('home');
+            }
+
+            if ($suggestion === 'faceid' || $suggestion === 'otp') {
+                $otp = rand(100000, 999999);
+                Session::put('expected_otp', $otp);
+                Session::put('pending_checkout_request', $request->all());
+
+                Log::channel('single')->info("MFA Requested for User [{$user->id}]. OTP Code: [{$otp}]");
+                \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\MfaOtpMail($otp));
+
+                Session::flash('ai_warning', "Secure Authentication Required. For your protection, please verify your identity to proceed.");
+
+                return redirect()->route('otp.verify');
+            }
+        }
+        
+        // Clean up flag for next time
+        Session::forget('mfa_verified');
+
+        // ==== END Risk Scoring Perimeter ====
+
         // Check if this is "Buy Now" from product page
-        if (request()->has('product_id')) {
-            $product = \App\Models\Product::findOrFail(request('product_id'));
+        if ($request->has('product_id')) {
+            $product = \App\Models\Product::findOrFail($request->input('product_id'));
             
             if ($product->seller_id === Auth::id()) {
                 return back()->with('error', 'You cannot purchase your own products.');
             }
             
-            $quantity = request('quantity', 1);
+            $quantity = $request->input('quantity', 1);
 
             // Create order directly without cart
             $subtotal = $product->getDiscountedPrice() * $quantity;
@@ -186,19 +296,19 @@ class OrderController extends Controller
             $totalAmount = $subtotal + $shippingFee;
 
             $order = Order::create([
+                'order_number' => $this->generateOrderNumber(),
                 'customer_id' => $user->id,
                 'seller_id' => $product->seller_id,
-                'order_number' => 'ORD-' . strtoupper(uniqid()),
-                'recipient_name' => $recipientName,
-                'recipient_phone' => $recipientPhone,
-                'delivery_address' => $deliveryAddress,
-                'payment_method' => $validated['payment_method'],
-                'payment_status' => 'pending',
                 'status' => 'pending',
+                'payment_status' => 'pending',
                 'subtotal' => $subtotal,
                 'shipping_fee' => $shippingFee,
                 'discount_amount' => 0,
                 'total_amount' => $totalAmount,
+                'payment_method' => $validated['payment_method'],
+                'recipient_name' => $recipientName,
+                'recipient_phone' => $recipientPhone,
+                'delivery_address' => $deliveryAddress,
             ]);
 
             // Add order item
@@ -224,7 +334,7 @@ class OrderController extends Controller
 
             // Handle payment
             if ($validated['payment_method'] === 'online') {
-                return redirect()->route('paypal.create', $order);
+                return redirect()->route('paypal.create', $order)->with('success', 'Order placed successfully. Proceeding to PayPal for payment.');
             }
 
             return redirect()->route('orders.show', $order)->with('success', 'Order placed successfully');
@@ -265,6 +375,7 @@ class OrderController extends Controller
             $groupedItems[$sellerId][] = $item;
         }
 
+        $lastOrder = null;
         foreach ($groupedItems as $sellerId => $sellerItems) {
             // Convert array to collection
             $sellerItemsCollection = collect($sellerItems);
@@ -291,6 +402,7 @@ class OrderController extends Controller
                 'recipient_phone' => $recipientPhone,
                 'delivery_address' => $deliveryAddress,
             ]);
+            $lastOrder = $order;
 
             // Create Order Items
             foreach ($sellerItemsCollection as $cartItem) {
@@ -323,19 +435,12 @@ class OrderController extends Controller
             $cart->items()->delete();
         }
 
-        // For first order in multi-seller, redirect to PayPal if online payment
-        if ($validated['payment_method'] === 'online') {
-            if (count($groupedItems) === 1) {
-                $firstOrder = Order::find($order->id ?? null);
-                if ($firstOrder) {
-                    return redirect()->route('paypal.create', $firstOrder)->with('success', 'Proceeding to PayPal payment');
-                }
-            } else {
-                return redirect()->route('orders.index')->with('success', 'Orders placed successfully. Please complete the online payment for each order below.');
-            }
+        // For online payment, redirect to PayPal with the last created order.
+        if ($validated['payment_method'] === 'online' && $lastOrder) {
+            return redirect()->route('paypal.create', $lastOrder)->with('success', 'Order placed successfully. Proceeding to PayPal for the first payment.');
         }
 
-        return redirect()->route('orders.success')->with('success', 'Order placed successfully');
+        return redirect()->route('orders.index')->with('success', 'Orders placed successfully!');
     }
 
     public function cancel(Request $request, Order $order)

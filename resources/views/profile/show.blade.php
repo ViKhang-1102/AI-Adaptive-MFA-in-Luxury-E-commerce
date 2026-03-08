@@ -51,6 +51,27 @@
                         <input type="file" name="avatar" accept="image/*" class="block mt-2 px-3 py-2 border rounded-md">
                     </div>
 
+                    <div class="mt-6">
+                        <label class="block font-bold mb-2">Luxury Identity Profile</label>
+                        @if(auth()->user()->identity_image)
+                        <div class="flex items-center gap-4 mb-3">
+                            <div class="w-24 h-24 rounded-md bg-neutral-900 flex flex-col items-center justify-center border border-gold shadow-md">
+                                <i class="fas fa-lock text-gold text-2xl mb-1"></i>
+                                <span class="text-[10px] text-gold uppercase tracking-wider font-bold">Secured</span>
+                            </div>
+                            <div class="text-sm text-neutral-600">
+                                <span class="text-emerald-600 font-bold block mb-1"><i class="fas fa-shield-alt"></i> Highly Protected Data</span>
+                                Your Luxury Identity is securely stored and <strong>hidden</strong> for your privacy. It is exclusively used by the AI engine for FaceID verification.
+                            </div>
+                        </div>
+                        @else
+                        <div class="text-sm text-neutral-600 mb-3 block">
+                            <i class="fas fa-info-circle text-primary"></i> <span class="font-bold">FaceID Not Configured</span><br>
+                            To prevent spoofing, Luxury Identity Profiles must be set up via a live Webcam scan during your next high-value transaction. File uploads are disabled for security reasons.
+                        </div>
+                        @endif
+                    </div>
+
                     <div>
                         <label class="block font-bold mb-2">Full Name</label>
                         <input type="text" name="name" value="{{ auth()->user()->name }}" 

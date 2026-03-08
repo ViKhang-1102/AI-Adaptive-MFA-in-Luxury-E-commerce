@@ -18,6 +18,7 @@ class User extends Authenticatable
         'phone',
         'address',
         'avatar',
+        'identity_image',
         'bio',
         'paypal_email',
         'is_active',

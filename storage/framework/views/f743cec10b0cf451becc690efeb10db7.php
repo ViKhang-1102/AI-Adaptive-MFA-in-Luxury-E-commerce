@@ -127,6 +127,10 @@
             <a href="<?php echo e(route('profile.show')); ?>" class="p-4 border rounded-md hover:bg-neutral-50">
                 <i class="fas fa-user text-primary mr-2"></i> My Profile
             </a>
+            <a href="<?php echo e(route('admin.security.index')); ?>" class="p-4 border border-gold bg-[#0A192F] text-white rounded-md hover:bg-[#112240] transition-colors shadow-soft">
+                <i class="fas fa-shield-alt text-gold mr-2"></i> Security Insights 
+                <span class="ml-2 bg-gold text-[#0A192F] text-xs font-bold px-2 py-1 rounded-full">AI</span>
+            </a>
         </div>
     </div>
 </div>

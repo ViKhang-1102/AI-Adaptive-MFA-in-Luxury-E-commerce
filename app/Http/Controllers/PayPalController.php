@@ -10,6 +10,10 @@ use App\Models\WalletTransaction;
 use App\Models\User;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Support\Facades\Auth;
+use App\Services\RiskAssessmentService;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
+use App\Models\SecurityAudit;
 
 class PayPalController extends Controller
 {
@@ -18,20 +22,11 @@ class PayPalController extends Controller
      */
     public function createPayment(Request $request, Order $order)
     {
-        // ==== Chèn logic AI Risk Score tại đây ====
-        // Ví dụ: $riskScore = app(RiskScoringService::class)->calculateRisk(auth()->user());
-        // Nếu $riskScore > 0.7, yêu cầu xác thực MFA
-        // ============================================
+        $user = auth()->user();
 
-        if ($request->filled('mfa_verified')) {
-            $riskScore = 0;
-        } else {
-            $riskScore = rand(0, 100) / 100;
-        }
-
-        if ($riskScore > 0.7) {
-            // ask for MFA: return a view where the user can verify
-            return view('mfa.verify', compact('riskScore', 'order'));
+        // Check if user is logged in
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Please login to continue.');
         }
 
         // otherwise proceed to PayPal

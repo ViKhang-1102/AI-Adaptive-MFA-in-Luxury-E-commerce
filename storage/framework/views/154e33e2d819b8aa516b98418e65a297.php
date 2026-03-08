@@ -4,7 +4,7 @@
 
 <?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">Checkout</h1>
+    <h1 class="text-3xl font-bold mb-8 text-primary font-serif">Checkout</h1>
 
     <form action="<?php echo e(route('orders.store')); ?>" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <?php echo csrf_field(); ?>
@@ -29,7 +29,7 @@
                 <h2 class="text-xl font-bold mb-4">Delivery Address</h2>
 
                 <?php if($defaultAddress): ?>
-                <div class="mb-4 p-4 border rounded-md bg-blue-50">
+                <div class="mb-4 p-4 border-2 border-primary rounded-md bg-neutral-50">
                     <label class="flex items-center">
                         <input type="radio" name="address_id" value="<?php echo e($defaultAddress->id); ?>" checked class="mr-2">
                         <div>
@@ -161,7 +161,7 @@
                 </div>
             </div>
 
-            <button type="submit" onclick="validateCheckoutForm(event)" class="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 font-bold mt-6">
+            <button type="submit" onclick="validateCheckoutForm(event)" class="w-full bg-primary text-white shadow-sm-soft hover:shadow-sm-hover hover:-translate-y-0.5 transition-all duration-300 py-3 rounded-md hover:bg-primary-light font-bold mt-6">
                 Place Order
             </button>
         </div>
@@ -183,7 +183,7 @@ function validateCheckoutForm(event) {
     if (!isNewAddressOpen) {
         selectedAddressId = form.querySelector('input[name="address_id"]:checked');
         if (!selectedAddressId) {
-            alert('Vui lòng chọn hoặc thêm địa chỉ giao hàng');
+            alert('Please select or add a delivery address');
             return false;
         }
     } else {
@@ -199,7 +199,7 @@ function validateCheckoutForm(event) {
         const recipientPhone = document.querySelector('#newAddressForm input[name="recipient_phone"]').value;
         
         if (!province || !district || !ward || !recipientName || !recipientPhone) {
-            alert('Vui lòng nhập đầy đủ thông tin giao hàng (Tên, SĐT, Tỉnh/Thành, Quận/Huyện, Phường/Xã)');
+            alert('Please enter all required delivery information (Name, Phone, Province/City, District, Ward/Commune)');
             return false;
         }
         
@@ -246,15 +246,15 @@ function initCheckoutAddress() {
 
     // Populate provinces
     const provinces = getProvinces();
-    provinceSelect.innerHTML = '<option value="">Chọn Tỉnh/Thành phố</option>' + 
+    provinceSelect.innerHTML = '<option value="">Select Province/City</option>' + 
         provinces.map(p => `<option value="${p}">${p}</option>`).join('');
 
     // Update districts
     provinceSelect.addEventListener('change', function() {
         const districts = getDistricts(this.value);
-        districtSelect.innerHTML = '<option value="">Chọn Quận/Huyện</option>' + 
+        districtSelect.innerHTML = '<option value="">Select District</option>' + 
             districts.map(d => `<option value="${d}">${d}</option>`).join('');
-        wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+        wardSelect.innerHTML = '<option value="">Select Ward/Commune</option>';
         updateCheckoutAddress();
     });
 
@@ -262,7 +262,7 @@ function initCheckoutAddress() {
     districtSelect.addEventListener('change', function() {
         const province = provinceSelect.value;
         const wards = getWards(province, this.value);
-        wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>' + 
+        wardSelect.innerHTML = '<option value="">Select Ward/Commune</option>' + 
             wards.map(w => `<option value="${w}">${w}</option>`).join('');
         updateCheckoutAddress();
     });
@@ -284,7 +284,7 @@ function initCheckoutAddress() {
 
         addressDisplay.textContent = fullAddress.length > 0 
             ? fullAddress.join(', ') 
-            : 'Vui lòng chọn địa chỉ';
+            : 'Please select an address';
     }
 }
 
@@ -297,23 +297,23 @@ function saveCheckoutAddress() {
     const street = document.getElementById('checkoutStreet').value.trim();
 
     if (!province) {
-        alert('Vui lòng chọn Tỉnh/Thành phố');
+        alert('Please select a Province/City');
         return;
     }
     if (!district) {
-        alert('Vui lòng chọn Quận/Huyện');
+        alert('Please select a District');
         return;
     }
     if (!ward) {
-        alert('Vui lòng chọn Phường/Xã');
+        alert('Please select a Ward/Commune');
         return;
     }
     if (!recipientName) {
-        alert('Vui lòng nhập tên người nhận');
+        alert('Please enter recipient name');
         return;
     }
     if (!recipientPhone) {
-        alert('Vui lòng nhập số điện thoại');
+        alert('Please enter phone number');
         return;
     }
 

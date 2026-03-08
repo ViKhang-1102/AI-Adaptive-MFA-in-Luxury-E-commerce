@@ -79,45 +79,49 @@
             <!-- Actions -->
             @auth
             @if(auth()->user()->isCustomer() || auth()->user()->isSeller())
-            <div class="space-y-3 mb-6">
-                <div class="flex gap-3 items-center mb-3">
-                    <label for="quantity" class="font-semibold">Quantity:</label>
-                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ $product->stock }}" class="w-20 px-3 py-2 border rounded-md">
+            <div class="space-y-4 mb-8">
+                <div class="flex gap-4 items-center mb-6">
+                    <label for="quantity" class="font-serif text-sm uppercase tracking-widest text-primary font-bold">Quantity:</label>
+                    <div class="relative">
+                        <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ $product->stock }}" class="w-24 px-4 py-2 bg-transparent border-0 border-b-2 border-gold focus:ring-0 focus:border-primary text-center font-bold text-lg transition-colors">
+                    </div>
                 </div>
 
-                <form action="{{ route('cart.add') }}" method="POST" class="flex space-x-2">
-                    @csrf
-                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                    <input type="hidden" name="quantity" id="cartQuantity" value="1">
-                    <button type="submit" class="flex-1 bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 py-2 rounded-md hover:bg-primary-light hover:-translate-y-0.5">
-                        <i class="fas fa-shopping-cart"></i> Add to Cart
-                    </button>
-                </form>
+                <div class="flex flex-col gap-3">
+                    <form action="{{ route('cart.add') }}" method="POST" class="w-full">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <input type="hidden" name="quantity" id="cartQuantity" value="1">
+                        <button type="submit" class="w-full inline-flex justify-center items-center gap-3 bg-primary text-white border border-primary font-serif font-bold tracking-widest uppercase py-4 hover:bg-transparent hover:text-primary transition-all duration-300">
+                            <i class="fas fa-shopping-cart text-gold"></i> Add to Cart
+                        </button>
+                    </form>
 
-                <form action="{{ route('checkout') }}" method="GET">
-                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                    <input type="hidden" name="quantity" id="buyNowQuantity" value="1">
-                    <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700">
-                        Buy Now
-                    </button>
-                </form>
+                    <form action="{{ route('checkout') }}" method="GET" class="w-full">
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <input type="hidden" name="quantity" id="buyNowQuantity" value="1">
+                        <button type="submit" class="w-full inline-flex justify-center items-center gap-3 bg-transparent text-primary border border-gold font-serif font-bold tracking-widest uppercase py-4 hover:bg-gold hover:text-white hover:border-gold transition-all duration-300">
+                            <i class="fas fa-bolt"></i> Buy Now
+                        </button>
+                    </form>
 
-                @if(auth()->user()->wishlist->where('product_id', $product->id)->first())
-                <form action="{{ route('wishlist.remove', $product->id) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700">
-                        <i class="fas fa-heart"></i> Remove from Wishlist
-                    </button>
-                </form>
-                @else
-                <form action="{{ route('wishlist.add', $product->id) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="w-full bg-gray-600 text-white py-2 rounded-md hover:bg-gray-700">
-                        <i class="far fa-heart"></i> Add to Wishlist
-                    </button>
-                </form>
-                @endif
+                    @if(auth()->user()->wishlist->where('product_id', $product->id)->first())
+                    <form action="{{ route('wishlist.remove', $product->id) }}" method="POST" class="w-full">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="w-full inline-flex justify-center items-center gap-3 bg-neutral-50 text-neutral-800 border border-transparent font-serif font-bold tracking-widest uppercase py-4 hover:bg-neutral-100 hover:text-red-600 transition-all duration-300">
+                            <i class="fas fa-heart text-red-500"></i> Remove from Wishlist
+                        </button>
+                    </form>
+                    @else
+                    <form action="{{ route('wishlist.add', $product->id) }}" method="POST" class="w-full">
+                        @csrf
+                        <button type="submit" class="w-full inline-flex justify-center items-center gap-3 bg-neutral-50 text-neutral-800 border border-transparent font-serif font-bold tracking-widest uppercase py-4 hover:bg-primary hover:text-gold transition-all duration-300">
+                            <i class="far fa-heart text-gold"></i> Add to Wishlist
+                        </button>
+                    </form>
+                    @endif
+                </div>
             </div>
             @endif
             @endif

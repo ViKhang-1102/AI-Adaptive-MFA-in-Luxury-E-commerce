@@ -30,6 +30,12 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
+// OTP Verification Routes for Adaptive MFA
+// NOTE: This must not require auth, because the user is not logged in yet when MFA is triggered.
+Route::get('/verify-otp', [\App\Http\Controllers\Auth\OTPController::class, 'showVerifyForm'])->name('otp.verify');
+Route::post('/verify-otp', [\App\Http\Controllers\Auth\OTPController::class, 'verify'])->name('otp.verify.submit');
+Route::post('/verify-otp/identity', [\App\Http\Controllers\Auth\OTPController::class, 'uploadIdentity'])->name('otp.identity.upload');
+
 // Protected Routes for All Authenticated Users
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
@@ -127,6 +133,11 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix
     Route::post('/transactions/{transaction}/reject', [App\Http\Controllers\Admin\TransactionController::class, 'reject'])->name('transaction.reject');
     Route::get('/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
+    
+    // Security Dashboard & AI Settings
+    Route::get('/security-insights', [App\Http\Controllers\Admin\SecurityController::class, 'index'])->name('security.index');
+    Route::post('/security-insights/toggle-mfa', [App\Http\Controllers\Admin\SecurityController::class, 'toggleMfa'])->name('security.toggle-mfa');
+    Route::get('/security-insights/export-blocked', [App\Http\Controllers\Admin\SecurityController::class, 'exportBlocked'])->name('security.export-blocked');
 });
 
 

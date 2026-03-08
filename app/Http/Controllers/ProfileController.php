@@ -22,6 +22,7 @@ class ProfileController extends Controller
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'avatar' => 'nullable|image|max:2048',
+            'identity_image' => 'nullable|image|max:4096',
             'bio' => 'nullable|string|max:500',
             'paypal_email' => 'nullable|email|max:255',
         ]);
@@ -32,6 +33,11 @@ class ProfileController extends Controller
         if ($request->hasFile('avatar')) {
             $path = $request->file('avatar')->store('avatars', 'public');
             $validated['avatar'] = $path;
+        }
+
+        if ($request->hasFile('identity_image')) {
+            $path = $request->file('identity_image')->store('identities', 'public');
+            $validated['identity_image'] = $path;
         }
 
         // Only allow sellers to set paypal_email, but accept the field safely
@@ -55,6 +61,86 @@ class ProfileController extends Controller
 
         /** @var User $currentUser */
         $currentUser = Auth::user();
+
+        // -------------------------
+        // NEW: Adaptive MFA for Password Change
+        // -------------------------
+        if (!\Illuminate\Support\Facades\Session::get('mfa_verified')) {
+            $enableAiMfa = env('ENABLE_AI_MFA', true);
+            if ($enableAiMfa) {
+                // Determine if device is new (from session)
+                $deviceIsNew = !\Illuminate\Support\Facades\Session::has('device_verified');
+                if ($deviceIsNew) {
+                    $riskService = app(\App\Services\RiskAssessmentService::class);
+                    // Pass a dummy amount for password change to trigger risk score.
+                    $riskResult = $riskService->analyze($currentUser, 0);
+
+                    if ($riskResult) {
+                        $suggestion = $riskResult['suggestion'] ?? 'allow';
+                        $score = $riskResult['risk_score'] ?? 0;
+                        $level = $riskResult['level'] ?? 'low';
+                    } else {
+                        $suggestion = 'otp';
+                        $score = 50.0;
+                        $level = 'medium';
+                        $riskResult = [
+                            'explanation' => [
+                                'score_breakdown' => ['Risk scoring unavailable; defaulting to MFA risk score.'],
+                                'input' => ['amount' => 0],
+                            ],
+                        ];
+                    }
+
+                    // Create Security Audit Record
+                    $audit = \App\Models\SecurityAudit::create([
+                        'user_id' => $currentUser->id,
+                        'action' => 'password_change',
+                        'amount' => 0,
+                        'risk_score' => $score,
+                        'level' => $level,
+                        'suggestion' => $suggestion,
+                        'result' => 'pending',
+                        'metadata' => [
+                            'ai_enabled' => true,
+                            'device_is_new' => true,
+                            'risk_explanation' => $riskResult['explanation'] ?? null,
+                            'engine_input' => [
+                                'amount' => 0,
+                                'device_is_new' => true,
+                            ],
+                        ]
+                    ]);
+
+                    \Illuminate\Support\Facades\Session::put('pending_audit_id', $audit->id);
+
+                    if ($suggestion === 'faceid' || $suggestion === 'otp' || $score >= 30) {
+                        $otp = rand(100000, 999999);
+                        \Illuminate\Support\Facades\Session::put('expected_otp', $otp);
+                        
+                        // Enable resume
+                        \Illuminate\Support\Facades\Session::put('intended_action_url', url()->previous());
+                        \Illuminate\Support\Facades\Session::put('pending_password_change', $validated);
+
+                        \Illuminate\Support\Facades\Log::channel('single')->info("MFA Requested for User [{$currentUser->id}]. OTP Code: [{$otp}]");
+                        
+                        \Illuminate\Support\Facades\Mail::to($currentUser->email)->send(new \App\Mail\MfaOtpMail($otp));
+
+                        \Illuminate\Support\Facades\Session::flash('ai_warning', "Security check required before changing password from a new device.");
+
+                        return redirect()->route('otp.verify');
+                    }
+                }
+            }
+        }
+        
+        // Clean up flag
+        \Illuminate\Support\Facades\Session::forget('mfa_verified');
+
+        // Check if there are pending passsword parameters from session
+        if (\Illuminate\Support\Facades\Session::has('pending_password_change')) {
+            $validated = \Illuminate\Support\Facades\Session::pull('pending_password_change');
+        }
+
         $currentUser->update([
             'password' => Hash::make($validated['password']),
         ]);

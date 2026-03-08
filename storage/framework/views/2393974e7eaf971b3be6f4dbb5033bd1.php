@@ -6,7 +6,7 @@
 <div class="max-w-md mx-auto mt-12 bg-white p-8 rounded-md-lg shadow-sm">
     <h1 class="text-2xl font-bold mb-6 text-center">Register</h1>
 
-    <form action="<?php echo e(route('register')); ?>" method="POST">
+    <form action="<?php echo e(route('register')); ?>" method="POST" enctype="multipart/form-data">
         <?php echo csrf_field(); ?>
 
         <div class="mb-4">
@@ -15,6 +15,23 @@
                 class="w-full px-4 py-2 border rounded-md-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
                 required>
             <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <span class="text-red-600 text-sm"><?php echo e($message); ?></span>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-neutral-700 font-bold mb-2">Luxury Identity Profile (Optional)</label>
+            <input type="file" name="identity_image" accept="image/*" 
+                class="w-full px-4 py-2 border rounded-md-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+            <p class="text-xs text-neutral-500 mt-2">Upload a clear headshot for premium security verification and high-value transaction protection.</p>
+            <?php $__errorArgs = ['identity_image'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }

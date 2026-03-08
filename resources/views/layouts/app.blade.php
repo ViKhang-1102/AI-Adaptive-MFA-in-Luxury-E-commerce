@@ -96,9 +96,35 @@
         </div>
     @endif
 
+    @if (session('info'))
+        <div class="bg-blue-50 border border-blue-300 text-blue-700 px-4 py-3 rounded-md m-4">
+            {{ session('info') }}
+        </div>
+    @endif
+
     @if (session('error'))
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md m-4">
             {{ session('error') }}
+        </div>
+    @endif
+
+    <!-- AI Security Toast -->
+    @if (session('ai_warning'))
+        <div id="ai-security-toast" class="fixed top-24 right-5 z-50 transform transition-all duration-500 translate-x-full opacity-0">
+            <div class="shadow-lg rounded-r-md px-4 py-3 min-w-[300px] flex items-start gap-4" style="background-color: #0A192F; border-left: 4px solid #DC143C;">
+                <div class="mt-1" style="color: #DC143C;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-shield-fill-exclamation" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.8 11.8 0 0 0 2.517 2.453c.386.273.744.482 1.048.625.28.132.581.24.829.24s.548-.108.829-.24a7 7 0 0 0 1.048-.625 11.8 11.8 0 0 0 2.517-2.453c1.678-2.195 3.061-5.513 2.465-9.99a1.54 1.54 0 0 0-1.044-1.263 63 63 0 0 0-2.887-.87C9.843.266 8.69 0 8 0m-.5 5a.5.5 0 0 1 1 0v3a.5.5 0 0 1-1 0zm.5 5.5a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h5 class="text-sm font-bold mb-1" style="color: #D4AF37; font-family: 'Playfair Display', serif; letter-spacing: 0.5px;">Security Advisory</h5>
+                    <p class="text-xs mb-0" style="color: #F1F3F5; line-height: 1.4;">{{ session('ai_warning') }}</p>
+                </div>
+                <button onclick="document.getElementById('ai-security-toast').style.display='none'" class="text-gray-400 hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-Lg" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/></svg>
+                </button>
+            </div>
         </div>
     @endif
 
@@ -164,6 +190,26 @@
                         menu.classList.add('hidden');
                     }, 200);
                 }
+            }
+        });
+
+        // Trigger AI Toast animation
+        window.addEventListener('DOMContentLoaded', () => {
+            const toast = document.getElementById('ai-security-toast');
+            if (toast) {
+                setTimeout(() => {
+                    toast.classList.remove('translate-x-full', 'opacity-0');
+                    toast.classList.add('translate-x-0', 'opacity-100');
+                }, 100);
+                
+                // Auto hide after 8s
+                setTimeout(() => {
+                    if (toast) {
+                        toast.classList.remove('translate-x-0', 'opacity-100');
+                        toast.classList.add('translate-x-full', 'opacity-0');
+                        setTimeout(() => toast.remove(), 500);
+                    }
+                }, 8000);
             }
         });
     </script>

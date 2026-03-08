@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">Checkout</h1>
+    <h1 class="text-3xl font-bold mb-8 text-primary font-serif">Checkout</h1>
 
     <form action="{{ route('orders.store') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         @csrf
@@ -29,7 +29,7 @@
                 <h2 class="text-xl font-bold mb-4">Delivery Address</h2>
 
                 @if($defaultAddress)
-                <div class="mb-4 p-4 border rounded-md bg-blue-50">
+                <div class="mb-4 p-4 border-2 border-primary rounded-md bg-neutral-50">
                     <label class="flex items-center">
                         <input type="radio" name="address_id" value="{{ $defaultAddress->id }}" checked class="mr-2">
                         <div>
@@ -161,7 +161,7 @@
                 </div>
             </div>
 
-            <button type="submit" onclick="validateCheckoutForm(event)" class="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 font-bold mt-6">
+            <button type="submit" onclick="validateCheckoutForm(event)" class="w-full bg-primary text-white shadow-sm-soft hover:shadow-sm-hover hover:-translate-y-0.5 transition-all duration-300 py-3 rounded-md hover:bg-primary-light font-bold mt-6">
                 Place Order
             </button>
         </div>
