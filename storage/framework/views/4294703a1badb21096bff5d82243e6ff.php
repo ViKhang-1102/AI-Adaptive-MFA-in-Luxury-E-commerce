@@ -167,7 +167,7 @@
                         <td colspan="9" class="px-4 py-4">
                             <?php
                                 $explanation = data_get($audit->metadata, 'risk_explanation.score_breakdown');
-                                $engineInput = data_get($audit->metadata, 'risk_explanation.input');
+                                $engineInput = data_get($audit->metadata, 'engine_input') ?? data_get($audit->metadata, 'risk_explanation.input');
                             ?>
                             <div class="text-xs text-neutral-600">
                                 <?php if($explanation): ?>
@@ -269,91 +269,15 @@
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startPush('scripts'); ?>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    // 1. Chart Data Render
-    const ctx = document.getElementById('riskChart').getContext('2d');
-    const riskChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: <?php echo json_encode($chartLabels); ?>,
-            datasets: [{
-                label: 'Average Risk Score (0-100)',
-                data: <?php echo json_encode($chartData); ?>,
-                borderColor: '#D4AF37',
-                backgroundColor: 'rgba(212, 175, 55, 0.1)',
-                borderWidth: 3,
-                tension: 0.4,
-                fill: true,
-                pointBackgroundColor: '#0A192F',
-                pointRadius: 4,
-                pointHoverRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    grid: { borderDash: [5, 5], color: '#f3f4f6' },
-                    border: { display: false }
-                },
-                x: {
-                    grid: { display: false },
-                    border: { display: false }
-                }
-            }
-        }
-    });
+    <div id="security-dashboard"
+        data-chart-labels='<?php echo json_encode($chartLabels, 15, 512) ?>'
+        data-chart-data='<?php echo json_encode($chartData, 15, 512) ?>'
+        data-toggle-url="<?php echo e(route('admin.security.toggle-mfa')); ?>"
+        data-csrf="<?php echo e(csrf_token()); ?>">
+    </div>
 
-    // 2. A/B Toggle AJAX Request
-    const toggle = document.getElementById('mfaToggle');
-    const statusText = document.getElementById('mfaStatusText');
-    
-    toggle.addEventListener('change', function() {
-        const isEnabled = this.checked;
-        statusText.innerText = "Updating...";
-        
-        fetch('<?php echo e(route('admin.security.toggle-mfa')); ?>', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
-            },
-            body: JSON.stringify({ enabled: isEnabled })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if(data.success) {
-                statusText.innerText = data.state === 'true' ? 'Active' : 'Disabled';
-            }
-        })
-        .catch(error => {
-            console.error('Error toggling MFA state:', error);
-            statusText.innerText = "Update Failed.";
-            toggle.checked = !isEnabled; // Revert
-        });
-    });
-
-    // 3. Details Toggle for each audit row
-    document.querySelectorAll('.details-toggle').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const auditId = btn.dataset.auditId;
-            const row = document.getElementById(`audit-details-${auditId}`);
-            if (!row) return;
-            const isHidden = row.classList.contains('hidden');
-            row.classList.toggle('hidden');
-            btn.textContent = isHidden ? 'Hide' : 'View';
-        });
-    });
-});
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="<?php echo e(asset('js/admin-security.js')); ?>"></script>
 <?php $__env->stopPush(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\E-commerce2026\resources\views/admin/security/index.blade.php ENDPATH**/ ?>

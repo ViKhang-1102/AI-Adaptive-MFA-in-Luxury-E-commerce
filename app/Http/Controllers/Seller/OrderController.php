@@ -14,6 +14,7 @@ class OrderController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
         $orders = $user->ordersAsSeller()
+            ->where('status', '<>', 'review')
             ->with('customer', 'items.product.images')
             ->latest()
             ->paginate(10);
@@ -23,7 +24,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        if ($order->seller_id !== Auth::id()) {
+        if ($order->seller_id !== Auth::id() || $order->status === 'review') {
             abort(403);
         }
 

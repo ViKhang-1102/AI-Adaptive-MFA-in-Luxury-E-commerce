@@ -73,6 +73,7 @@
                             @php
                                 $statusStyles = [
                                     'pending' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
+                                    'review' => 'bg-amber-50 text-amber-700 border-amber-200',
                                     'processing' => 'bg-blue-50 text-blue-700 border-blue-200',
                                     'confirmed' => 'bg-blue-50 text-blue-700 border-blue-200',
                                     'shipped' => 'bg-purple-50 text-purple-700 border-purple-200',
@@ -80,10 +81,11 @@
                                     'cancelled' => 'bg-red-50 text-red-700 border-red-200',
                                 ];
                                 $badgeClass = $statusStyles[$order->status] ?? 'bg-neutral-50 text-neutral-700 border-neutral-200';
+                                $statusLabel = $order->status === 'review' ? 'On Hold - Security Review' : ucfirst($order->status);
                             @endphp
                             <div class="text-right">
                                 <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border {{ $badgeClass }}">
-                                    {{ $order->status }}
+                                    {{ $statusLabel }}
                                 </span>
                             </div>
                         </div>
@@ -97,7 +99,13 @@
                             <a href="{{ route('orders.show', $order) }}" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg text-sm font-bold text-white bg-primary hover:bg-primary-light transition-colors shadow-sm text-center">
                                 View Order Details
                             </a>
-                            
+
+                            @if($order->status === 'review')
+                                <a href="{{ route('support.contact', ['order_id' => $order->id]) }}" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg text-sm font-bold text-white bg-amber-600 hover:bg-amber-700 transition-colors shadow-sm text-center">
+                                    View Status
+                                </a>
+                            @endif
+
                             <div class="flex gap-2">
                                 <form action="{{ route('orders.buyAgain', $order) }}" method="POST" class="flex-1 border rounded-lg hover:bg-neutral-50 transition-colors text-center">
                                     @csrf

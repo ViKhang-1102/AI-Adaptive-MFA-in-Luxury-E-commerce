@@ -13,6 +13,7 @@ class Order extends Model
         'order_number',
         'customer_id',
         'seller_id',
+        'security_audit_id',
         'status',
         'subtotal',
         'shipping_fee',
@@ -48,6 +49,11 @@ class Order extends Model
     public function seller()
     {
         return $this->belongsTo(User::class, 'seller_id');
+    }
+
+    public function securityAudit()
+    {
+        return $this->belongsTo(\App\Models\SecurityAudit::class, 'security_audit_id');
     }
 
     public function items()
@@ -104,6 +110,7 @@ class Order extends Model
 
     public function canBeCancelled()
     {
-        return in_array($this->status, ['pending', 'confirmed']);
+        // Orders requiring manual review are still cancellable by the customer.
+        return in_array($this->status, ['pending', 'confirmed', 'review']);
     }
 }

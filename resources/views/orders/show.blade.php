@@ -15,6 +15,7 @@
                 @php
                     $statusStyles = [
                         'pending' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
+                        'review' => 'bg-orange-50 text-orange-700 border-orange-200',
                         'confirmed' => 'bg-blue-50 text-blue-700 border-blue-200',
                         'shipped' => 'bg-purple-50 text-purple-700 border-purple-200',
                         'delivered' => 'bg-green-50 text-green-700 border-green-200',
@@ -25,6 +26,15 @@
                 <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border {{ $badgeClass }}">
                     {{ $order->status }}
                 </span>
+
+                @if($order->status === 'review')
+                    <div class="ml-4">
+                        <a href="{{ route('support.contact', ['order_id' => $order->id]) }}" class="inline-flex items-center gap-2 px-3 py-1 bg-orange-600 text-white rounded-full text-xs font-semibold hover:bg-orange-700 transition">
+                            <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                            Contact Support to Verify
+                        </a>
+                    </div>
+                @endif
             </div>
             <p class="text-neutral-500 mt-2">Placed on {{ $order->created_at->format('F d, Y \a\t h:i A') }}</p>
         </div>
@@ -63,6 +73,7 @@
                     @php
                         $stages = [
                             'pending' => ['icon' => 'clock', 'label' => 'Order Placed', 'desc' => 'We have received your order'],
+                            'review' => ['icon' => 'shield-alert', 'label' => 'Under Review', 'desc' => 'Your order is being reviewed by our support team'],
                             'confirmed' => ['icon' => 'check-circle', 'label' => 'Confirmed', 'desc' => 'Seller has confirmed the order'],
                             'shipped' => ['icon' => 'truck', 'label' => 'Shipped', 'desc' => 'Your item is on the way'],
                             'delivered' => ['icon' => 'package-check', 'label' => 'Delivered', 'desc' => 'Order successfully delivered'],

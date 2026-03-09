@@ -37,24 +37,26 @@
                         @endif
                     </a>
 
-                    <!-- Message Icon (Global) -->
-                    <a href="{{ auth()->user()->isSeller() ? route('seller.messages.index') : route('customer.messages.index') }}" class="relative text-neutral-600 hover:text-primary transition-colors group">
-                        @if(auth()->user()->isSeller())
-                            <i data-lucide="message-circle" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
-                        @else
-                            <i data-lucide="message-square" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
-                        @endif
-                        
-                        @if(auth()->user()->unreadMessagesCount() > 0)
-                            <span data-message-badge class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-md-full w-4 h-4 flex items-center justify-center shadow-sm-sm border border-white">
-                                {{ auth()->user()->unreadMessagesCount() }}
-                            </span>
-                        @else
-                            <span data-message-badge class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-md-full w-4 h-4 flex items-center justify-center shadow-sm-sm border border-white hidden">
-                                0
-                            </span>
-                        @endif
-                    </a>
+                    @if(auth()->user()->isSeller() || auth()->user()->isCustomer())
+                        <!-- Message Icon (Global) -->
+                        <a href="{{ auth()->user()->isSeller() ? route('seller.messages.index') : route('customer.messages.index') }}" class="relative text-neutral-600 hover:text-primary transition-colors group">
+                            @if(auth()->user()->isSeller())
+                                <i data-lucide="message-circle" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                            @else
+                                <i data-lucide="message-square" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                            @endif
+                            
+                            @if(auth()->user()->unreadMessagesCount() > 0)
+                                <span data-message-badge class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-md-full w-4 h-4 flex items-center justify-center shadow-sm-sm border border-white">
+                                    {{ auth()->user()->unreadMessagesCount() }}
+                                </span>
+                            @else
+                                <span data-message-badge class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-md-full w-4 h-4 flex items-center justify-center shadow-sm-sm border border-white hidden">
+                                    0
+                                </span>
+                            @endif
+                        </a>
+                    @endif
 
                     <!-- User Menu -->
                     <div class="relative" id="user-menu-container">
@@ -146,6 +148,7 @@
     </nav>
 </header>
 @auth
+@if(auth()->user()->isSeller() || auth()->user()->isCustomer())
 <script>
     // Determine correct route for unread count
     const unreadCountUrl = "{{ auth()->user()->isSeller() ? route('seller.messages.unread-count') : route('messages.unread-count') }}";
@@ -173,4 +176,5 @@
     updateMessageBadge();
     setInterval(updateMessageBadge, 5000);
 </script>
+@endif
 @endauth

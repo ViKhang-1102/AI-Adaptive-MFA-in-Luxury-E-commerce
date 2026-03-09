@@ -124,6 +124,9 @@
             <a href="{{ route('admin.orders.index') }}" class="p-4 border rounded-md hover:bg-neutral-50">
                 <i class="fas fa-receipt text-primary mr-2"></i> All Orders
             </a>
+            <a href="{{ route('admin.orders.pending') }}" class="p-4 border rounded-md hover:bg-neutral-50">
+                <i class="fas fa-exclamation-triangle text-primary mr-2"></i> Pending Verifications
+            </a>
             <a href="{{ route('profile.show') }}" class="p-4 border rounded-md hover:bg-neutral-50">
                 <i class="fas fa-user text-primary mr-2"></i> My Profile
             </a>

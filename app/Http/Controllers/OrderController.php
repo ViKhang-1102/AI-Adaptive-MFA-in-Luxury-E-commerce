@@ -145,6 +145,7 @@ class OrderController extends Controller
         ]);
 
         $user = Auth::user();
+        $requiresManualReview = false;
 
         // Get address information - either from saved address or new address
         if ($request->has('address_id') && $validated['address_id']) {
@@ -254,11 +255,13 @@ class OrderController extends Controller
                     ],
                 ],
             ]);
-            Session::put('pending_audit_id', $audit->id);
+            $auditId = $audit->id;
+            Session::put('pending_audit_id', $auditId);
 
-            if ($suggestion === 'block') {
-                Session::flash('error', "Transaction Blocked: Our AI engine detected a critical risk of unauthorized activity. Please contact our support team to verify your account.");
-                return redirect()->route('home');
+            $requiresManualReview = $suggestion === 'block';
+
+            if ($requiresManualReview) {
+                Session::flash('error', "High risk detected. Your order requires manual review before it can be processed. Please contact support for help.");
             }
 
             if ($suggestion === 'faceid' || $suggestion === 'otp') {
@@ -295,11 +298,14 @@ class OrderController extends Controller
             $shippingFee = SystemFee::first()?->shipping_fee_default ?? 0;
             $totalAmount = $subtotal + $shippingFee;
 
+            $orderStatus = $requiresManualReview ? 'review' : 'pending';
+
             $order = Order::create([
                 'order_number' => $this->generateOrderNumber(),
                 'customer_id' => $user->id,
                 'seller_id' => $product->seller_id,
-                'status' => 'pending',
+                'security_audit_id' => $auditId ?? null,
+                'status' => $orderStatus,
                 'payment_status' => 'pending',
                 'subtotal' => $subtotal,
                 'shipping_fee' => $shippingFee,
@@ -331,6 +337,17 @@ class OrderController extends Controller
                 'status' => 'pending',
                 'amount' => $totalAmount,
             ]);
+
+            // If this order needs manual review, redirect customer to contact support
+            if ($requiresManualReview) {
+                \App\Models\OrderNotification::create([
+                    'order_id' => $order->id,
+                    'customer_id' => $user->id,
+                    'message' => 'Your order has been flagged for manual review. Please contact support to have it verified.',
+                ]);
+
+                return redirect()->route('support.contact', ['order_id' => $order->id]);
+            }
 
             // Handle payment
             if ($validated['payment_method'] === 'online') {
@@ -386,12 +403,16 @@ class OrderController extends Controller
             $shippingFee = SystemFee::first()?->shipping_fee_default ?? 0;
             $totalAmount = $subtotal + $shippingFee;
 
+            // Determine order status based on whether manual review is required
+            $orderStatus = $requiresManualReview ? 'review' : 'pending';
+
             // Create Order
             $order = Order::create([
                 'order_number' => $this->generateOrderNumber(),
                 'customer_id' => $user->id,
                 'seller_id' => $sellerId,
-                'status' => 'pending',
+                'security_audit_id' => $auditId ?? null,
+                'status' => $orderStatus,
                 'payment_status' => 'pending',
                 'subtotal' => $subtotal,
                 'shipping_fee' => $shippingFee,
@@ -433,6 +454,17 @@ class OrderController extends Controller
             $cart->items()->whereIn('id', $selectedItemIds)->delete();
         } else {
             $cart->items()->delete();
+        }
+
+        // If any of these orders require manual review, send notification and send user to contact support.
+        if ($requiresManualReview && $lastOrder) {
+            \App\Models\OrderNotification::create([
+                'order_id' => $lastOrder->id,
+                'customer_id' => $user->id,
+                'message' => 'Your order has been flagged for manual review. Please contact support to have it verified.',
+            ]);
+
+            return redirect()->route('support.contact', ['order_id' => $lastOrder->id]);
         }
 
         // For online payment, redirect to PayPal with the last created order.

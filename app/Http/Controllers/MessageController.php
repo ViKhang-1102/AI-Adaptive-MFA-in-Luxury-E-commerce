@@ -125,7 +125,8 @@ class MessageController extends Controller
      */
     public function customerConversation(Product $product, User $other)
     {
-        if ($product->seller_id !== $other->id) {
+        // Allow conversations with the product's seller or the admin (support)
+        if ($product->seller_id !== $other->id && !$other->isAdmin()) {
             abort(404, 'Invalid seller for this product');
         }
 

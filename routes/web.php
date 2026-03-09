@@ -48,6 +48,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/cart/update/{item}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{item}', [CartController::class, 'remove'])->name('cart.remove');
 
+    // Wishlist Routes
+    Route::get('/wishlist', [ProductController::class, 'wishlist'])->name('wishlist');
+    Route::post('/wishlist/add/{product}', [ProductController::class, 'addWishlist'])->name('wishlist.add');
+    Route::delete('/wishlist/remove/{product}', [ProductController::class, 'removeWishlist'])->name('wishlist.remove');
+
+    // Address Book Routes
+    Route::get('/addresses', [ProfileController::class, 'addresses'])->name('addresses.index');
+    Route::post('/addresses', [ProfileController::class, 'storeAddress'])->name('addresses.store');
+    Route::get('/addresses/{address}/edit', [ProfileController::class, 'editAddress'])->name('addresses.edit');
+    Route::put('/addresses/{address}', [ProfileController::class, 'updateAddress'])->name('addresses.update');
+    Route::delete('/addresses/{address}', [ProfileController::class, 'destroyAddress'])->name('addresses.destroy');
+
     // Order Routes
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
@@ -69,23 +81,10 @@ Route::middleware(['auth', \App\Http\Middleware\CustomerMiddleware::class])->gro
         return view('orders.success');
     })->name('orders.success');
 
-    // Wishlist Routes
-    Route::get('/wishlist', [ProductController::class, 'wishlist'])->name('wishlist');
-    Route::post('/wishlist/add/{product}', [ProductController::class, 'addWishlist'])->name('wishlist.add');
-    Route::delete('/wishlist/remove/{product}', [ProductController::class, 'removeWishlist'])->name('wishlist.remove');
-
-    // Addresses Routes
-    Route::get('/addresses', [ProfileController::class, 'addresses'])->name('addresses.index');
-    Route::post('/addresses', [ProfileController::class, 'storeAddress'])->name('addresses.store');
-    Route::get('/addresses/{address}/edit', [ProfileController::class, 'editAddress'])->name('addresses.edit');
-    Route::put('/addresses/{address}', [ProfileController::class, 'updateAddress'])->name('addresses.update');
-    Route::delete('/addresses/{address}', [ProfileController::class, 'destroyAddress'])->name('addresses.destroy');
-
-    // Review Routes
-    Route::post('/products/{product}/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
-    Route::delete('/reviews/{review}', [App\Http\Controllers\ReviewController::class, 'destroy'])->name('reviews.destroy');
-
-    // Message Routes
+        // Contact Admin (for review/verification cases)
+        Route::get('/contact-admin', [\App\Http\Controllers\SupportController::class, 'showContactForm'])->name('support.contact');
+        Route::post('/contact-admin', [\App\Http\Controllers\SupportController::class, 'submitContact'])->name('support.contact.submit');
+    Route::get('/support/messages', [\App\Http\Controllers\SupportController::class, 'messages'])->name('support.messages');
     Route::get('/messages', [App\Http\Controllers\MessageController::class, 'customerInbox'])->name('customer.messages.index');
     Route::get('/messages/unread/count', [App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unread-count');
     Route::get('/messages/{product}/{other}', [App\Http\Controllers\MessageController::class, 'customerConversation'])->name('customer.messages.conversation');
@@ -132,8 +131,12 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix
     Route::post('/transactions/{transaction}/approve', [App\Http\Controllers\Admin\TransactionController::class, 'approve'])->name('transaction.approve');
     Route::post('/transactions/{transaction}/reject', [App\Http\Controllers\Admin\TransactionController::class, 'reject'])->name('transaction.reject');
     Route::get('/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/pending-verifications', [App\Http\Controllers\Admin\OrderController::class, 'pending'])->name('orders.pending');
     Route::get('/orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
-    
+    Route::post('/orders/{order}/verify', [App\Http\Controllers\Admin\OrderController::class, 'verify'])->name('orders.verify');
+    Route::post('/orders/{order}/reject', [App\Http\Controllers\Admin\OrderController::class, 'reject'])->name('orders.reject');
+    Route::post('/orders/{order}/message', [App\Http\Controllers\Admin\OrderController::class, 'sendMessage'])->name('orders.message');
+
     // Security Dashboard & AI Settings
     Route::get('/security-insights', [App\Http\Controllers\Admin\SecurityController::class, 'index'])->name('security.index');
     Route::post('/security-insights/toggle-mfa', [App\Http\Controllers\Admin\SecurityController::class, 'toggleMfa'])->name('security.toggle-mfa');

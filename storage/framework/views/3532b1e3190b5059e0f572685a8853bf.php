@@ -1,85 +1,87 @@
-@extends('layouts.app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 <div class="max-w-4xl mx-auto py-8">
     <div class="mb-6">
-        <a href="{{ route('admin.orders.index') }}" class="text-primary hover:underline">← Back to Orders</a>
+        <a href="<?php echo e(route('admin.orders.index')); ?>" class="text-primary hover:underline">← Back to Orders</a>
     </div>
 
     <div class="bg-white rounded-md-lg shadow-sm-md p-6">
         <!-- Order Header -->
         <div class="mb-6">
-            <h1 class="text-2xl font-bold mb-4">Order #{{ $order->id }}</h1>
+            <h1 class="text-2xl font-bold mb-4">Order #<?php echo e($order->id); ?></h1>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
                     <p class="text-neutral-600 text-sm">Order Date</p>
-                    <p class="font-semibold">{{ $order->created_at->format('M d, Y') }}</p>
+                    <p class="font-semibold"><?php echo e($order->created_at->format('M d, Y')); ?></p>
                 </div>
                 <div>
                     <p class="text-neutral-600 text-sm">Status</p>
-                    @php
+                    <?php
                         $statusClass = match($order->status) {
                             'completed' => 'bg-green-100 text-green-800',
                             'cancelled' => 'bg-red-100 text-red-800',
                             'pending' => 'bg-yellow-100 text-yellow-800',
                             default => 'bg-blue-100 text-blue-800'
                         };
-                    @endphp
-                    <span class="px-3 py-1 rounded-md-full text-sm font-semibold {{ $statusClass }}">
-                        {{ ucfirst($order->status) }}
+                    ?>
+                    <span class="px-3 py-1 rounded-md-full text-sm font-semibold <?php echo e($statusClass); ?>">
+                        <?php echo e(ucfirst($order->status)); ?>
+
                     </span>
                 </div>
                 <div>
                     <p class="text-neutral-600 text-sm">Total Amount</p>
-                    <p class="font-semibold text-lg">${{ number_format($order->total_amount, 2) }}</p>
+                    <p class="font-semibold text-lg">$<?php echo e(number_format($order->total_amount, 2)); ?></p>
                 </div>
                 <div>
                     <p class="text-neutral-600 text-sm">Payment Status</p>
-                    @php
+                    <?php
                         $paymentStatus = ($order->payment && $order->payment->status === 'completed') ? 'Paid' : 'Unpaid';
                         $paymentClass = ($order->payment && $order->payment->status === 'completed') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-                    @endphp
-                    <span class="px-3 py-1 rounded-md-full text-sm font-semibold {{ $paymentClass }}">
-                        {{ $paymentStatus }}
+                    ?>
+                    <span class="px-3 py-1 rounded-md-full text-sm font-semibold <?php echo e($paymentClass); ?>">
+                        <?php echo e($paymentStatus); ?>
+
                     </span>
                 </div>
             </div>
         </div>
 
         <!-- Security Review Summary -->
-        @if($securityAudit)
+        <?php if($securityAudit): ?>
             <div class="mb-6 pb-6 border-b">
                 <h2 class="text-xl font-bold mb-4">Security Review</h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div class="rounded-lg border border-neutral-200 bg-neutral-50 p-4">
                         <p class="text-sm text-neutral-600">Risk Score</p>
-                        <p class="text-2xl font-bold text-primary">{{ number_format($securityAudit->risk_score, 1) }}</p>
-                        <p class="text-xs text-neutral-500">Level: {{ ucfirst($securityAudit->level) }}</p>
+                        <p class="text-2xl font-bold text-primary"><?php echo e(number_format($securityAudit->risk_score, 1)); ?></p>
+                        <p class="text-xs text-neutral-500">Level: <?php echo e(ucfirst($securityAudit->level)); ?></p>
                     </div>
                     <div class="rounded-lg border border-neutral-200 bg-neutral-50 p-4">
                         <p class="text-sm text-neutral-600">AI Reason</p>
                         <div class="text-sm text-neutral-700 mt-2">
-                            @if(is_array($securityAudit->metadata['risk_explanation']['score_breakdown'] ?? null))
+                            <?php if(is_array($securityAudit->metadata['risk_explanation']['score_breakdown'] ?? null)): ?>
                                 <ul class="list-disc list-inside space-y-1">
-                                    @foreach($securityAudit->metadata['risk_explanation']['score_breakdown'] as $line)
-                                        <li>{{ $line }}</li>
-                                    @endforeach
+                                    <?php $__currentLoopData = $securityAudit->metadata['risk_explanation']['score_breakdown']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $line): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <li><?php echo e($line); ?></li>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </ul>
-                            @else
-                                <p>{{ $securityAudit->metadata['risk_explanation']['score_breakdown'] ?? 'No details available.' }}</p>
-                            @endif
+                            <?php else: ?>
+                                <p><?php echo e($securityAudit->metadata['risk_explanation']['score_breakdown'] ?? 'No details available.'); ?></p>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <div class="rounded-lg border border-neutral-200 bg-neutral-50 p-4">
                         <p class="text-sm text-neutral-600">Face Verify Cache</p>
                         <div class="text-sm text-neutral-700 mt-2">
-                            @if($faceCacheInfo)
-                                <p class="font-semibold">Landmark Count: {{ count($faceCacheInfo['landmarks'] ?? []) }}</p>
+                            <?php if($faceCacheInfo): ?>
+                                <p class="font-semibold">Landmark Count: <?php echo e(count($faceCacheInfo['landmarks'] ?? [])); ?></p>
                                 <p class="text-xs text-neutral-500">(Cached data found)</p>
-                            @else
+                            <?php else: ?>
                                 <p class="text-sm text-neutral-500">No local face cache data available.</p>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -90,13 +92,13 @@
                             <h3 class="text-sm font-semibold text-neutral-700">Identity Profile</h3>
                             <span class="text-xs text-neutral-500">Stored Image</span>
                         </div>
-                        @if($order->customer && $order->customer->identity_image)
-                            <img src="{{ asset('storage/' . $order->customer->identity_image) }}" class="w-full h-48 object-cover rounded-md" alt="Identity Image">
-                        @else
+                        <?php if($order->customer && $order->customer->identity_image): ?>
+                            <img src="<?php echo e(asset('storage/' . $order->customer->identity_image)); ?>" class="w-full h-48 object-cover rounded-md" alt="Identity Image">
+                        <?php else: ?>
                             <div class="h-48 rounded-md bg-neutral-100 flex items-center justify-center text-neutral-400">
                                 <span>No identity image available</span>
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
                     <div class="rounded-lg border border-neutral-200 bg-white p-4">
@@ -104,17 +106,17 @@
                             <h3 class="text-sm font-semibold text-neutral-700">Last Face Scan (Live)</h3>
                             <span class="text-xs text-neutral-500">Captured at review</span>
                         </div>
-                        @if($securityAudit && isset($securityAudit->metadata['face_scan_image']))
-                            <img src="{{ asset('storage/' . $securityAudit->metadata['face_scan_image']) }}" class="w-full h-48 object-cover rounded-md" alt="Live Scan">
-                        @else
+                        <?php if($securityAudit && isset($securityAudit->metadata['face_scan_image'])): ?>
+                            <img src="<?php echo e(asset('storage/' . $securityAudit->metadata['face_scan_image'])); ?>" class="w-full h-48 object-cover rounded-md" alt="Live Scan">
+                        <?php else: ?>
                             <div class="h-48 rounded-md bg-neutral-100 flex items-center justify-center text-neutral-400">
                                 <span>No live scan available</span>
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
-        @endif
+        <?php endif; ?>
 
         <!-- Customer Information -->
         <div class="mb-6 pb-6 border-b">
@@ -122,39 +124,39 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <p class="text-neutral-600 text-sm">Name</p>
-                    <p class="font-semibold">{{ $order->customer->name ?? 'N/A' }}</p>
+                    <p class="font-semibold"><?php echo e($order->customer->name ?? 'N/A'); ?></p>
                 </div>
                 <div>
                     <p class="text-neutral-600 text-sm">Email</p>
-                    <p class="font-semibold">{{ $order->customer->email ?? 'N/A' }}</p>
+                    <p class="font-semibold"><?php echo e($order->customer->email ?? 'N/A'); ?></p>
                 </div>
                 <div>
                     <p class="text-neutral-600 text-sm">Phone</p>
-                    <p class="font-semibold">{{ $order->customer->phone ?? 'N/A' }}</p>
+                    <p class="font-semibold"><?php echo e($order->customer->phone ?? 'N/A'); ?></p>
                 </div>
                 <div>
                     <p class="text-neutral-600 text-sm">Address</p>
-                    <p class="font-semibold">{{ $order->shipping_address ?? 'N/A' }}</p>
+                    <p class="font-semibold"><?php echo e($order->shipping_address ?? 'N/A'); ?></p>
                 </div>
             </div>
         </div>
 
         <!-- Seller Information -->
-        @if($order->seller)
+        <?php if($order->seller): ?>
         <div class="mb-6 pb-6 border-b">
             <h2 class="text-xl font-bold mb-4">Seller Information</h2>
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <p class="text-neutral-600 text-sm">Seller Name</p>
-                    <p class="font-semibold">{{ $order->seller->name ?? 'N/A' }}</p>
+                    <p class="font-semibold"><?php echo e($order->seller->name ?? 'N/A'); ?></p>
                 </div>
                 <div>
                     <p class="text-neutral-600 text-sm">Email</p>
-                    <p class="font-semibold">{{ $order->seller->email ?? 'N/A' }}</p>
+                    <p class="font-semibold"><?php echo e($order->seller->email ?? 'N/A'); ?></p>
                 </div>
             </div>
         </div>
-        @endif
+        <?php endif; ?>
 
         <!-- Order Items -->
         <div class="mb-6">
@@ -171,28 +173,28 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($order->items as $item)
+                        <?php $__currentLoopData = $order->items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <tr class="border-b hover:bg-neutral-50">
                             <td class="px-4 py-2">
-                                @if($item->product && $item->product->images->first())
-                                    <img src="{{ asset('storage/' . $item->product->images->first()->image) }}" alt="{{ $item->product->name }}" class="w-12 h-12 object-cover rounded-md">
-                                @else
+                                <?php if($item->product && $item->product->images->first()): ?>
+                                    <img src="<?php echo e(asset('storage/' . $item->product->images->first()->image)); ?>" alt="<?php echo e($item->product->name); ?>" class="w-12 h-12 object-cover rounded-md">
+                                <?php else: ?>
                                     <div class="w-12 h-12 bg-neutral-200 rounded-md flex items-center justify-center">
                                         <i class="fas fa-image text-gray-400"></i>
                                     </div>
-                                @endif
+                                <?php endif; ?>
                             </td>
                             <td class="px-4 py-2">
                                 <div>
-                                    <p class="font-semibold">{{ $item->product_name ?? $item->product->name ?? 'Product Removed' }}</p>
-                                    <p class="text-neutral-600 text-xs">SKU: {{ $item->product->sku ?? 'N/A' }}</p>
+                                    <p class="font-semibold"><?php echo e($item->product_name ?? $item->product->name ?? 'Product Removed'); ?></p>
+                                    <p class="text-neutral-600 text-xs">SKU: <?php echo e($item->product->sku ?? 'N/A'); ?></p>
                                 </div>
                             </td>
-                            <td class="px-4 py-2 text-center">{{ $item->quantity }}</td>
-                            <td class="px-4 py-2 text-right">${{ number_format($item->product_price ?? 0, 2) }}</td>
-                            <td class="px-4 py-2 text-right font-semibold">${{ number_format($item->subtotal ?? (($item->product_price ?? 0) * $item->quantity), 2) }}</td>
+                            <td class="px-4 py-2 text-center"><?php echo e($item->quantity); ?></td>
+                            <td class="px-4 py-2 text-right">$<?php echo e(number_format($item->product_price ?? 0, 2)); ?></td>
+                            <td class="px-4 py-2 text-right font-semibold">$<?php echo e(number_format($item->subtotal ?? (($item->product_price ?? 0) * $item->quantity), 2)); ?></td>
                         </tr>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </tbody>
                 </table>
             </div>
@@ -202,23 +204,23 @@
         <div class="bg-neutral-50 rounded-md-lg p-4">
             <div class="flex justify-between mb-2">
                 <span>Subtotal:</span>
-                <span>${{ number_format($order->items->sum(fn($item) => $item->subtotal ?? (($item->product_price ?? 0) * $item->quantity)), 2) }}</span>
+                <span>$<?php echo e(number_format($order->items->sum(fn($item) => $item->subtotal ?? (($item->product_price ?? 0) * $item->quantity)), 2)); ?></span>
             </div>
-            @if($order->shipping_fee)
+            <?php if($order->shipping_fee): ?>
                 <div class="flex justify-between mb-2">
                 <span>Shipping Fee:</span>
-                <span>${{ number_format($order->shipping_fee, 2) }}</span>
+                <span>$<?php echo e(number_format($order->shipping_fee, 2)); ?></span>
             </div>
-            @endif
-            @if($order->tax_amount)
+            <?php endif; ?>
+            <?php if($order->tax_amount): ?>
             <div class="flex justify-between mb-2">
                 <span>Tax:</span>
-                <span>${{ number_format($order->tax_amount, 2) }}</span>
+                <span>$<?php echo e(number_format($order->tax_amount, 2)); ?></span>
             </div>
-            @endif
+            <?php endif; ?>
             <div class="flex justify-between text-lg font-bold border-t pt-2">
                 <span>Total:</span>
-                <span>${{ number_format($order->total_amount, 2) }}</span>
+                <span>$<?php echo e(number_format($order->total_amount, 2)); ?></span>
             </div>
         </div>
 
@@ -229,25 +231,25 @@
                     Print
                 </button>
 
-                <a href="{{ route('admin.orders.index') }}" class="px-4 py-2 bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 rounded-md-lg hover:bg-primary-light hover:-translate-y-0.5">
+                <a href="<?php echo e(route('admin.orders.index')); ?>" class="px-4 py-2 bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 rounded-md-lg hover:bg-primary-light hover:-translate-y-0.5">
                     Back to Orders
                 </a>
 
-                @if($order->status === 'review')
-                    <form method="POST" action="{{ route('admin.orders.verify', $order) }}" class="inline" id="admin-approve-form">
-                        @csrf
+                <?php if($order->status === 'review'): ?>
+                    <form method="POST" action="<?php echo e(route('admin.orders.verify', $order)); ?>" class="inline" id="admin-approve-form">
+                        <?php echo csrf_field(); ?>
                         <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-md-lg hover:bg-emerald-700" id="approve-btn">
                             Approve & Unlock
                         </button>
                     </form>
 
-                    <form method="POST" action="{{ route('admin.orders.reject', $order) }}" class="inline" id="admin-reject-form">
-                        @csrf
+                    <form method="POST" action="<?php echo e(route('admin.orders.reject', $order)); ?>" class="inline" id="admin-reject-form">
+                        <?php echo csrf_field(); ?>
                         <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md-lg hover:bg-red-700" id="reject-btn">
                             Reject & Cancel
                         </button>
                     </form>
-                @endif
+                <?php endif; ?>
             </div>
 
             <div class="w-full md:w-1/2 bg-neutral-50 rounded-lg border border-neutral-200 p-4">
@@ -260,11 +262,11 @@
             </div>
         </div>
 
-        @push('scripts')
+        <?php $__env->startPush('scripts'); ?>
         <script>
             const sendReplyBtn = document.getElementById('send-reply-btn');
-                const sendReplyUrl = "{{ route('admin.orders.message', $order) }}";
-                const csrfToken = "{{ csrf_token() }}";
+                const sendReplyUrl = "<?php echo e(route('admin.orders.message', $order)); ?>";
+                const csrfToken = "<?php echo e(csrf_token()); ?>";
 
                 if (sendReplyBtn) {
                     sendReplyBtn.addEventListener('click', async () => {
@@ -315,7 +317,7 @@
 
                     if (response.ok) {
                         // Redirect to the next pending order (or empty state) after action completes
-                        window.location.href = "{{ route('admin.orders.pending') }}";
+                        window.location.href = "<?php echo e(route('admin.orders.pending')); ?>";
                     } else {
                         const data = await response.json();
                         alert(data.error || 'Something went wrong.');
@@ -325,8 +327,8 @@
                 });
             }
 
-            const verifyUrl = "{{ route('admin.orders.verify', $order) }}";
-            const rejectUrl = "{{ route('admin.orders.reject', $order) }}";
+            const verifyUrl = "<?php echo e(route('admin.orders.verify', $order)); ?>";
+            const rejectUrl = "<?php echo e(route('admin.orders.reject', $order)); ?>";
 
             if (approveForm) {
                 ajaxSubmit(approveForm, verifyUrl);
@@ -335,7 +337,9 @@
                 ajaxSubmit(rejectForm, rejectUrl);
             }
         </script>
-        @endpush
+        <?php $__env->stopPush(); ?>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\E-commerce2026\resources\views/admin/orders/show.blade.php ENDPATH**/ ?>

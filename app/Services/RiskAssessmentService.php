@@ -2,9 +2,12 @@
 
 namespace App\Services;
 
+use App\Mail\RedFlagWarningMail;
+use App\Models\SecurityAudit;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 
 class RiskAssessmentService
@@ -59,7 +62,9 @@ class RiskAssessmentService
                 ->post($apiUrl, $payload);
             
             if ($response->successful()) {
-                return $response->json();
+                $result = $response->json();
+                $this->maybeSendRedFlagWarning($user, $result);
+                return $result;
             }
             
             Log::error('Risk Scoring API Error', [
@@ -69,7 +74,7 @@ class RiskAssessmentService
             
             // Use local heuristic fallback if API responds with error
             $fallbackScore = $this->estimateLocalRisk($user, $transactionAmount);
-            return [
+            $result = [
                 'risk_score' => $fallbackScore,
                 'level' => $this->riskLevel($fallbackScore),
                 'suggestion' => $this->suggestionFromScore($fallbackScore),
@@ -78,6 +83,10 @@ class RiskAssessmentService
                     'input' => ['amount' => $transactionAmount],
                 ],
             ];
+
+            $this->maybeSendRedFlagWarning($user, $result);
+
+            return $result;
         } catch (\Throwable $e) {
             Log::error('Risk Scoring Exception', [
                 'exception' => $e->getMessage(),
@@ -85,7 +94,7 @@ class RiskAssessmentService
             ]);
 
             $fallbackScore = $this->estimateLocalRisk($user, $transactionAmount);
-            return [
+            $result = [
                 'risk_score' => $fallbackScore,
                 'level' => $this->riskLevel($fallbackScore),
                 'suggestion' => $this->suggestionFromScore($fallbackScore),
@@ -94,6 +103,10 @@ class RiskAssessmentService
                     'input' => ['amount' => $transactionAmount],
                 ],
             ];
+
+            $this->maybeSendRedFlagWarning($user, $result);
+
+            return $result;
         }
     }
 
@@ -146,5 +159,44 @@ class RiskAssessmentService
             return 'otp';
         }
         return 'allow';
+    }
+
+    protected function maybeSendRedFlagWarning(User $user, array $riskResult): void
+    {
+        $score = $riskResult['risk_score'] ?? 0;
+
+        // Only warn on critical-level scores.
+        if ($score < 80) {
+            return;
+        }
+
+        // Count the number of high-risk audits in the last 30 days
+        $redFlagCount = SecurityAudit::where('user_id', $user->id)
+            ->where('created_at', '>=', now()->subDays(30))
+            ->where('risk_score', '>=', 80)
+            ->count();
+
+        $threshold = 3;
+        if ($redFlagCount < $threshold) {
+            return;
+        }
+
+        // Avoid spamming the user more than once per day
+        if (Session::has('red_flag_warning_sent_at')) {
+            $sentAt = \Carbon\Carbon::parse(Session::get('red_flag_warning_sent_at'));
+            if ($sentAt->diffInHours(now()) < 24) {
+                return;
+            }
+        }
+
+        Session::put('red_flag_warning_sent_at', now()->toDateTimeString());
+
+        Session::flash('error', "Multiple high-risk activities were detected on your account. Please contact support to verify your identity.");
+
+        try {
+            Mail::to($user->email)->send(new RedFlagWarningMail($user, $redFlagCount));
+        } catch (\Exception $e) {
+            Log::warning('Failed to send red flag warning email', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+        }
     }
 }

@@ -153,12 +153,12 @@
                                 @endif
                                 <div>
                                     <h3 class="font-bold text-primary mb-1">{{ $item->product->name ?? 'Product Removed' }}</h3>
-                                    <p class="text-sm text-neutral-500">Qty: {{ $item->quantity }} x ${{ number_format($item->price, 2) }}</p>
+                                    <p class="text-sm text-neutral-500">Qty: {{ $item->quantity }} x ${{ number_format($item->product_price ?? 0, 2) }}</p>
                                 </div>
                             </div>
                             
                             <div class="text-right flex flex-col items-end gap-2">
-                                <span class="font-bold text-lg text-primary">${{ number_format($item->price * $item->quantity, 2) }}</span>
+                                <span class="font-bold text-lg text-primary">${{ number_format(($item->subtotal ?? (($item->product_price ?? 0) * $item->quantity)), 2) }}</span>
                             </div>
                         </div>
                         @if(!$loop->last)

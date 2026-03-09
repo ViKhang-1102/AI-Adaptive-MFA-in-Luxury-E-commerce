@@ -38,25 +38,27 @@
                         <?php endif; ?>
                     </a>
 
-                    <!-- Message Icon (Global) -->
-                    <a href="<?php echo e(auth()->user()->isSeller() ? route('seller.messages.index') : route('customer.messages.index')); ?>" class="relative text-neutral-600 hover:text-primary transition-colors group">
-                        <?php if(auth()->user()->isSeller()): ?>
-                            <i data-lucide="message-circle" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
-                        <?php else: ?>
-                            <i data-lucide="message-square" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
-                        <?php endif; ?>
-                        
-                        <?php if(auth()->user()->unreadMessagesCount() > 0): ?>
-                            <span data-message-badge class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-md-full w-4 h-4 flex items-center justify-center shadow-sm-sm border border-white">
-                                <?php echo e(auth()->user()->unreadMessagesCount()); ?>
+                    <?php if(auth()->user()->isSeller() || auth()->user()->isCustomer()): ?>
+                        <!-- Message Icon (Global) -->
+                        <a href="<?php echo e(auth()->user()->isSeller() ? route('seller.messages.index') : route('customer.messages.index')); ?>" class="relative text-neutral-600 hover:text-primary transition-colors group">
+                            <?php if(auth()->user()->isSeller()): ?>
+                                <i data-lucide="message-circle" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                            <?php else: ?>
+                                <i data-lucide="message-square" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                            <?php endif; ?>
+                            
+                            <?php if(auth()->user()->unreadMessagesCount() > 0): ?>
+                                <span data-message-badge class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-md-full w-4 h-4 flex items-center justify-center shadow-sm-sm border border-white">
+                                    <?php echo e(auth()->user()->unreadMessagesCount()); ?>
 
-                            </span>
-                        <?php else: ?>
-                            <span data-message-badge class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-md-full w-4 h-4 flex items-center justify-center shadow-sm-sm border border-white hidden">
-                                0
-                            </span>
-                        <?php endif; ?>
-                    </a>
+                                </span>
+                            <?php else: ?>
+                                <span data-message-badge class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-md-full w-4 h-4 flex items-center justify-center shadow-sm-sm border border-white hidden">
+                                    0
+                                </span>
+                            <?php endif; ?>
+                        </a>
+                    <?php endif; ?>
 
                     <!-- User Menu -->
                     <div class="relative" id="user-menu-container">
@@ -148,6 +150,7 @@
     </nav>
 </header>
 <?php if(auth()->guard()->check()): ?>
+<?php if(auth()->user()->isSeller() || auth()->user()->isCustomer()): ?>
 <script>
     // Determine correct route for unread count
     const unreadCountUrl = "<?php echo e(auth()->user()->isSeller() ? route('seller.messages.unread-count') : route('messages.unread-count')); ?>";
@@ -175,4 +178,5 @@
     updateMessageBadge();
     setInterval(updateMessageBadge, 5000);
 </script>
+<?php endif; ?>
 <?php endif; ?><?php /**PATH C:\laragon\www\E-commerce2026\resources\views/layouts/header.blade.php ENDPATH**/ ?>

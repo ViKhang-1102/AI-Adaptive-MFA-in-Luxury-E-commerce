@@ -6,9 +6,16 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
+    public function __construct()
+    {
+        // Require login for wishlist operations
+        $this->middleware('auth')->only(['wishlist', 'addWishlist', 'removeWishlist']);
+    }
+
     public function index(Request $request)
     {
         $query = Product::active()->inStock()->with('seller', 'images');
@@ -68,8 +75,8 @@ class ProductController extends Controller
         $userReview = null;
         $canReview = false;
 
-        if (auth()->check() && auth()->user()->isCustomer()) {
-            $userId = auth()->id();
+        if (Auth::check() && Auth::user()->isCustomer()) {
+            $userId = Auth::id();
             // find any delivered order for this product
             $deliveredOrder = \App\Models\Order::where('customer_id', $userId)
                 ->where('status', 'delivered')
@@ -101,7 +108,7 @@ class ProductController extends Controller
 
     public function wishlist()
     {
-        $wishlists = auth()->user()->wishlist()->with('product.images', 'product.seller')->paginate(12);
+        $wishlists = Auth::user()->wishlist()->with('product.images', 'product.seller')->paginate(12);
         return view('products.wishlist', compact('wishlists'));
     }
 
@@ -110,7 +117,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($productId);
 
         Wishlist::firstOrCreate([
-            'customer_id' => auth()->id(),
+            'customer_id' => Auth::id(),
             'product_id' => $product->id,
         ]);
 
@@ -119,7 +126,7 @@ class ProductController extends Controller
 
     public function removeWishlist($productId)
     {
-        Wishlist::where('customer_id', auth()->id())
+        Wishlist::where('customer_id', Auth::id())
             ->where('product_id', $productId)
             ->delete();
 

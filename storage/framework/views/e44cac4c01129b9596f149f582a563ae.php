@@ -50,11 +50,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <?php echo $__env->yieldPushContent('styles'); ?>
     <style>
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 50;
+        /* Reset browser default spacing */
+        html, body {
+            margin: 0;
+            padding: 0;
+            /* The header is fixed-position; content padding is handled by `.content-wrapper` so it stays below the header. */
         }
+
+        /* Keep header pinned at the top and ensure it is visible above other content */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            width: 100%;
+            background-color: rgba(255,255,255,0.92); /* ensure header stays readable over content */
+            backdrop-filter: blur(12px);
+        }
+
+        /* Content padding is adjusted via JS based on the header's height (and this acts as a fallback). */
+        .content-wrapper {
+            padding-top: 6rem;
+        }
+
         #scroll-to-top {
             position: fixed;
             bottom: 2rem;
@@ -132,7 +151,7 @@
     <?php endif; ?>
 
     <!-- Main Content -->
-    <div class="min-h-screen">
+    <div class="min-h-screen content-wrapper">
         <?php echo $__env->yieldContent('content'); ?>
     </div>
 
@@ -195,6 +214,19 @@
                 }
             }
         });
+
+        // Adjust content padding to keep page content clear of the fixed header
+        function adjustContentPadding() {
+            const header = document.querySelector('header');
+            const content = document.querySelector('.content-wrapper');
+            if (!header || !content) return;
+
+            const headerHeight = header.getBoundingClientRect().height;
+            content.style.paddingTop = `${headerHeight + 16}px`;
+        }
+
+        window.addEventListener('DOMContentLoaded', adjustContentPadding);
+        window.addEventListener('resize', adjustContentPadding);
 
         // Trigger AI Toast animation
         window.addEventListener('DOMContentLoaded', () => {

@@ -182,12 +182,39 @@ class OTPController extends Controller
 
                 if (!$comparison['success']) {
                     if (Session::has('pending_audit_id')) {
-                        SecurityAudit::where('id', Session::get('pending_audit_id'))->update([
-                            'result' => 'failed',
-                            'metadata->face_verification_error' => $comparison['reason']
-                        ]);
+                        $audit = SecurityAudit::find(Session::get('pending_audit_id'));
+                        if ($audit) {
+                            $meta = $audit->metadata ?? [];
+                            $meta['face_verification_error'] = $comparison['reason'];
+                            $audit->metadata = $meta;
+                            $audit->save();
+                        }
                     }
                     return back()->with('error', $comparison['reason']);
+                } else {
+                    if (Session::has('pending_audit_id')) {
+                        $audit = SecurityAudit::find(Session::get('pending_audit_id'));
+                        if ($audit) {
+                            $meta = $audit->metadata ?? [];
+
+                            // Save the face scan snapshot for admin review
+                            if ($faceData) {
+                                $snapshotData = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $faceData));
+                                $scanPath = 'face_scans/user_' . $user->id . '_' . time() . '.jpg';
+                                Storage::disk('public')->put($scanPath, $snapshotData);
+                                $meta['face_scan_image'] = $scanPath;
+                            }
+
+                            $meta['face_verification'] = [
+                                'reason' => $comparison['reason'] ?? null,
+                                'confidence' => $comparison['confidence'] ?? null,
+                                'used_google_vision' => $comparison['used_google_vision'] ?? null,
+                            ];
+
+                            $audit->metadata = $meta;
+                            $audit->save();
+                        }
+                    }
                 }
             }
         } elseif ($isFaceVerified && !$faceData) {

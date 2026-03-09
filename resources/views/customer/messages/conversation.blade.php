@@ -11,6 +11,13 @@
     <div class="bg-white p-6 rounded-md-lg shadow-sm">
         <h2 class="text-xl font-bold mb-4">Product: <a href="{{ route('products.show', $product) }}" class="text-primary hover:underline">{{ $product->name }}</a></h2>
         <h3 class="text-lg mb-4">Seller: {{ $other->name }}</h3>
+
+        <div id="conversation-data"
+             data-product="{{ $product->id }}"
+             data-other="{{ $other->id }}"
+             data-user="{{ auth()->id() ?? '' }}"
+             class="hidden"></div>
+
         <div id="messages-container" class="h-96 bg-neutral-100 rounded-md-lg p-4 mb-4 overflow-y-auto flex flex-col">
             <!-- messages loaded by JS -->
         </div>
@@ -30,9 +37,11 @@
 <script>
     const messagesContainer = document.getElementById('messages-container');
     const messageForm = document.getElementById('message-form');
-    const productId = {{ $product->id }};
-    const otherId = {{ $other->id }};
-    const userId = {{ auth()->check() ? auth()->id() : 'null' }};
+    const conversationData = document.getElementById('conversation-data').dataset;
+
+    const productId = Number(conversationData.product);
+    const otherId = Number(conversationData.other);
+    const userId = conversationData.user ? Number(conversationData.user) : null;
 
     async function loadMessages() {
         try {
