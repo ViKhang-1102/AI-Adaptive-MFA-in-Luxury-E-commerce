@@ -28,9 +28,26 @@ class FaceVerificationService
             return false;
         }
 
+        // Sử dụng User ID (nếu có) để chỉ kiểm tra file cache của người đó.
+        $userId = $this->getUserIdFromPath($storedImagePath);
+        if ($userId) {
+            $cacheFile = $cacheDir . '/user_' . $userId . '.json';
+            return file_exists($cacheFile);
+        }
+
+        // Fallback cho các cache cũ sử dụng hash của ảnh
         $hash = hash_file('sha256', $fullPath);
         $cacheFile = $cacheDir . '/' . $hash . '.json';
         return file_exists($cacheFile);
+    }
+
+    private function getUserIdFromPath(string $path): ?int
+    {
+        $base = basename($path);
+        if (preg_match('/user[_-]?(\d+)/', $base, $m)) {
+            return (int)$m[1];
+        }
+        return null;
     }
 
     /**
@@ -41,9 +58,14 @@ class FaceVerificationService
      * @param bool $enrollment If true, we only extract landmarks and save to cache
      * @return array ['success' => bool, 'reason' => string]
      */
-    public function verify(string $base64Snapshot, string $storedImagePath, bool $enrollment = false): array
+    public function verify(string $base64Snapshot, string $storedImagePath, bool $enrollment = false, ?int $userId = null): array
     {
         try {
+            // Determine User ID for cache isolation
+            if (!$userId) {
+                $userId = $this->getUserIdFromPath($storedImagePath);
+            }
+
             // Prepare images (strip data URI prefix)
             $snapshotBase64 = preg_replace('/^data:image\/\w+;base64,/', '', $base64Snapshot);
 
@@ -72,6 +94,9 @@ class FaceVerificationService
             file_put_contents($liveFilePath, base64_decode($snapshotBase64));
 
             $python = env('PYTHON_BINARY');
+            if ($python && !file_exists($python)) {
+                $python = null;
+            }
             if (!$python) {
                 $finder = new ExecutableFinder();
                 $python = $finder->find('python') ?: $finder->find('python3');
@@ -84,8 +109,12 @@ class FaceVerificationService
 
             $script = base_path('scripts/face_verify.py');
 
-            // face_verify.py [reference] [candidate]
+            // face_verify.py [reference] [candidate] (--user-id <id>)
             $args = [$python, $script, $fullStoredPath, $liveFilePath];
+            if ($userId) {
+                $args[] = '--user-id';
+                $args[] = (string)$userId;
+            }
             if ($enrollment) {
                 $args[] = '--enroll';
             }

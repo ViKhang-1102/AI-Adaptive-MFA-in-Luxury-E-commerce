@@ -56,13 +56,13 @@
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-neutral-700">Subject</label>
-                <input type="text" name="subject" value="{{ old('subject') }}" class="mt-1 w-full border border-neutral-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold" required>
+                <input type="text" name="subject" value="{{ old('subject', $order && $order->status === 'review' ? 'Order verification request for Order #' . $order->order_number : '') }}" class="mt-1 w-full border border-neutral-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold" required>
                 @error('subject')<p class="text-red-600 text-sm mt-1">{{ $message }}</p>@enderror
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-neutral-700">Message</label>
-                <textarea name="message" rows="6" class="mt-1 w-full border border-neutral-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold" required>{{ old('message') }}</textarea>
+                <textarea name="message" rows="6" class="mt-1 w-full border border-neutral-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold" required>{{ old('message', $order && $order->status === 'review' ? 'Please review and confirm my order so I can proceed with the payment.' : '') }}</textarea>
                 @error('message')<p class="text-red-600 text-sm mt-1">{{ $message }}</p>@enderror
             </div>
 

@@ -65,6 +65,23 @@ class OrderController extends Controller
 
     }
 
+    public function paymentHistory()
+    {
+        $user = Auth::user();
+
+        // Only show successful PayPal payments for this customer.
+        $payments = \App\Models\Payment::where('payment_method', 'paypal')
+            ->where('status', 'completed')
+            ->whereHas('order', function ($q) use ($user) {
+                $q->where('customer_id', $user->id);
+            })
+            ->with('order')
+            ->latest()
+            ->paginate(15);
+
+        return view('payments.history', compact('payments'));
+    }
+
     public function checkout()
     {
         $user = Auth::user();
@@ -292,7 +309,10 @@ class OrderController extends Controller
             }
             
             $quantity = $request->input('quantity', 1);
-
+            // Stock validation
+            if ($product->stock < $quantity) {
+                return back()->with('error', "Only {$product->stock} units of {$product->name} are available. Please adjust quantity.");
+            }
             // Create order directly without cart
             $subtotal = $product->getDiscountedPrice() * $quantity;
             $shippingFee = SystemFee::first()?->shipping_fee_default ?? 0;
@@ -374,6 +394,22 @@ class OrderController extends Controller
 
         if ($items->isEmpty()) {
             return back()->with('error', 'No items selected for checkout');
+        }
+
+        // Stock validation: refuse checkout if any requested quantity exceeds available stock.
+        $outOfStock = [];
+        foreach ($items as $item) {
+            $product = $item->product;
+            if (!$product) {
+                continue;
+            }
+            if ($product->stock < $item->quantity) {
+                $outOfStock[] = "{$product->name} ({$product->stock} left)";
+            }
+        }
+        if (!empty($outOfStock)) {
+            $message = "The following products are out of stock or have insufficient quantity: " . implode(', ', $outOfStock) . ". Please adjust your cart.";
+            return back()->with('error', $message);
         }
 
         foreach ($items as $item) {
@@ -469,7 +505,7 @@ class OrderController extends Controller
 
         // For online payment, redirect to PayPal with the last created order.
         if ($validated['payment_method'] === 'online' && $lastOrder) {
-            return redirect()->route('paypal.create', $lastOrder)->with('success', 'Order placed successfully. Proceeding to PayPal for the first payment.');
+            return redirect()->route('paypal.create', $lastOrder)->with('success', 'Order placed successfully. Proceeding to PayPal for payment.');
         }
 
         return redirect()->route('orders.index')->with('success', 'Orders placed successfully!');
@@ -546,23 +582,48 @@ class OrderController extends Controller
         }
 
         $cart = Auth::user()->cart ?? \App\Models\Cart::create(['customer_id' => Auth::id()]);
+        
+        $skippedItems = [];
+        $addedCount = 0;
+
         foreach ($order->items as $item) {
-            if (!$item->product) {
-                continue; // product removed
+            if (!$item->product || $item->product->stock <= 0) {
+                $skippedItems[] = $item->product_name ?? 'Unknown Product';
+                continue; // product removed or out of stock entirely
             }
+
+            // check if we can add the full previous quantity
+            $quantityToAdd = min($item->quantity, $item->product->stock);
+
+            if ($quantityToAdd < $item->quantity) {
+                $skippedItems[] = ($item->product_name ?? 'Product') . " (only $quantityToAdd available)";
+            }
+
             $existing = $cart->items()->where('product_id', $item->product_id)->first();
             if ($existing) {
-                $existing->increment('quantity', $item->quantity);
+                // Total cart quantity shouldn't exceed stock
+                $newQuantity = min($existing->quantity + $quantityToAdd, $item->product->stock);
+                $existing->update(['quantity' => $newQuantity]);
+                $addedCount++;
             } else {
                 \App\Models\CartItem::create([
                     'cart_id' => $cart->id,
                     'product_id' => $item->product_id,
-                    'quantity' => $item->quantity,
+                    'quantity' => $quantityToAdd,
                 ]);
+                $addedCount++;
             }
         }
 
-        return redirect()->route('cart.index')->with('success', 'All items added to cart.');
+        if ($addedCount === 0) {
+            return redirect()->route('cart.index')->with('error', 'None of the items from this order are currently available.');
+        }
+
+        if (!empty($skippedItems)) {
+            return redirect()->route('cart.index')->with('info', 'Some items were added to cart, but the following had limited or no stock: ' . implode(', ', $skippedItems));
+        }
+
+        return redirect()->route('cart.index')->with('success', 'All available items added to cart.');
     }
 
     private function generateOrderNumber()

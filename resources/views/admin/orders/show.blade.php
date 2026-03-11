@@ -253,7 +253,7 @@
             <div class="w-full md:w-1/2 bg-neutral-50 rounded-lg border border-neutral-200 p-4">
                 <h3 class="text-sm font-semibold text-neutral-700 mb-3">Quick Reply to Customer</h3>
                 <form id="admin-quick-reply" class="space-y-3">
-                    <textarea id="admin-reply-message" class="w-full border border-neutral-200 rounded-md p-3 text-sm" rows="3" placeholder="Type a quick response...">Chúng tôi đã xác minh danh tính thành công. Quý khách có thể hoàn tất thanh toán ngay bây giờ.</textarea>
+                    <textarea id="admin-reply-message" class="w-full border border-neutral-200 rounded-md p-3 text-sm" rows="3" placeholder="Type a quick response...">Your account has been verified successfully. Please complete the payment to proceed with order shipment.</textarea>
                     <button type="button" id="send-reply-btn" class="w-full py-2 bg-gold text-primary font-semibold rounded-md hover:bg-gold-light transition">Send to Customer</button>
                 </form>
                 <p class="text-xs text-neutral-500 mt-2">This will be delivered to the customer via the messaging system.</p>

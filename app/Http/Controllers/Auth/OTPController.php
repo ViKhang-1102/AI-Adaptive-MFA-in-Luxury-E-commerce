@@ -171,7 +171,7 @@ class OTPController extends Controller
                 Storage::disk('public')->put($newIdentityPath, $snapshotData);
                 
                 // Trích xuất Landmarks ngay lập tức để lưu cache JSON (Digital Identity)
-                $enrollResult = $faceService->verify($faceData, $newIdentityPath, true);
+                $enrollResult = $faceService->verify($faceData, $newIdentityPath, true, $user->id);
                 
                 if (!$enrollResult['success']) {
                     Storage::disk('public')->delete($newIdentityPath);
@@ -186,7 +186,7 @@ class OTPController extends Controller
                 Session::flash('success', $faceCacheMissing ? 'Biometric data updated for secure verification.' : 'Biometric identity registered successfully.');
             } else {
                 // Comparison Flow: User already has an identity image and cache
-                $comparison = $faceService->verify($faceData, $user->identity_image);
+                $comparison = $faceService->verify($faceData, $user->identity_image, false, $user->id);
 
                 if (!$comparison['success']) {
                     if (Session::has('pending_audit_id')) {

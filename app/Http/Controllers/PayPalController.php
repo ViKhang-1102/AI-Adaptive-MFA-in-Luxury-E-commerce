@@ -22,7 +22,7 @@ class PayPalController extends Controller
      */
     public function createPayment(Request $request, Order $order)
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         // Check if user is logged in
         if (!$user) {
@@ -72,6 +72,17 @@ class PayPalController extends Controller
     {
         $orderId = $request->query('order_id');
         $order = Order::findOrFail($orderId);
+
+        // If the order is already paid, just show the success view
+        if ($order->payment_status === 'paid') {
+            $adminPercentage = SystemFee::getPlatformCommission();
+            $sellerPercentage = 100 - $adminPercentage;
+            $adminFee = round($order->total_amount * ($adminPercentage / 100), 2);
+            $sellerAmount = round($order->total_amount * ($sellerPercentage / 100), 2);
+            $sellerPayPalEmail = $order->seller?->paypal_email;
+            
+            return view('paypal.success', compact('order', 'adminFee', 'sellerAmount', 'sellerPayPalEmail', 'adminPercentage', 'sellerPercentage'));
+        }
 
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal'));

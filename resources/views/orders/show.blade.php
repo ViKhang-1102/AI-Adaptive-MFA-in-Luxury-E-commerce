@@ -15,7 +15,9 @@
                 @php
                     $statusStyles = [
                         'pending' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
-                        'review' => 'bg-orange-50 text-orange-700 border-orange-200',
+                        'review' => 'bg-amber-50 text-amber-700 border-amber-200',
+                        'paid' => 'bg-blue-50 text-blue-700 border-blue-200',
+                        'processing' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
                         'confirmed' => 'bg-blue-50 text-blue-700 border-blue-200',
                         'shipped' => 'bg-purple-50 text-purple-700 border-purple-200',
                         'delivered' => 'bg-green-50 text-green-700 border-green-200',
@@ -39,7 +41,7 @@
             <p class="text-neutral-500 mt-2">Placed on {{ $order->created_at->format('F d, Y \a\t h:i A') }}</p>
         </div>
         
-        @if($order->status === 'pending' && $order->payment_method === 'online' && $order->payment_status === 'pending')
+        @if($order->status === 'pending' && $order->payment_method === 'online' && in_array($order->payment_status, ['unpaid', 'pending']))
         <div>
             <a href="{{ route('paypal.create', $order) }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gold text-primary font-bold rounded-xl hover:bg-gold-light transition-all shadow-soft hover:shadow-hover hover:-translate-y-0.5">
                 <i data-lucide="credit-card" class="w-5 h-5"></i> Pay Now (${{ number_format($order->total_amount, 2) }})
@@ -74,15 +76,34 @@
                         $stages = [
                             'pending' => ['icon' => 'clock', 'label' => 'Order Placed', 'desc' => 'We have received your order'],
                             'review' => ['icon' => 'shield-alert', 'label' => 'Under Review', 'desc' => 'Your order is being reviewed by our support team'],
-                            'confirmed' => ['icon' => 'check-circle', 'label' => 'Confirmed', 'desc' => 'Seller has confirmed the order'],
+                            'paid' => ['icon' => 'credit-card', 'label' => 'Payment Completed', 'desc' => 'Payment received successfully'],
+                            'processing' => ['icon' => 'settings', 'label' => 'Processing', 'desc' => 'Seller is preparing your items'],
                             'shipped' => ['icon' => 'truck', 'label' => 'Shipped', 'desc' => 'Your item is on the way'],
                             'delivered' => ['icon' => 'package-check', 'label' => 'Delivered', 'desc' => 'Order successfully delivered'],
                         ];
                         
-                        $statusKeys = array_keys($stages);
-                        $currentIndex = array_search($order->status, $statusKeys);
-                        if ($currentIndex === false) $currentIndex = -1;
-                        if ($order->status === 'cancelled') $currentIndex = -1;
+                        $completedStages = ['pending'];
+
+                        switch ($order->status) {
+                            case 'review':
+                                $completedStages = ['pending', 'review'];
+                                break;
+                            case 'paid':
+                                $completedStages = ['pending', 'paid'];
+                                break;
+                            case 'processing':
+                                $completedStages = ['pending', 'paid', 'processing'];
+                                break;
+                            case 'shipped':
+                                $completedStages = ['pending', 'paid', 'processing', 'shipped'];
+                                break;
+                            case 'delivered':
+                                $completedStages = ['pending', 'paid', 'processing', 'shipped', 'delivered'];
+                                break;
+                            default:
+                                $completedStages = ['pending'];
+                                break;
+                        }
                     @endphp
                     
                     <div class="space-y-8 relative">
@@ -99,7 +120,7 @@
                         @else
                             @foreach($stages as $key => $stage)
                                 @php
-                                    $isCompleted = array_search($key, $statusKeys) <= $currentIndex;
+                                    $isCompleted = in_array($key, $completedStages);
                                     $isCurrent = $key === $order->status;
                                     $iconBg = $isCompleted ? 'bg-primary text-gold' : 'bg-neutral-50 text-neutral-400';
                                     if ($isCurrent) $iconBg = 'bg-gold text-primary';

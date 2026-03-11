@@ -9,7 +9,7 @@
     @if(session('order_notifications'))
     <div class="mb-6">
         @foreach(session('order_notifications') as $note)
-        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-2">
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-2 auto-hide-alert rounded-md shadow-sm">
             <p class="text-blue-700">{{ $note['message'] }}</p>
         </div>
         @endforeach
@@ -74,7 +74,8 @@
                                 $statusStyles = [
                                     'pending' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
                                     'review' => 'bg-amber-50 text-amber-700 border-amber-200',
-                                    'processing' => 'bg-blue-50 text-blue-700 border-blue-200',
+                                    'paid' => 'bg-blue-50 text-blue-700 border-blue-200',
+                                    'processing' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
                                     'confirmed' => 'bg-blue-50 text-blue-700 border-blue-200',
                                     'shipped' => 'bg-purple-50 text-purple-700 border-purple-200',
                                     'delivered' => 'bg-green-50 text-green-700 border-green-200',
@@ -91,7 +92,7 @@
                         </div>
 
                         <div class="w-full space-y-2">
-                             @if($order->status === 'pending' && $order->payment_method === 'online' && $order->payment_status === 'pending')
+                             @if($order->status === 'pending' && $order->payment_method === 'online' && in_array($order->payment_status, ['unpaid', 'pending']))
                             <a href="{{ route('paypal.create', $order) }}" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg text-sm font-bold text-white bg-green-600 hover:bg-green-700 transition-colors shadow-sm text-center">
                                 Pay Now
                             </a>

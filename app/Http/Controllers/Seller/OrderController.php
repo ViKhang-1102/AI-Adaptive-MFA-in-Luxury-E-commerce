@@ -34,12 +34,13 @@ class OrderController extends Controller
 
     public function confirm(Request $request, Order $order)
     {
-        if ($order->seller_id !== Auth::id() || !in_array($order->status, ['pending', 'processing'])) {
+        // Allow confirmation after payment (paid) or for cash orders (pending)
+        if ($order->seller_id !== Auth::id() || !in_array($order->status, ['pending', 'paid', 'processing'])) {
             abort(403);
         }
 
         $order->update([
-            'status' => 'confirmed',
+            'status' => 'processing',
             'confirmed_at' => now(),
         ]);
 

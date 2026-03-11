@@ -187,7 +187,7 @@ class AuthController extends Controller
                 }
                 $script = base_path('scripts/face_verify.py');
                 if (file_exists($fullPath) && file_exists($script)) {
-                    $process = new \Symfony\Component\Process\Process([$python, $script, $fullPath, $fullPath, '--enroll']);
+                    $process = new \Symfony\Component\Process\Process([$python, $script, $fullPath, $fullPath, '--user-id', (string)$user->id, '--enroll']);
                     $process->start(); // Run async to not block login
                 }
             } catch (\Exception $e) {
@@ -213,25 +213,27 @@ class AuthController extends Controller
             'face_data' => 'required|string', // Live scan is now mandatory
         ]);
 
-        // 1. Save Physical Identity (.jpg)
-        $faceData = $validated['face_data'];
-        $snapshotData = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $faceData));
-        $identityPath = 'identities/' . uniqid('user_') . '.jpg';
-        Storage::disk('public')->put($identityPath, $snapshotData);
-
-        // 2. Create User
+        // 1. Create User record first (identity_image will be set after storing the photo)
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
             'is_active' => true,
-            'identity_image' => $identityPath,
+            'identity_image' => null,
         ]);
+
+        // 2. Save Physical Identity (.jpg) using user ID to tie cache directly to profile
+        $faceData = $validated['face_data'];
+        $snapshotData = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $faceData));
+        $identityPath = 'identity_images/user_' . $user->id . '_' . time() . '.jpg';
+        Storage::disk('public')->put($identityPath, $snapshotData);
+        $user->identity_image = $identityPath;
+        $user->save();
 
         // 3. Extract Landmarks and Save Digital Identity (.json cache)
         $faceService = app(FaceVerificationService::class);
-        $enrollResult = $faceService->verify($faceData, $identityPath, true);
+        $enrollResult = $faceService->verify($faceData, $identityPath, true, $user->id);
 
         if (!$enrollResult['success']) {
             // Fail registration if AI cannot extract landmarks from the live scan

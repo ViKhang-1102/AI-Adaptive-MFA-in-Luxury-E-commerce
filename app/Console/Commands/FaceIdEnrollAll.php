@@ -62,7 +62,7 @@ class FaceIdEnrollAll extends Command
             }
 
             // Dùng flag --enroll để đồng bộ với logic mới trong face_verify.py
-            $process = new Process([$python, $script, $fullPath, $fullPath, '--enroll']);
+            $process = new Process([$python, $script, $fullPath, $fullPath, '--user-id', (string)$user->id, '--enroll']);
             $process->setTimeout(30);
             $process->run();
 

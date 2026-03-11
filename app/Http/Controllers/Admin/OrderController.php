@@ -66,8 +66,19 @@ class OrderController extends Controller
         if ($order->customer && $order->customer->identity_image) {
             $identityPath = storage_path('app/public/' . $order->customer->identity_image);
             if (file_exists($identityPath)) {
-                $hash = hash_file('sha256', $identityPath);
-                $cachePath = storage_path('app/face_verify_cache/' . $hash . '.json');
+                // Prefer cache keyed by user ID (user_{id}.json)
+                $userId = null;
+                if (preg_match('/user[_-]?(\d+)/', basename($order->customer->identity_image), $m)) {
+                    $userId = (int)$m[1];
+                }
+
+                if ($userId) {
+                    $cachePath = storage_path('app/face_verify_cache/user_' . $userId . '.json');
+                } else {
+                    $hash = hash_file('sha256', $identityPath);
+                    $cachePath = storage_path('app/face_verify_cache/' . $hash . '.json');
+                }
+
                 if (file_exists($cachePath)) {
                     $faceCacheInfo = json_decode(file_get_contents($cachePath), true);
                 }
@@ -100,69 +111,14 @@ class OrderController extends Controller
             $audit->save();
         }
 
-        // Update order status and payment info
+        // Update order status so customer can proceed to payment
         $order->status = 'pending';
-        $order->payment_status = 'paid';
+        $order->payment_status = 'pending';
         $order->save();
 
-        // Mark or create payment record
-        $payment = $order->payment;
-        if (!$payment) {
-            $payment = Payment::create([
-                'order_id' => $order->id,
-                'payment_method' => $order->payment_method,
-                'status' => 'completed',
-                'amount' => $order->total_amount,
-                'transaction_id' => 'manual-' . $order->id . '-' . time(),
-                'processed_at' => now(),
-            ]);
-        } else {
-            $payment->status = 'completed';
-            $payment->processed_at = now();
-            $payment->transaction_id = $payment->transaction_id ?: ('manual-' . $order->id . '-' . time());
-            $payment->save();
-        }
+        // Note: We do not create a payment record here. The customer must complete payment via PayPal.
 
-        // Create wallet transactions (admin commission + pending seller payout)
-        $total = $order->total_amount;
-        $adminPercentage = SystemFee::getPlatformCommission();
-        $sellerPercentage = 100 - $adminPercentage;
-        $adminFee = round($total * ($adminPercentage / 100), 2);
-        $sellerAmount = round($total * ($sellerPercentage / 100), 2);
-
-        $adminWallet = User::where('role', 'admin')->first()?->wallet;
-        if ($adminWallet) {
-            $tx = WalletTransaction::create([
-                'wallet_id' => $adminWallet->id,
-                'order_id' => $order->id,
-                'type' => 'credit',
-                'amount' => $adminFee,
-                'description' => "Platform commission from Order #{$order->id} ({$adminPercentage}%)",
-                'status' => 'completed',
-                'transaction_reference' => $payment->transaction_id,
-            ]);
-
-            try {
-                $adminWallet->adjustBalance($adminFee);
-            } catch (\Exception $e) {
-                Log::error('Failed to adjust admin wallet balance', ['error' => $e->getMessage()]);
-            }
-        }
-
-        $sellerWallet = $order->seller?->wallet;
-        if ($sellerWallet) {
-            WalletTransaction::create([
-                'wallet_id' => $sellerWallet->id,
-                'order_id' => $order->id,
-                'type' => 'credit',
-                'amount' => $sellerAmount,
-                'description' => "Order #{$order->id} payment ({$sellerPercentage}%)",
-                'status' => 'pending',
-                'transaction_reference' => $payment->transaction_id,
-            ]);
-        }
-
-        // Notify customer that order is approved and ready for payment
+        // Notify customer the order is now verified and can be paid
         \App\Models\OrderNotification::create([
             'order_id' => $order->id,
             'customer_id' => $order->customer_id,

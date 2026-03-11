@@ -140,6 +140,48 @@
     </section>
     <?php endif; ?>
 
+    <!-- Discounted Products -->
+    <?php if($discountedProducts->count() > 0): ?>
+    <section class="mb-24">
+        <div class="flex items-end justify-between mb-8">
+            <div>
+                <h5 class="text-red-500 font-bold tracking-widest uppercase text-xs mb-2">Limited Time</h5>
+                <h2 class="text-3xl font-serif font-bold text-primary">Special Offers</h2>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <?php $__currentLoopData = $discountedProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <a href="<?php echo e(route('products.show', $product)); ?>" class="group flex flex-col bg-white overflow-hidden text-decoration-none">
+                <div class="relative aspect-[4/5] bg-neutral-50 mb-4 overflow-hidden rounded-xl">
+                    <?php if($product->discount_percent): ?>
+                    <div class="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 text-xs font-bold tracking-wider z-10 shadow-sm">
+                        -<?php echo e($product->discount_percent); ?>%
+                    </div>
+                    <?php endif; ?>
+                    <?php if($product->images->first()): ?>
+                    <img src="<?php echo e(asset('storage/' . $product->images->first()->image)); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="<?php echo e($product->name); ?>">
+                    <?php else: ?>
+                    <div class="w-full h-full flex items-center justify-center">
+                        <i data-lucide="image" class="w-12 h-12 text-neutral-300"></i>
+                    </div>
+                    <?php endif; ?>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-primary truncate group-hover:text-gold transition-colors text-lg mb-1"><?php echo e($product->name); ?></h3>
+                    <p class="text-neutral-500 text-xs uppercase tracking-wider mb-2"><?php echo e($product->seller->name); ?></p>
+                    <div class="flex items-center gap-3">
+                        <span class="text-red-600 font-bold">$<?php echo e(number_format($product->getDiscountedPrice(), 2)); ?></span>
+                        <span class="text-neutral-400 line-through text-xs">$<?php echo e(number_format($product->price, 2)); ?></span>
+                    </div>
+                </div>
+            </a>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </div>
+    </section>
+    <?php endif; ?>
+
     <!-- Top Selling Products -->
     <?php if($topProducts->count() > 0): ?>
     <section class="mb-24">
@@ -175,48 +217,6 @@
                         <?php else: ?>
                         <span class="text-primary font-bold">$<?php echo e(number_format($product->price, 2)); ?></span>
                         <?php endif; ?>
-                    </div>
-                </div>
-            </a>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-        </div>
-    </section>
-    <?php endif; ?>
-
-    <!-- Discounted Products -->
-    <?php if($discountedProducts->count() > 0): ?>
-    <section class="mb-24">
-        <div class="flex items-end justify-between mb-8">
-            <div>
-                <h5 class="text-red-500 font-bold tracking-widest uppercase text-xs mb-2">Limited Time</h5>
-                <h2 class="text-3xl font-serif font-bold text-primary">Special Offers</h2>
-            </div>
-        </div>
-        
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <?php $__currentLoopData = $discountedProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <a href="<?php echo e(route('products.show', $product)); ?>" class="group flex flex-col bg-white overflow-hidden text-decoration-none">
-                <div class="relative aspect-[4/5] bg-neutral-50 mb-4 overflow-hidden rounded-xl">
-                    <?php if($product->discount_percent): ?>
-                    <div class="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 text-xs font-bold tracking-wider z-10 shadow-sm">
-                        -<?php echo e($product->discount_percent); ?>%
-                    </div>
-                    <?php endif; ?>
-                    <?php if($product->images->first()): ?>
-                    <img src="<?php echo e(asset('storage/' . $product->images->first()->image)); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="<?php echo e($product->name); ?>">
-                    <?php else: ?>
-                    <div class="w-full h-full flex items-center justify-center">
-                        <i data-lucide="image" class="w-12 h-12 text-neutral-300"></i>
-                    </div>
-                    <?php endif; ?>
-                </div>
-                
-                <div>
-                    <h3 class="font-bold text-primary truncate group-hover:text-gold transition-colors text-lg mb-1"><?php echo e($product->name); ?></h3>
-                    <p class="text-neutral-500 text-xs uppercase tracking-wider mb-2"><?php echo e($product->seller->name); ?></p>
-                    <div class="flex items-center gap-3">
-                        <span class="text-red-600 font-bold">$<?php echo e(number_format($product->getDiscountedPrice(), 2)); ?></span>
-                        <span class="text-neutral-400 line-through text-xs">$<?php echo e(number_format($product->price, 2)); ?></span>
                     </div>
                 </div>
             </a>

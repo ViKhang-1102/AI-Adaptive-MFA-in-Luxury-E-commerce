@@ -100,7 +100,7 @@
 
     <!-- Alert Messages -->
     <?php if($errors->any()): ?>
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md m-4">
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md m-4 auto-hide-alert shadow-sm z-50 relative">
             <ul class="list-disc list-inside">
                 <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <li><?php echo e($error); ?></li>
@@ -110,21 +110,21 @@
     <?php endif; ?>
 
     <?php if(session('success')): ?>
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md m-4">
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md m-4 auto-hide-alert shadow-sm z-50 relative">
             <?php echo e(session('success')); ?>
 
         </div>
     <?php endif; ?>
 
     <?php if(session('info')): ?>
-        <div class="bg-blue-50 border border-blue-300 text-blue-700 px-4 py-3 rounded-md m-4">
+        <div class="bg-blue-50 border border-blue-300 text-blue-700 px-4 py-3 rounded-md m-4 auto-hide-alert shadow-sm z-50 relative">
             <?php echo e(session('info')); ?>
 
         </div>
     <?php endif; ?>
 
     <?php if(session('error')): ?>
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md m-4">
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md m-4 auto-hide-alert shadow-sm z-50 relative">
             <?php echo e(session('error')); ?>
 
         </div>
@@ -234,6 +234,26 @@
                         setTimeout(() => toast.remove(), 500);
                     }
                 }, 8000);
+            }
+
+            // Auto hide order notifications and generic alerts
+            const autoHideAlerts = document.querySelectorAll('.auto-hide-alert');
+            if (autoHideAlerts.length > 0) {
+                setTimeout(() => {
+                    autoHideAlerts.forEach(alert => {
+                        alert.style.transition = 'opacity 0.5s ease-out, margin 0.5s ease-out, height 0.5s ease-out';
+                        alert.style.opacity = '0';
+                        alert.style.overflow = 'hidden';
+                        setTimeout(() => {
+                            alert.style.height = '0px';
+                            alert.style.marginTop = '0px';
+                            alert.style.marginBottom = '0px';
+                            alert.style.paddingTop = '0px';
+                            alert.style.paddingBottom = '0px';
+                        }, 500);
+                        setTimeout(() => alert.remove(), 1000);
+                    });
+                }, 5000);
             }
         });
     </script>
