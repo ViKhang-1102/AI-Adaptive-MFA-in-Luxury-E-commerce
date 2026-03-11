@@ -65,7 +65,7 @@ class SecurityAuditSeeder extends Seeder
                     'amount' => $amount,
                     'risk_score' => $score,
                     'level' => 'medium',
-                    'suggestion' => 'mfa',
+                    'suggestion' => 'otp',
                     'result' => $result,
                     'metadata' => ['ai_enabled' => true, 'note' => 'New device detected. OTP requested.'],
                     'created_at' => $randomDate,

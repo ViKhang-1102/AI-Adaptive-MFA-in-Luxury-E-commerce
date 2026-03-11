@@ -145,10 +145,22 @@
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">High</span>
                             @endif
                         </td>
-                        <td class="py-4 px-4 text-xs font-medium uppercase text-neutral-500">
-                            <button type="button" class="details-toggle text-primary hover:text-primary-dark" data-audit-id="{{ $audit->id }}">View</button>
+                        <td class="py-4 px-4 text-xs font-bold uppercase">
+                            @if($audit->suggestion == 'allow')
+                                <span class="text-green-600">Allow</span>
+                            @elseif($audit->suggestion == 'otp')
+                                <span class="text-amber-600">OTP</span>
+                            @elseif($audit->suggestion == 'faceid')
+                                <span class="text-orange-600">FaceID</span>
+                            @elseif($audit->suggestion == 'block')
+                                <span class="text-red-600">Block</span>
+                            @else
+                                <span class="text-neutral-500">{{ $audit->suggestion }}</span>
+                            @endif
                         </td>
-                        <td class="py-4 px-4 text-xs font-medium uppercase text-neutral-500">{{ $audit->suggestion }}</td>
+                        <td class="py-4 px-4">
+                            <button type="button" class="details-toggle text-xs font-medium uppercase text-primary hover:text-primary-dark transition-colors" data-audit-id="{{ $audit->id }}">View</button>
+                        </td>
                         <td class="py-4 pl-4 whitespace-nowrap">
                             @if($audit->result == 'success')
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-500 text-white shadow-sm">Verified/Paid</span>

@@ -81,28 +81,52 @@ class AuthController extends Controller
             return back()->with('error', 'Your account has been deactivated');
         }
 
+        // --- Check if FaceID Cache is Missing ---
+        $faceService = app(FaceVerificationService::class);
+        $faceCacheMissing = !$user->identity_image || !$faceService->hasCachedFaceDescriptor($user->identity_image);
+
         // --- AI Risk Assessment for Login Anomaly Intervention ---
         $enableAiMfa = env('ENABLE_AI_MFA', true);
-        if ($enableAiMfa && !Session::get('mfa_verified_for_login')) {
-            $riskService = app(RiskAssessmentService::class);
-            // We pass in an arbitrary 'amount' of 0 for log-in assessments
-            $riskResult = $riskService->analyze($user, 0);
+        if ($faceCacheMissing || ($enableAiMfa && !Session::get('mfa_verified_for_login')) || (!$enableAiMfa && !Session::get('mfa_verified_for_login'))) {
+            if ($enableAiMfa) {
+                $riskService = app(RiskAssessmentService::class);
+                // We pass in an arbitrary 'amount' of 0 for log-in assessments
+                $riskResult = $riskService->analyze($user, 0);
 
-            if ($riskResult) {
-                $suggestion = $riskResult['suggestion'] ?? 'allow';
-                $score = $riskResult['risk_score'] ?? 0;
-                $level = $riskResult['level'] ?? 'low';
+                if ($riskResult) {
+                    $suggestion = $riskResult['suggestion'] ?? 'allow';
+                    $score = $riskResult['risk_score'] ?? 0;
+                    $level = $riskResult['level'] ?? 'low';
+                } else {
+                    // Fail-secure: default to MFA if API timeouts
+                    $suggestion = 'otp';
+                    $score = 50.0;
+                    $level = 'medium';
+                    $riskResult = [
+                        'explanation' => [
+                            'score_breakdown' => ['Risk scoring service unreachable; applying default login MFA score.'],
+                            'input' => ['amount' => 0, 'ip' => request()->ip()],
+                        ],
+                    ];
+                }
             } else {
-                // Fail-secure: default to MFA if API timeouts
+                // Static MFA - Non AI branch (Always OTP for every login if AI is disabled)
                 $suggestion = 'otp';
                 $score = 50.0;
                 $level = 'medium';
                 $riskResult = [
                     'explanation' => [
-                        'score_breakdown' => ['Risk scoring service unreachable; applying default login MFA score.'],
+                        'score_breakdown' => ['Static (no-AI) MFA mode in use; every login requires OTP.'],
                         'input' => ['amount' => 0, 'ip' => request()->ip()],
                     ],
                 ];
+            }
+
+            // FORCE FACE ID re-enrollment if they have no cache (only if AI is enabled)
+            if ($enableAiMfa && $faceCacheMissing) {
+                $suggestion = 'faceid';
+                $score = max($score, 85.0);
+                $level = 'high';
             }
 
             // Create Security Audit Record
@@ -113,10 +137,10 @@ class AuthController extends Controller
                 'risk_score' => $score,
                 'level' => $level,
                 'suggestion' => $suggestion,
-                'result' => $suggestion === 'allow' ? 'success' : 'pending',
+                'result' => ($suggestion === 'allow' ? 'success' : ($suggestion === 'block' ? 'blocked' : 'pending')),
                 'metadata' => [
                     'ip' => request()->ip(),
-                    'ai_enabled' => true,
+                    'ai_enabled' => $enableAiMfa,
                     'risk_explanation' => $riskResult['explanation'] ?? null,
                     'engine_input' => [
                         'amount' => 0,
@@ -151,6 +175,25 @@ class AuthController extends Controller
 
         Auth::login($user);
         $user->update(['last_login' => now()]);
+
+        // Auto re-enroll face identity to keep AI vectors up to date with extreme lighting/HOG upgrades
+        if ($enableAiMfa && $user->identity_image) {
+            try {
+                $fullPath = Storage::disk('public')->path($user->identity_image);
+                $python = env('PYTHON_BINARY');
+                if (!$python) {
+                    $finder = new \Symfony\Component\Process\ExecutableFinder();
+                    $python = $finder->find('python') ?: $finder->find('python3') ?: 'python';
+                }
+                $script = base_path('scripts/face_verify.py');
+                if (file_exists($fullPath) && file_exists($script)) {
+                    $process = new \Symfony\Component\Process\Process([$python, $script, $fullPath, $fullPath, '--enroll']);
+                    $process->start(); // Run async to not block login
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Auto FaceID re-enroll failed: ' . $e->getMessage());
+            }
+        }
 
         return redirect()->intended(route('home'));
     }

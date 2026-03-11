@@ -1,6 +1,6 @@
-@extends('layouts.app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 <div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-neutral-50 relative overflow-hidden">
     
     <!-- Decorative background elements -->
@@ -36,34 +36,34 @@
                 </p>
 
                 <!-- Alerts -->
-                @if(session('success'))
+                <?php if(session('success')): ?>
                     <div class="bg-emerald-50 border-l-4 border-emerald-500 rounded p-4 flex items-start gap-3 mb-6">
                         <i class="fas fa-check-circle text-emerald-500 mt-1"></i>
-                        <p class="text-sm text-emerald-800">{{ session('success') }}</p>
+                        <p class="text-sm text-emerald-800"><?php echo e(session('success')); ?></p>
                     </div>
-                @endif
-                @if(session('ai_warning'))
+                <?php endif; ?>
+                <?php if(session('ai_warning')): ?>
                     <div class="bg-amber-50 border-l-4 border-amber-500 rounded p-4 flex items-start gap-3 mb-6">
                         <i class="fas fa-robot text-amber-500 mt-1"></i>
-                        <p class="text-sm text-amber-800">{{ session('ai_warning') }}</p>
+                        <p class="text-sm text-amber-800"><?php echo e(session('ai_warning')); ?></p>
                     </div>
-                @endif
+                <?php endif; ?>
 
-                @if(session('error'))
+                <?php if(session('error')): ?>
                     <div class="bg-red-50 border-l-4 border-red-500 rounded p-4 flex items-start gap-3 mb-6">
                         <i class="fas fa-exclamation-circle text-red-500 mt-1"></i>
-                        <p class="text-sm text-red-800">{{ session('error') }}</p>
+                        <p class="text-sm text-red-800"><?php echo e(session('error')); ?></p>
                     </div>
-                @endif
+                <?php endif; ?>
 
-                @if(isset($faceCacheMissing) && $faceCacheMissing)
+                <?php if(isset($faceCacheMissing) && $faceCacheMissing): ?>
                     <div class="bg-amber-50 border-l-4 border-amber-500 rounded p-4 flex items-start gap-3 mb-6">
                         <i class="fas fa-exclamation-triangle text-amber-500 mt-1"></i>
                         <p class="text-sm text-amber-800">FaceID cache is missing or stale; please rescan your face to rebuild local verification data.</p>
                     </div>
-                @endif
+                <?php endif; ?>
 
-                @if($needsIdentityUpload)
+                <?php if($needsIdentityUpload): ?>
                     <div class="bg-neutral-50 border border-gold/30 rounded-lg p-6 mb-6">
                         <div class="flex items-start gap-4">
                             <div class="flex-shrink-0">
@@ -78,8 +78,8 @@
                         </div>
                     </div>
 
-                    <form method="POST" action="{{ route('otp.identity.upload') }}" enctype="multipart/form-data" class="space-y-6" id="identity-setup-form">
-                        @csrf
+                    <form method="POST" action="<?php echo e(route('otp.identity.upload')); ?>" enctype="multipart/form-data" class="space-y-6" id="identity-setup-form">
+                        <?php echo csrf_field(); ?>
                         <!-- Hidden input to hold the captured image file -->
                         <div class="hidden">
                             <input id="identity_image_input" type="file" name="identity_image" accept="image/png" required>
@@ -154,8 +154,8 @@
                             <i class="fas fa-lock text-gold"></i> Biometric data is encrypted and stored securely.
                         </p>
                     </form>
-                @else
-                    @if($scanEnabled)
+                <?php else: ?>
+                    <?php if($scanEnabled): ?>
                         <style>
                             @keyframes scan_vertical {
                                 0% { top: 0%; opacity: 0; }
@@ -167,7 +167,7 @@
                                 animation: scan_vertical 2.5s ease-in-out infinite;
                             }
                         </style>
-                        <div id="face-scan-container" class="relative rounded-xl overflow-hidden border border-gold mb-6 bg-primary-dark shadow-2xl" @if(!$scanRequired) style="display: none;" @endif>
+                        <div id="face-scan-container" class="relative rounded-xl overflow-hidden border border-gold mb-6 bg-primary-dark shadow-2xl" <?php if(!$scanRequired): ?> style="display: none;" <?php endif; ?>>
                             <!-- Overlay cảnh báo nếu môi trường quá tối -->
                             <div id="light-warning" class="hidden absolute inset-0 z-30 flex items-center justify-center bg-black/70 text-white text-center px-6">
                                 <div class="max-w-sm">
@@ -192,11 +192,11 @@
                             <!-- Smart Instructions Hub -->
                             <div class="px-6 pb-6 text-center relative z-20">
                                 <h4 id="liveness-title" class="text-xl font-bold text-gold mb-2 tracking-wide uppercase">
-                                    @if(isset($isEnrollment) && $isEnrollment) FaceID Enrollment @else Identity Verification @endif
+                                    <?php if(isset($isEnrollment) && $isEnrollment): ?> FaceID Enrollment <?php else: ?> Identity Verification <?php endif; ?>
                                 </h4>
                                 <div id="liveness-message-box" class="inline-flex flex-col items-center gap-2 bg-primary/95 border border-gold/30 py-3 px-6 rounded-xl shadow-lg mb-3">
                                     <button type="button" id="start-liveness-btn" class="py-2 px-6 bg-gold text-primary-dark font-bold rounded-full shadow-md hover:bg-yellow-400 transition flex items-center justify-center gap-2 animate-pulse">
-                                        <i class="fas fa-video"></i> @if(isset($isEnrollment) && $isEnrollment) Start Identity Scan @else Start FaceID Scan @endif
+                                        <i class="fas fa-video"></i> <?php if(isset($isEnrollment) && $isEnrollment): ?> Start Identity Scan <?php else: ?> Start FaceID Scan <?php endif; ?>
                                     </button>
                                     <div id="liveness-status-box" class="hidden flex items-center gap-2 mt-2">
                                         <i id="liveness-icon" class="fas fa-expand text-gold"></i>
@@ -213,39 +213,54 @@
                             </div>
                         </div>
 
-                        @if(!$scanRequired)
+                        <?php if(!$scanRequired): ?>
                             <div class="mb-6 text-center">
                                 <button type="button" id="switch-to-faceid" class="text-gold text-sm font-bold hover:text-yellow-400 transition flex items-center justify-center gap-2 mx-auto">
                                     <i class="fas fa-id-card"></i> Or Verify with FaceID
                                 </button>
                             </div>
-                        @else
+                        <?php else: ?>
                             <div class="mb-6 text-center">
                                 <button type="button" id="backup-otp-btn" class="hidden text-gold text-sm font-bold hover:text-yellow-400 transition flex items-center justify-center gap-2 mx-auto">
                                     <i class="fas fa-key"></i> Sử dụng mã OTP dự phòng
                                 </button>
                             </div>
-                        @endif
-                    @endif
+                        <?php endif; ?>
+                    <?php endif; ?>
 
-                    <form method="POST" action="{{ route('otp.verify.submit') }}" class="space-y-8" id="otp-form" @if($scanEnabled && $scanRequired) style="display: none;" @endif>
-                        @csrf
+                    <form method="POST" action="<?php echo e(route('otp.verify.submit')); ?>" class="space-y-8" id="otp-form" <?php if($scanEnabled && $scanRequired): ?> style="display: none;" <?php endif; ?>>
+                        <?php echo csrf_field(); ?>
 
                         <div>
                             <div class="relative">
                                 <input id="otp" type="text" 
-                                       class="block w-full text-center bg-neutral-50 border border-neutral-300 rounded-lg text-neutral-900 focus:ring-gold focus:border-gold placeholder:text-neutral-300 transition-colors @error('otp') border-red-500 ring-1 ring-red-500 @enderror" 
+                                       class="block w-full text-center bg-neutral-50 border border-neutral-300 rounded-lg text-neutral-900 focus:ring-gold focus:border-gold placeholder:text-neutral-300 transition-colors <?php $__errorArgs = ['otp'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 ring-1 ring-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
                                        name="otp" 
-                                       @if(!$scanRequired) required autofocus @endif
+                                       <?php if(!$scanRequired): ?> required autofocus <?php endif; ?>
                                        placeholder="&middot; &middot; &middot; &middot; &middot; &middot;"
                                        maxlength="6"
                                        style="letter-spacing: 0.8em; font-size: 1.75rem; padding: 1rem 0; font-family: monospace;">
                                         
-                                @error('otp')
+                                <?php $__errorArgs = ['otp'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                     <p class="mt-2 text-sm text-red-600 text-center font-medium bg-red-50 py-1.5 rounded" role="alert">
-                                        {{ $message }}
+                                        <?php echo e($message); ?>
+
                                     </p>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                             <p class="mt-3 text-center text-xs text-neutral-400">
                                 Enter the 6-digit code provided in the email.
@@ -256,13 +271,13 @@
                             <button type="submit" class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-primary hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary uppercase tracking-widest transition-all hover:shadow-md">
                                 Verify & Proceed
                             </button>
-                            <a href="{{ route('home') }}" class="w-full flex justify-center py-3.5 px-4 border border-neutral-300 rounded-lg shadow-sm text-sm font-bold text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary tracking-widest uppercase transition-colors">
+                            <a href="<?php echo e(route('home')); ?>" class="w-full flex justify-center py-3.5 px-4 border border-neutral-300 rounded-lg shadow-sm text-sm font-bold text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary tracking-widest uppercase transition-colors">
                                 Cancel
                             </a>
                         </div>
                     </form>
 
-                    @if($scanEnabled)
+                    <?php if($scanEnabled): ?>
                         <script>
                             document.addEventListener('DOMContentLoaded', function () {
                                 const otpForm = document.getElementById('otp-form');
@@ -485,8 +500,8 @@
                                 startBtn.addEventListener('click', startLivenessDetection);
                             });
                         </script>
-                    @endif
-                @endif
+                    <?php endif; ?>
+                <?php endif; ?>
 
                 <script>
                     (function () {
@@ -593,11 +608,11 @@
                     })();
                 </script>
 
-                @if(isset($riskScore) && $riskScore !== null)
+                <?php if(isset($riskScore) && $riskScore !== null): ?>
                     <div class="mt-6 text-center text-xs text-neutral-500">
-                        <span class="font-semibold">Risk Score:</span> {{ number_format($riskScore, 1) }} / 100
+                        <span class="font-semibold">Risk Score:</span> <?php echo e(number_format($riskScore, 1)); ?> / 100
                     </div>
-                @endif
+                <?php endif; ?>
                 <span class="text-xs text-neutral-400 font-medium tracking-wide flex items-center justify-center gap-2">
                     <i class="fas fa-lock text-gold"></i> Secured by LuxGuard
                 </span>
@@ -605,4 +620,6 @@
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\E-commerce2026\resources\views/auth/verify-otp.blade.php ENDPATH**/ ?>

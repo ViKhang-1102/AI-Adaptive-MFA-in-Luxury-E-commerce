@@ -19,8 +19,8 @@ class SecurityController extends Controller
         // 1. Calculate General Metrics
         $totalTransactions = SecurityAudit::count();
         $allowedCount = SecurityAudit::where('suggestion', 'allow')->count();
-        $mfaCount = SecurityAudit::where('suggestion', 'otp')->count();
-        $blockedCount = SecurityAudit::where('suggestion', 'faceid')->count();
+        $mfaCount = SecurityAudit::whereIn('suggestion', ['otp', 'faceid', 'mfa'])->count();
+        $blockedCount = SecurityAudit::where('suggestion', 'block')->count();
 
         $allowPercentage = $totalTransactions > 0 ? round(($allowedCount / $totalTransactions) * 100, 1) : 0;
         $mfaPercentage = $totalTransactions > 0 ? round(($mfaCount / $totalTransactions) * 100, 1) : 0;
@@ -57,7 +57,7 @@ class SecurityController extends Controller
         // 4. Fetch Top Risky Users (Most MFA/Blocks)
         $topRiskyUsers = SecurityAudit::with('user')
             ->select('user_id', DB::raw('count(*) as incident_count'))
-            ->whereIn('suggestion', ['otp', 'faceid'])
+            ->whereIn('suggestion', ['otp', 'faceid', 'block'])
             ->groupBy('user_id')
             ->orderByDesc('incident_count')
             ->limit(5)
@@ -138,7 +138,7 @@ class SecurityController extends Controller
         
         $audits = SecurityAudit::with('user')
             ->where(function ($query) {
-                $query->where('suggestion', 'faceid')
+                $query->whereIn('suggestion', ['faceid', 'block'])
                       ->orWhere('result', 'blocked');
             })
             ->orderBy('created_at', 'desc')

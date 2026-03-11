@@ -20,30 +20,39 @@ def load_image(path):
 
 def enhance_image(img):
     """
-    Tiền xử lý ảnh: 
-    1. Tăng Brightness & Contrast lên 30% nếu ảnh bị tối.
-    2. Sử dụng CLAHE để cân bằng ánh sáng cục bộ.
+    Tiền xử lý ảnh (Adaptive Lighting Correction & Denoising): 
+    - Hạ sáng nếu ảnh bị cháy sáng (Overexposed).
+    - Tăng sáng nếu ảnh thiếu sáng (Underexposed).
+    - Cân bằng sáng cục bộ (CLAHE) và khử nhiễu (Denoising).
     """
-    # Chuyển sang không gian màu LAB
     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     l, a, b = cv2.split(lab)
     
-    # Kiểm tra độ sáng trung bình của kênh L (Lightness)
     avg_brightness = np.mean(l)
     log_debug(f"Average brightness: {avg_brightness:.2f}")
     
-    # Nếu ảnh tối (ngưỡng < 100), tăng độ sáng và tương phản
-    if avg_brightness < 100:
-        log_debug("Low light detected. Applying 30% boost.")
-        # Tăng contrast (alpha) và brightness (beta)
+    if avg_brightness < 80:
+        log_debug("Extreme low light detected. Applying strong boost.")
+        l = cv2.convertScaleAbs(l, alpha=1.5, beta=50)
+    elif avg_brightness < 100:
+        log_debug("Low light detected. Applying moderate boost.")
         l = cv2.convertScaleAbs(l, alpha=1.3, beta=30)
+    elif avg_brightness > 200:
+        log_debug("Extreme high light detected. Reducing brightness.")
+        l = cv2.convertScaleAbs(l, alpha=0.8, beta=-40)
+    elif avg_brightness > 180:
+        log_debug("High light detected. Reducing brightness.")
+        l = cv2.convertScaleAbs(l, alpha=0.9, beta=-20)
     
-    # Áp dụng CLAHE để tối ưu hóa chi tiết khuôn mặt
+    # Cân bằng cục bộ để hiện rõ chi tiết
     clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
     cl = clahe.apply(l)
     
     lab = cv2.merge((cl, a, b))
     enhanced = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+    
+    # Khử nhiễu hột từ camera mờ
+    enhanced = cv2.fastNlMeansDenoisingColored(enhanced, None, 10, 10, 7, 21)
     return enhanced
 
 def detect_face_region(img):
@@ -150,16 +159,76 @@ def save_to_cache(img_path, descriptor, cache_dir):
     return cache_path
 
 def lbph_match(training_img, candidate_img):
-    """Dự phòng LBPH nếu Vision API lỗi hoặc môi trường offline."""
+    """Dự phòng LBPH nếu Vision API lỗi hoặc môi trường offline.
+
+    - Tăng sáng/tương phản khi ảnh quá tối.
+    - Áp dụng Gaussian Blur nhẹ để giảm nhiễu hạt trong điều kiện thiếu sáng.
+    - Sử dụng CLAHE thay vì equalizeHist để cân bằng sáng cục bộ.
+    """
     def normalize(i):
         g = cv2.cvtColor(i, cv2.COLOR_BGR2GRAY)
-        g = cv2.equalizeHist(g)
+        # Giảm nhiễu hạt nhẹ trước khi cân bằng histogram
+        g = cv2.GaussianBlur(g, (3, 3), 0)
+
+        # Tự động bù sáng/tương phản dựa trên độ sáng trung bình
+        avg = np.mean(g)
+        if avg < 80:
+            # Rất tối: tăng mạnh hơn
+            g = cv2.convertScaleAbs(g, alpha=1.5, beta=40)
+        elif avg < 100:
+            # Hơi tối: tăng vừa phải
+            g = cv2.convertScaleAbs(g, alpha=1.3, beta=30)
+
+        # CLAHE: cân bằng sáng cục bộ hơn equalizeHist
+        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+        g = clahe.apply(g)
+
         return cv2.resize(g, (200, 200))
         
     recognizer = cv2.face.LBPHFaceRecognizer_create()
     recognizer.train([normalize(training_img)], np.array([0]))
     label, confidence = recognizer.predict(normalize(candidate_img))
     return confidence
+
+def compute_face_vector(img, size=(128, 128)):
+    """Trích xuất Vector khuôn mặt kết hợp HOG (Gradient/Shape) và LBP (Texture).
+    Đây là kỹ thuật mạnh mẽ nhất thay vì chỉ dùng LBP đơn giản.
+    """
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = cv2.resize(gray, size)
+    gray = cv2.GaussianBlur(gray, (3, 3), 0)
+
+    # 1. Trích xuất HOG Vector (Hình dáng, đường nét khuôn mặt)
+    hog = cv2.HOGDescriptor(
+        _winSize=(128, 128), _blockSize=(16, 16),
+        _blockStride=(8, 8), _cellSize=(8, 8), _nbins=9
+    )
+    hog_feats = hog.compute(gray)
+    if hog_feats is not None:
+        hog_feats = hog_feats.flatten()
+        norm = np.linalg.norm(hog_feats)
+        if norm > 0:
+            hog_feats = hog_feats / norm
+    else:
+        hog_feats = np.array([])
+
+    # 2. Trích xuất LBP Vector (Bề mặt da, các nếp nhăn)
+    neighbors = [(-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1)]
+    lbp = np.zeros_like(gray, dtype=np.uint8)
+    for i, (dy, dx) in enumerate(neighbors):
+        shifted = np.roll(np.roll(gray, dy, axis=0), dx, axis=1)
+        lbp |= ((shifted >= gray) << i).astype(np.uint8)
+
+    lbp_hist, _ = np.histogram(lbp.ravel(), bins=256, range=(0, 256))
+    lbp_hist = lbp_hist.astype(float)
+    lbp_norm = np.linalg.norm(lbp_hist)
+    if lbp_norm > 0:
+        lbp_hist = lbp_hist / lbp_norm
+
+    # 3. Nối (Concatenate) cả 2 vector lại thành 1 siêu vector đặc trưng
+    combined_vector = np.concatenate((hog_feats, lbp_hist))
+    return combined_vector.tolist()
+
 
 def euclidean_dist(l1, l2):
     """Tính khoảng cách Euclidean trung bình giữa 2 bộ landmarks."""
@@ -213,9 +282,10 @@ def main():
             save_to_cache(args.reference, desc, cache_dir)
             print(json.dumps({'match': True, 'confidence': 1.0, 'reason': 'Face landmarks extracted and cached successfully'}))
         else:
-            # Fallback LBPH Enrollment (vẫn tạo file cache dummy để đánh dấu đã quét)
-            save_to_cache(args.reference, {'fallback': 'LBPH'}, cache_dir)
-            print(json.dumps({'match': True, 'confidence': 0.5, 'reason': 'Google Vision failed; enrolled using LBPH fallback'}))
+            # Fallback enrollment: lưu descriptor Vector khi Vision API không khả dụng.
+            desc = compute_face_vector(ref_face if ref_found else ref_enhanced)
+            save_to_cache(args.reference, {'method': 'face_vector', 'descriptor': desc}, cache_dir)
+            print(json.dumps({'match': True, 'confidence': 0.8, 'reason': 'Google Vision failed; enrolled using Facial Vector descriptor (HOG+LBP)'}))
         return
 
     # 4. Luồng Verification (Xác thực)
@@ -232,8 +302,8 @@ def main():
         except Exception:
             pass
 
-    # Nếu có cache Landmarks và có Google Key -> So sánh Landmarks
-    if ref_desc and 'fallback' not in ref_desc and google_key:
+    # 1) Nếu có cache Landmarks và có Google Key -> So sánh Landmarks
+    if ref_desc and 'descriptor' not in ref_desc and google_key:
         cand_desc = get_face_descriptor_vision(cand_face if cand_found else cand_enhanced, google_key)
         if cand_desc:
             dist = euclidean_dist(ref_desc, cand_desc)
@@ -246,6 +316,29 @@ def main():
                 'used_google_vision': True
             }))
             return
+
+    # 2) Nếu có cache vector descriptor (fallback), hãy so sánh euclidean distance
+    if ref_desc and 'descriptor' in ref_desc:
+        cand_desc = compute_face_vector(cand_face if cand_found else cand_enhanced)
+        ref_vec = np.array(ref_desc['descriptor'], dtype=float)
+        cand_vec = np.array(cand_desc, dtype=float)
+        
+        if len(ref_vec) != len(cand_vec):
+            # Formatted sai do model cũ, bắt buộc loại để trigger Auth cập nhật
+            dist = 1.0 
+        else:
+            dist = float(np.linalg.norm(ref_vec - cand_vec))
+            
+        # Threshold vector tổng hợp (HOG+LBP) cho phép dao động hợp lý 0.80
+        match = dist <= 0.80
+        print(json.dumps({
+            'match': bool(match),
+            'confidence': float(max(0.0, 1.0 - (dist / 1.5))),
+            'reason': f'Facial Vector distance: {dist:.3f} (Threshold: 0.80)',
+            'used_google_vision': False,
+            'used_fallback_descriptor': True
+        }))
+        return
 
     # Fallback cuối cùng: LBPH (OpenCV)
     raw_score = lbph_match(ref_face if ref_found else ref_img, cand_face if cand_found else cand_img)

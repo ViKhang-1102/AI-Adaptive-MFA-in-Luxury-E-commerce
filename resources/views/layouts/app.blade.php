@@ -71,7 +71,7 @@
 
         /* Content padding is adjusted via JS based on the header's height (and this acts as a fallback). */
         .content-wrapper {
-            padding-top: 6rem;
+            padding-top: 0; /* allow JS to place content directly below header */
         }
 
         #scroll-to-top {
@@ -213,19 +213,8 @@
         });
 
         // Adjust content padding to keep page content clear of the fixed header
-        function adjustContentPadding() {
-            const header = document.querySelector('header');
-            const content = document.querySelector('.content-wrapper');
-            if (!header || !content) return;
+        // Removed adjustContentPadding because the header uses sticky positioning which handles the flow natively.
 
-            const headerHeight = header.getBoundingClientRect().height;
-            content.style.paddingTop = `${headerHeight + 16}px`;
-        }
-
-        window.addEventListener('DOMContentLoaded', adjustContentPadding);
-        window.addEventListener('resize', adjustContentPadding);
-
-        // Trigger AI Toast animation
         window.addEventListener('DOMContentLoaded', () => {
             const toast = document.getElementById('ai-security-toast');
             if (toast) {

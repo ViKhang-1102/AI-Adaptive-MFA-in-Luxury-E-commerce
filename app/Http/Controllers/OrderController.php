@@ -242,7 +242,7 @@ class OrderController extends Controller
                 'risk_score' => $score,
                 'level' => $level,
                 'suggestion' => $suggestion,
-                'result' => $suggestion === 'allow' ? 'success' : 'pending',
+                'result' => ($suggestion === 'allow' ? 'success' : ($suggestion === 'block' ? 'blocked' : 'pending')),
                 'metadata' => [
                     'ai_enabled' => $enableAiMfa,
                     'risk_explanation' => $riskResult['explanation'] ?? null,

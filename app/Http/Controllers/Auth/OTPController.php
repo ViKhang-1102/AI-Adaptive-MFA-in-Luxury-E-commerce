@@ -44,9 +44,11 @@ class OTPController extends Controller
             }
         }
 
+        $aiEnabled = env('ENABLE_AI_MFA', true);
+
         // --- Enrollment Redirection for Legacy Users ---
         // If logged in but missing digital identity cache, force enrollment
-        if (Auth::check() && $hasIdentityImage && $faceCacheMissing) {
+        if ($aiEnabled && Auth::check() && $hasIdentityImage && $faceCacheMissing) {
             return redirect()->route('face.enrollment.show')->with('info', 'Please update your biometric data for secure transactions.');
         }
 
@@ -81,6 +83,12 @@ class OTPController extends Controller
         // But if user has NO identity image AND it's a high risk, we show enrollment UI
         if (!$hasIdentityImage && $scanRequired) {
             $scanEnabled = true;
+        }
+
+        if (!$aiEnabled) {
+            $scanRequired = false;
+            $scanEnabled = false;
+            $faceCacheMissing = false;
         }
 
         return view('auth.verify-otp', [

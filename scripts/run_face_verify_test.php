@@ -8,11 +8,12 @@ $kernel->bootstrap();
 $service = app(App\Services\FaceVerificationService::class);
 
 // Use an existing stored identity image for testing
-$source = storage_path('app/public/identity_images/user_1_1772991665.jpg');
-if (!file_exists($source)) {
-    echo "Test image not found: $source\n";
+$files = glob(storage_path('app/public/identity_images/*.jpg'));
+if (empty($files)) {
+    echo "No test identity images found in storage.\n";
     exit(1);
 }
+$source = $files[0];
 
 $img = file_get_contents($source);
 $b64 = 'data:image/jpeg;base64,' . base64_encode($img);

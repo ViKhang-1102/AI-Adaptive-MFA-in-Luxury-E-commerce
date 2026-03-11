@@ -157,6 +157,10 @@ async def calculate_risk_score(data: TransactionInput):
             heuristic_risk += 35
             reasons.append(f"Security Alert: Multiple IP address changes detected ({data.ip_change_count})")
 
+        if data.location == "Unknown":
+            heuristic_risk += 20
+            reasons.append("Warning: User location could not be determined.")
+
         # 3. AI Guard Agent Analysis (GPT-4o-mini) - Weight 50%
         ai_analysis = await get_openai_analysis(data)
         ai_risk = ai_analysis.get("score", 0)

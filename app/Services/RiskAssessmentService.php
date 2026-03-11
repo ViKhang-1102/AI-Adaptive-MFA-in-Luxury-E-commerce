@@ -35,7 +35,7 @@ class RiskAssessmentService
             
             // Enhanced Context: User Agent and Mock Location (for demo)
             $userAgent = request()->header('User-Agent');
-            $location = "Hanoi, Vietnam"; // In real app, use GeoIP library
+            $location = $this->getLocationFromIp($currentIp);
 
             $historicalAvgAmount = \App\Models\Order::where('customer_id', $user->id)
                 ->whereIn('status', ['completed', 'delivered'])
@@ -80,7 +80,7 @@ class RiskAssessmentService
                 'suggestion' => $this->suggestionFromScore($fallbackScore),
                 'explanation' => [
                     'score_breakdown' => ['Risk scoring service returned HTTP error; using local heuristic fallback.'],
-                    'input' => ['amount' => $transactionAmount],
+                    'input' => $payload,
                 ],
             ];
 
@@ -100,7 +100,7 @@ class RiskAssessmentService
                 'suggestion' => $this->suggestionFromScore($fallbackScore),
                 'explanation' => [
                     'score_breakdown' => ['Exception while calling risk scoring service; using local heuristic fallback.'],
-                    'input' => ['amount' => $transactionAmount],
+                    'input' => isset($payload) ? $payload : ['amount' => $transactionAmount],
                 ],
             ];
 
@@ -159,6 +159,36 @@ class RiskAssessmentService
             return 'otp';
         }
         return 'allow';
+    }
+
+    protected function getLocationFromIp(string $ip): string
+    {
+        // If the request is from localhost in a local environment, fetch the public IP.
+        if (in_array($ip, ['127.0.0.1', '::1']) && app()->isLocal()) {
+            try {
+                $publicIpResponse = Http::timeout(2)->get('https://api.ipify.org');
+                if ($publicIpResponse->successful()) {
+                    $ip = trim($publicIpResponse->body());
+                } else {
+                    return 'Unknown (Local IP)';
+                }
+            } catch (\Exception $e) {
+                Log::warning('Could not fetch public IP for local dev.', ['error' => $e->getMessage()]);
+                return 'Unknown (Local IP)';
+            }
+        }
+
+        // Proceed with GeoIP lookup using the public IP.
+        try {
+            $response = Http::timeout(2)->get("http://ip-api.com/json/{$ip}");
+            if ($response->successful() && $response->json('status') === 'success') {
+                return $response->json('city') . ', ' . $response->json('country');
+            }
+        } catch (\Exception $e) {
+            Log::warning('GeoIP lookup failed', ['ip' => $ip, 'error' => $e->getMessage()]);
+        }
+
+        return 'Unknown';
     }
 
     protected function maybeSendRedFlagWarning(User $user, array $riskResult): void

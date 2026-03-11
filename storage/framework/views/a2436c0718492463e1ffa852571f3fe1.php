@@ -239,4 +239,4 @@
     </script>
 </body>
 </html>
-<?php /**PATH C:\laragon\www\E-commerce2026\resources\views/layouts/app.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\laragon\www\E-commerce2026 - Copy (2)\resources\views/layouts/app.blade.php ENDPATH**/ ?>
