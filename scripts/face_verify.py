@@ -14,7 +14,7 @@ import numpy as np
 import requests
 
 def log_debug(msg):
-    """In log ra stderr để không làm hỏng luồng stdout chứa JSON."""
+    """Log to stderr so we do not corrupt JSON output on stdout."""
     sys.stderr.write(f"DEBUG: {msg}\n")
 
 def load_image(path):
@@ -24,15 +24,15 @@ def load_image(path):
     return img
 
 def gray_world_white_balance(img):
-    """Áp dụng Gray World White Balance để loại bỏ ám màu do môi trường (vàng/xanh)."""
+    """Apply Gray World white balance to remove environmental color cast (yellow/green)."""
     result = img.astype(np.float32)
-    # Tính trung bình mỗi kênh
+    # Compute per-channel average
     avg_b = np.mean(result[:, :, 0])
     avg_g = np.mean(result[:, :, 1])
     avg_r = np.mean(result[:, :, 2])
     avg = (avg_b + avg_g + avg_r) / 3.0
 
-    # Scale mỗi kênh về mức trung bình chung
+    # Scale each channel toward the global average
     if avg_b > 0:
         result[:, :, 0] = np.clip(result[:, :, 0] * (avg / avg_b), 0, 255)
     if avg_g > 0:
@@ -44,21 +44,21 @@ def gray_world_white_balance(img):
 
 
 def enhance_image(img):
-    """Tiền xử lý ảnh (Adaptive Environment Correction).
-    - White balance (Gray World) để loại bỏ ám vàng/xanh do ánh sáng.
-    - Histogram Equalization trên kênh Y (YCrCb) để giảm bóng đèn trần.
-    - Bilateral Filter để giảm nhiễu mà không làm mờ chi tiết khuôn mặt.
+    """Image preprocessing (Adaptive Environment Correction).
+    - White balance (Gray World) to remove yellow/green cast from lighting.
+    - Histogram Equalization on Y channel (YCrCb) to reduce ceiling light hotspots.
+    - Bilateral Filter to reduce noise while preserving facial details.
     """
     # 1) White balance
     img = gray_world_white_balance(img)
 
-    # 2) Histogram Equalization trên kênh Y (YCrCb)
+    # 2) Histogram Equalization on Y channel (YCrCb)
     ycrcb = cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb)
     y, cr, cb = cv2.split(ycrcb)
     y = cv2.equalizeHist(y)
     img = cv2.cvtColor(cv2.merge((y, cr, cb)), cv2.COLOR_YCrCb2BGR)
 
-    # 3) Bilateral filter giúp giảm nhiễu camera mà vẫn giữ chi tiết cạnh
+    # 3) Bilateral filter to reduce camera noise while preserving edges
     enhanced = cv2.bilateralFilter(img, d=5, sigmaColor=50, sigmaSpace=50)
 
     log_debug('Environmental correction applied: GrayWorldWB + Y-channel hist-eq + bilateral filter')
@@ -70,15 +70,15 @@ def detect_face_region(img):
     
     def _detect(img_to_check):
         gray = cv2.cvtColor(img_to_check, cv2.COLOR_BGR2GRAY)
-        # Nới lỏng minNeighbors để dễ tìm mặt hơn trong điều kiện khó
+        # Relax minNeighbors to detect faces more easily under difficult conditions
         faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=3, minSize=(40, 40))
         if len(faces) == 0:
             return None
-        # Ưu tiên khuôn mặt to nhất (gần camera nhất)
+        # Prioritize the largest face (closest to the camera)
         faces = sorted(faces, key=lambda r: r[2] * r[3], reverse=True)
         return faces[0]
 
-    # Thử detect trên nhiều kích thước khác nhau (Multi-scale retry)
+    # Try detection at multiple scales (multi-scale retry)
     scales = [1.0, 1.25, 0.8, 1.5]
     for scale in scales:
         if scale == 1.0:
@@ -94,7 +94,7 @@ def detect_face_region(img):
             if scale != 1.0:
                 x, y, w, h = int(x/scale), int(y/scale), int(w/scale), int(h/scale)
             
-            # Crop vùng mặt với margin 15% để giữ lại các đặc trưng xung quanh
+            # Crop face region with 15% margin to preserve surrounding features
             margin_w = int(w * 0.15)
             margin_h = int(h * 0.15)
             y1 = max(0, y - margin_h)
@@ -107,7 +107,7 @@ def detect_face_region(img):
     return img, False
 
 def get_face_descriptor_vision(img, api_key):
-    """Trích xuất Landmarks từ Google Vision API."""
+    """Extract facial landmarks from Google Vision API."""
     if not api_key:
         log_debug("Google API Key missing.")
         return None
@@ -153,12 +153,12 @@ def get_face_descriptor_vision(img, api_key):
     return None
 
 def _normalize_path_for_hash(path: str) -> str:
-    """Chuẩn hóa đường dẫn để tạo key cache ổn định (không phụ thuộc vào nội dung ảnh)."""
+    """Normalize path so cache keys are stable and independent from image content."""
     return os.path.normpath(path).replace('\\', '/').lower()
 
 
 def _get_user_id_from_reference(reference_path: str) -> Optional[str]:
-    """Cố gắng trích xuất user ID từ tên file hoặc đường dẫn (vd. user_123, user-123)."""
+    """Try to extract user ID from filename or path (e.g. user_123, user-123)."""
     if not reference_path:
         return None
     base = os.path.basename(reference_path)
@@ -172,10 +172,10 @@ def _get_user_id_from_reference(reference_path: str) -> Optional[str]:
 
 
 def _get_cache_path(reference_path: str, cache_dir: str, user_id: str = None) -> str:
-    """Mỗi user -> 1 file JSON cache ổn định.
+    """Each user -> one stable JSON cache file.
 
-    Nếu user_id được cung cấp sẽ được dùng thẳng (tên file user_{id}.json).
-    Nếu không thể xác định user_id thì fallback về hash của đường dẫn để tránh phá vỡ cache cũ.
+    If user_id is provided it is used directly (file name user_{id}.json).
+    If user_id cannot be determined, fall back to a hash of the path to keep legacy caches working.
     """
     if not user_id:
         user_id = _get_user_id_from_reference(reference_path)
@@ -197,7 +197,7 @@ def _brightness_label(brightness: float) -> str:
 
 
 def compute_grid_descriptors(img, grid=(3, 3), cell_size=(128, 128)):
-    """Tạo bộ descriptor theo lưới 3x3 (Grid-based) để tăng tính ổn định khi tóc/râu thay đổi."""
+    """Create a 3x3 grid-based descriptor to stay stable when hair/beard changes."""
     target_h = grid[0] * cell_size[0]
     target_w = grid[1] * cell_size[1]
     resized = cv2.resize(img, (target_w, target_h), interpolation=cv2.INTER_CUBIC)
@@ -215,8 +215,8 @@ def compute_grid_descriptors(img, grid=(3, 3), cell_size=(128, 128)):
 
 
 def compare_grid_descriptors(ref_grid, cand_grid):
-    """So sánh 2 bộ descriptor grid và trả về điểm khớp với thông tin chi tiết từng ô."""
-    # Trọng số ưu tiên vùng 'Tam giác vàng' (mắt + mũi) ở hàng giữa.
+    """Compare two grid descriptors and return a match score with per-cell details."""
+    # Weight the 'golden triangle' region (eyes + nose) in the middle row more heavily.
     weights = [
         [0.02, 0.06, 0.02],
         [0.20, 0.40, 0.20],
@@ -238,7 +238,7 @@ def compare_grid_descriptors(ref_grid, cand_grid):
         if r == 1 and c == 1:
             center_score = score
 
-    # Ngưỡng khớp được tune lại cho môi trường thực tế (webcam, ánh sáng indoor).
+    # Match thresholds tuned for real-world conditions (webcam, indoor lighting).
     center_threshold = 0.40
     total_threshold = 0.35
     match = (center_score is not None and center_score >= center_threshold and total_score >= total_threshold)
@@ -259,7 +259,7 @@ def compare_grid_descriptors(ref_grid, cand_grid):
 
 
 def build_template_descriptor(img):
-    """Tạo descriptor template (grid + lighting info) từ ảnh khuôn mặt."""
+    """Create a template descriptor (grid + lighting info) from a face image."""
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     brightness = float(np.mean(gray))
     lighting = _brightness_label(brightness)
@@ -272,24 +272,24 @@ def build_template_descriptor(img):
 
 
 def augment_dark_noisy(img):
-    """Tạo bản giả lập môi trường tối/nhiễu để AI quen với điều kiện indoor."""
+    """Create dark + noisy variants so AI is familiar with typical indoor conditions."""
     return augment_noisy(augment_dark(img))
 
 
 def augment_dark(img):
-    """Tạo phiên bản tối để mô phỏng ánh sáng yếu."""
+    """Create a darker version to simulate low-light conditions."""
     return cv2.convertScaleAbs(img, alpha=0.6, beta=-30)
 
 
 def augment_noisy(img):
-    """Thêm nhiễu Gaussian để mô phỏng môi trường thấp chất lượng camera."""
+    """Add Gaussian noise to simulate low-quality camera environments."""
     noise = np.random.normal(0, 12, img.shape).astype(np.int16)
     noisy = np.clip(img.astype(np.int16) + noise, 0, 255).astype(np.uint8)
     return noisy
 
 
 def rotate_image(img, angle: float):
-    """Xoay ảnh quanh tâm, giữ kích thước ban đầu."""
+    """Rotate image around the center while keeping original size."""
     (h, w) = img.shape[:2]
     center = (w // 2, h // 2)
     M = cv2.getRotationMatrix2D(center, angle, 1.0)
@@ -301,9 +301,9 @@ MAX_TEMPLATES = 5
 
 
 def save_to_cache(reference_path, descriptor, cache_dir, user_id: str = None):
-    """Lưu định danh kỹ thuật (JSON) vào cache theo User ID (multi-template).
+    """Persist technical identity (JSON) into cache keyed by User ID (multi-template).
 
-    Nếu không có user_id, sẽ cố gắng trích xuất từ tên file. Nếu vẫn không có -> fallback hash.
+    If user_id is missing, try to extract it from filename. If still missing -> fall back to path hash.
     """
     cache_path = _get_cache_path(reference_path, cache_dir, user_id)
     os.makedirs(cache_dir, exist_ok=True)
@@ -321,7 +321,7 @@ def save_to_cache(reference_path, descriptor, cache_dir, user_id: str = None):
     if not isinstance(templates, list):
         templates = []
 
-    # Nếu descriptor đã là template (grid), thì nhập vào danh sách.
+    # If descriptor is already a grid template, merge it into the list.
     if isinstance(descriptor, dict) and 'grid' in descriptor:
         template = {
             'id': hashlib.sha256(json.dumps(descriptor, sort_keys=True).encode('utf-8')).hexdigest()[:16],
@@ -331,7 +331,7 @@ def save_to_cache(reference_path, descriptor, cache_dir, user_id: str = None):
             'grid': descriptor['grid'],
         }
 
-        # Nếu đã có template tương tự, ghi đè; nếu không thì thêm mới.
+        # If a very similar template exists, overwrite it; otherwise append as new.
         updated = False
         for i, t in enumerate(templates):
             if isinstance(t, dict) and 'grid' in t:
@@ -343,11 +343,11 @@ def save_to_cache(reference_path, descriptor, cache_dir, user_id: str = None):
         if not updated:
             templates.append(template)
 
-        # Giữ tối đa MAX_TEMPLATES mẫu, mới nhất ở cuối
+        # Keep at most MAX_TEMPLATES samples, newest at the end
         templates = templates[-MAX_TEMPLATES:]
         out = {'templates': templates}
     else:
-        # fallback cũ (legacy) để không phá vỡ các dữ liệu đã lưu
+        # Legacy fallback to avoid breaking previously stored data
         out = descriptor
 
     with open(cache_path, 'w', encoding='utf-8') as f:
@@ -364,27 +364,27 @@ def save_to_cache(reference_path, descriptor, cache_dir, user_id: str = None):
     return cache_path
 
 def lbph_match(training_img, candidate_img):
-    """Dự phòng LBPH nếu Vision API lỗi hoặc môi trường offline.
+    """LBPH-based fallback when Vision API fails or environment is offline.
 
-    - Tăng sáng/tương phản khi ảnh quá tối.
-    - Áp dụng Gaussian Blur nhẹ để giảm nhiễu hạt trong điều kiện thiếu sáng.
-    - Sử dụng CLAHE thay vì equalizeHist để cân bằng sáng cục bộ.
+    - Boost brightness/contrast for very dark images.
+    - Apply light Gaussian blur to reduce noise under low light.
+    - Use CLAHE instead of equalizeHist for local contrast normalization.
     """
     def normalize(i):
         g = cv2.cvtColor(i, cv2.COLOR_BGR2GRAY)
-        # Giảm nhiễu hạt nhẹ trước khi cân bằng histogram
+        # Lightly reduce noise before histogram equalization
         g = cv2.GaussianBlur(g, (3, 3), 0)
 
-        # Tự động bù sáng/tương phản dựa trên độ sáng trung bình
+        # Automatically adjust brightness/contrast based on average intensity
         avg = np.mean(g)
         if avg < 80:
-            # Rất tối: tăng mạnh hơn
+            # Very dark: stronger boost
             g = cv2.convertScaleAbs(g, alpha=1.5, beta=40)
         elif avg < 100:
-            # Hơi tối: tăng vừa phải
+            # Slightly dark: moderate boost
             g = cv2.convertScaleAbs(g, alpha=1.3, beta=30)
 
-        # CLAHE: cân bằng sáng cục bộ hơn equalizeHist
+        # CLAHE: local contrast enhancement, better than equalizeHist for faces
         clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
         g = clahe.apply(g)
 
@@ -396,15 +396,15 @@ def lbph_match(training_img, candidate_img):
     return confidence
 
 def compute_face_vector(img, size=(128, 128)):
-    """Trích xuất Vector khuôn mặt kết hợp HOG (Gradient/Shape) và LBP (Texture).
-    Kết hợp Bilateral Filter để giữ cạnh sắc nét, giúp nhận diện 'khung xương' trong bóng tối.
+    """Extract a face vector combining HOG (gradient/shape) and LBP (texture).
+    Bilateral filter keeps edges sharp to capture bone structure even in low light.
     """
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = cv2.bilateralFilter(gray, d=9, sigmaColor=75, sigmaSpace=75)
     gray = cv2.resize(gray, size)
     gray = cv2.GaussianBlur(gray, (3, 3), 0)
 
-    # 1. Trích xuất HOG Vector (Hình dáng, đường nét khuôn mặt)
+    # 1. Extract HOG vector (overall facial shape and contours)
     hog = cv2.HOGDescriptor(
         _winSize=size, _blockSize=(16, 16),
         _blockStride=(8, 8), _cellSize=(8, 8), _nbins=9
@@ -418,7 +418,7 @@ def compute_face_vector(img, size=(128, 128)):
     else:
         hog_feats = np.array([])
 
-    # 2. Trích xuất LBP Vector (Bề mặt da, các nếp nhăn)
+    # 2. Extract LBP vector (skin surface and fine wrinkles)
     neighbors = [(-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1)]
     lbp = np.zeros_like(gray, dtype=np.uint8)
     for i, (dy, dx) in enumerate(neighbors):
@@ -431,13 +431,13 @@ def compute_face_vector(img, size=(128, 128)):
     if lbp_norm > 0:
         lbp_hist = lbp_hist / lbp_norm
 
-    # 3. Nối (Concatenate) cả 2 vector lại thành 1 siêu vector đặc trưng
+    # 3. Concatenate both vectors into a single high-dimensional descriptor
     combined_vector = np.concatenate((hog_feats, lbp_hist))
     return combined_vector.tolist()
 
 
 def euclidean_dist(l1, l2):
-    """Tính khoảng cách Euclidean trung bình giữa 2 bộ landmarks."""
+    """Compute average Euclidean distance between two landmark sets."""
     dists = []
     l2_dict = {item['type']: item for item in l2}
     for item1 in l1:
@@ -450,9 +450,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('reference', nargs='?', help='Reference image path (stored identity image)')
     parser.add_argument('candidate', nargs='?', help='Candidate image path (live scan)')
-    parser.add_argument('--user-id', dest='user_id', help='User ID để tách cache theo từng người dùng')
+    parser.add_argument('--user-id', dest='user_id', help='User ID to keep cache separated per user')
     parser.add_argument('--enroll', action='store_true')
-    parser.add_argument('--clear-cache', action='store_true', help='Xóa toàn bộ file JSON cache trong face_verify_cache')
+    parser.add_argument('--clear-cache', action='store_true', help='Clear all JSON cache files in face_verify_cache')
     args = parser.parse_args()
 
     if not args.clear_cache and (not args.reference or not args.candidate):
@@ -472,12 +472,12 @@ def main():
         print(json.dumps({'cleared': True, 'path': cache_dir}))
         return
 
-    # Load và tiền xử lý
+    # Load and pre-process
     ref_img = load_image(args.reference)
     cand_img = load_image(args.candidate)
 
     if ref_img is None or cand_img is None:
-        # Debug chi tiết tại sao load fail
+        # Detailed debug for why loading failed
         if ref_img is None:
             log_debug(f"Reference image load failed: {args.reference}")
             if not os.path.exists(args.reference):
@@ -488,30 +488,30 @@ def main():
         print(json.dumps({'match': False, 'confidence': 0, 'reason': 'Image loading failed (Check server logs for path details)'}))
         return
 
-    # 1. Tiền xử lý (Brightness, Contrast, CLAHE)
+    # 1. Pre-processing (brightness, contrast, CLAHE)
     ref_enhanced = enhance_image(ref_img)
     cand_enhanced = enhance_image(cand_img)
 
-    # 2. Phát hiện vùng mặt
+    # 2. Face region detection
     ref_face, ref_found = detect_face_region(ref_enhanced)
     cand_face, cand_found = detect_face_region(cand_enhanced)
 
-    # 3. Luồng Enrollment (Đăng ký) - Lưu nhiều mẫu (Multi-Template) để nhận diện trong cả môi trường sáng/tối.
+    # 3. Enrollment flow - store multiple templates (multi-template) for both bright and dark conditions.
     if args.enroll:
         used_img = cand_face if cand_found else cand_enhanced
 
-        # Xác định User ID để chia cache riêng (user_{id}.json)
+        # Determine User ID so cache is separated (user_{id}.json)
         user_id = args.user_id or _get_user_id_from_reference(args.reference)
 
         templates = []
 
-        # 1) Ảnh gốc đã qua xử lý GrayWorld (cân bằng trắng)
+        # 1) Base image after GrayWorld white balance
         gray_world = gray_world_white_balance(used_img)
         desc_gray = build_template_descriptor(gray_world)
         save_to_cache(args.reference, desc_gray, cache_dir, user_id=user_id)
         templates.append({'type': 'gray_world', 'lighting': desc_gray['lighting'], 'brightness': desc_gray['brightness']})
 
-        # 2) & 3) Ảnh xoay ±15 độ
+        # 2) & 3) Rotated images at +-15 degrees
         for angle in (-15, 15):
             rotated = rotate_image(used_img, angle)
             desc_rot = build_template_descriptor(rotated)
@@ -538,17 +538,17 @@ def main():
         }))
         return
 
-    # 4. Luồng Verification (Xác thực)
-    # Luôn ưu tiên cache theo User ID (user_{id}.json) để tránh nhiễm chéo giữa các user.
+    # 4. Verification flow
+    # Always prefer user-ID-based cache (user_{id}.json) to avoid cross-user contamination.
     user_id = args.user_id or _get_user_id_from_reference(args.reference)
     cache_path = _get_cache_path(args.reference, cache_dir, user_id)
 
-    # Nếu định danh user xác định được nhưng cache chưa tồn tại thì không tiếp tục các cơ chế fallback
+    # If user identity is known but cache is missing, do not apply further fallbacks
     if user_id and not os.path.exists(cache_path):
         print(json.dumps({'match': False, 'confidence': 0, 'reason': 'Face cache missing for user.'}))
         return
 
-    # Chuyển tiếp cho legacy: nếu không có user_id, vẫn thử dùng hash cũ để giữ tương thích
+    # Legacy handoff: when user_id is unknown, try the old hash-based file to keep compatibility
     if not os.path.exists(cache_path):
         try:
             with open(args.reference, 'rb') as f:
@@ -584,7 +584,7 @@ def main():
             t = best['template']
             match = comp['match']
 
-            # Self-learning: nếu match tốt (score > 0.85), thêm template mới vào cache để cập nhật ngoại hình.
+            # Self-learning: if match is strong (score > 0.85), add a new template to update appearance.
             if match and comp['score'] > 0.85:
                 new_template = build_template_descriptor(cand_face if cand_found else cand_enhanced)
                 save_to_cache(args.reference, new_template, cache_dir)
@@ -606,7 +606,7 @@ def main():
             }))
             return
 
-    # 2) Nếu có cache Landmarks và có Google Key -> So sánh Landmarks (legacy)
+    # 2) If landmark cache exists and Google Key is available -> compare landmarks (legacy)
     if ref_desc and isinstance(ref_desc, list) and google_key:
         cand_desc = get_face_descriptor_vision(cand_face if cand_found else cand_enhanced, google_key)
         if cand_desc:
@@ -621,19 +621,19 @@ def main():
             }))
             return
 
-    # 3) Nếu có cache vector descriptor (fallback), hãy so sánh euclidean distance (legacy)
+    # 3) If vector descriptor cache exists (fallback), compare Euclidean distance (legacy)
     if ref_desc and isinstance(ref_desc, dict) and 'descriptor' in ref_desc:
         cand_desc = compute_face_vector(cand_face if cand_found else cand_enhanced)
         ref_vec = np.array(ref_desc['descriptor'], dtype=float)
         cand_vec = np.array(cand_desc, dtype=float)
         
         if len(ref_vec) != len(cand_vec):
-            # Formatted sai do model cũ, bắt buộc loại để trigger Auth cập nhật
+            # Bad descriptor length from old model; force mismatch to trigger auth cache update
             dist = 1.0 
         else:
             dist = float(np.linalg.norm(ref_vec - cand_vec))
             
-        # Threshold vector tổng hợp (HOG+LBP) cho phép dao động hợp lý 0.80
+        # Combined HOG+LBP descriptor threshold, allowing reasonable variation 0.80
         match = dist <= 0.80
         print(json.dumps({
             'match': bool(match),
@@ -644,9 +644,9 @@ def main():
         }))
         return
 
-    # Fallback cuối cùng: LBPH (OpenCV)
+    # Final fallback: LBPH (OpenCV)
     raw_score = lbph_match(ref_face if ref_found else ref_img, cand_face if cand_found else cand_img)
-    # Threshold LBPH = 65.0
+    # LBPH threshold = 65.0
     match = raw_score <= 65.0
     print(json.dumps({
         'match': match,
@@ -656,5 +656,5 @@ def main():
     }))
 
 if __name__ == '__main__':
-    # Đảm bảo CHỈ in ra JSON ở stdout
+    # Ensure we only print JSON to stdout
     main()

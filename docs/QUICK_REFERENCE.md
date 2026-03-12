@@ -196,7 +196,7 @@ tail -100 storage/logs/laravel.log
 
 **Issues?**
 1. Check tail logs: `tail storage/logs/laravel.log`
-2. Run verification: `php artisan tinker @include 'verify-payment-system.php'`
+2. Run verification: `php artisan tinker @include 'tests/dev-tools/verify-payment-system.php'`
 3. Review: [PAYPAL_TESTING_GUIDE.md](PAYPAL_TESTING_GUIDE.md)
 
 **API References:**

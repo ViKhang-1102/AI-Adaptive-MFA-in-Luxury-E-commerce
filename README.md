@@ -69,11 +69,11 @@ Visit: `http://localhost:8000`
 
 **For detailed setup instructions**, see [INSTALLATION.md](INSTALLATION.md)
 
-## � Documentation & Quick Scripts
+## 📚 Documentation & Dev Tools
 - **Docs folder**: See `docs/` for deep dives (chat system, testing guides, deployment notes, etc.)
-- **Test scripts**: `run-tests.ps1`, `run-tests.sh`, `test-chat-system.php`, `verify-chat-system.*`
+- **Dev test scripts**: see `tests/dev-tools/` for one-off diagnostics (chat system, order flows, AI risk scenarios, PayPal config, shipper webhook, etc.)
 
-## �📁 Project Structure
+## 📁 Project Structure
 
 ```
 E-commerce2026/
@@ -126,6 +126,48 @@ Checkout          Confirm orders    Create banners
 Track orders      Update status     Monitor wallet
 Rate products     View earnings     Manage categories
 ```
+
+## 🤖 AI Security & Risk Engine
+
+This project includes an **AI-assisted security layer** that evaluates risky actions (login, checkout, password change) and enforces multi-factor authentication (MFA) when necessary.
+
+- **RiskAssessmentService**
+  - Builds an input payload: user ID, device fingerprint (session-based), IP history, geo-location, transaction amount, and user role.
+  - Sends the payload to an external risk-scoring API (AI Core).
+  - If the API fails, falls back to a local heuristic:
+    - Adds risk for large transactions, new/unverified devices, unusual amounts.
+    - Reduces risk for known devices and spending patterns close to historical averages.
+  - Maps the final score (0–100) to:
+    - `allow` (no MFA), `otp` (email OTP), `faceid` (FaceID verification), or `block`.
+  - Stores a full explanation payload in `security_audits.metadata.risk_explanation` which powers the **Recent Audit Decisions** view in the admin panel.
+
+- **MFA & OTP Flow**
+  - When `suggestion=otp` or `faceid`, the checkout/login flow:
+    - Generates a 6-digit OTP and stores it in session (`expected_otp`).
+    - Redirects to `/otp/verify` with an AI warning banner.
+  - On the OTP screen:
+    - If FaceID is not used, OTP is required.
+    - If FaceID passes, OTP becomes optional depending on risk.
+  - Successful OTP/FaceID:
+    - Marks session as `mfa_verified` and `device_verified`, so future actions on the same device may skip MFA if risk is low.
+
+- **FaceID Digital Identity**
+  - Frontend captures a webcam snapshot as Base64 JPEG.
+  - Backend (`FaceVerificationService`) writes an identity image and calls `scripts/face_verify.py`.
+  - Python performs:
+    - Face detection, alignment, light normalization (GrayWorld/CLAHE).
+    - Builds grid descriptors and generates multiple templates (normal, rotated, dark, noisy).
+    - Persists cache descriptors in `storage/app/face_verify_cache/user_{id}.json`.
+  - During verification:
+    - Live capture is converted to a descriptor.
+    - Compared against all cached templates using weighted grid similarity.
+    - Returns JSON with `match`, `confidence`, lighting info, and detailed score breakdown.
+
+- **Admin Risk Audits**
+  - Every intercepted action writes a `SecurityAudit` record including:
+    - risk score, level, suggestion, final decision.
+    - engine input and score breakdown (API or local heuristic).
+  - Admin UI shows a human-readable breakdown so you can see exactly *why* AI requested OTP/FaceID or blocked an action.
 
 ## 💳 Payment Methods
 

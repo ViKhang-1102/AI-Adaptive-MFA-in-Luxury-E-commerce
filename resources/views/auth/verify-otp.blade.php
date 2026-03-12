@@ -113,7 +113,7 @@
                         <div class="space-y-4">
                             <button type="button" id="enable-webcam" class="w-full py-4 bg-primary text-white rounded-lg font-bold hover:bg-primary-light transition flex flex-col items-center justify-center gap-1 shadow-md">
                                 <span class="flex items-center gap-2 text-lg"><i class="fas fa-video"></i> Open Camera & Scan Face</span>
-                                <span class="text-xs opacity-80 font-normal">Cho phép trình duyệt truy cập máy ảnh của bạn</span>
+                                <span class="text-xs opacity-80 font-normal">Allow your browser to access the camera</span>
                             </button>
                             
                             <div id="webcam-container" class="hidden flex flex-col items-center bg-neutral-900 p-4 rounded-xl border border-neutral-800 shadow-inner">
@@ -168,11 +168,11 @@
                             }
                         </style>
                         <div id="face-scan-container" class="relative rounded-xl overflow-hidden border border-gold mb-6 bg-primary-dark shadow-2xl" @if(!$scanRequired) style="display: none;" @endif>
-                            <!-- Overlay cảnh báo nếu môi trường quá tối -->
+                            <!-- Low-light overlay when the environment is too dark -->
                             <div id="light-warning" class="hidden absolute inset-0 z-30 flex items-center justify-center bg-black/70 text-white text-center px-6">
                                 <div class="max-w-sm">
-                                    <div class="text-lg font-bold mb-2">Môi trường quá tối</div>
-                                    <div class="text-sm">Vui lòng tăng độ sáng hoặc đưa mặt lại gần màn hình để hệ thống có thể nhận diện chính xác.</div>
+                                    <div class="text-lg font-bold mb-2">Environment too dark</div>
+                                    <div class="text-sm">Increase lighting or move closer to the screen so FaceID can recognize you accurately.</div>
                                 </div>
                             </div>
 
@@ -204,7 +204,7 @@
                                     </div>
                                 </div>
                                 <p id="liveness-detail" class="text-xs text-neutral-300 h-8">Click 'Start' to allow camera access.</p>
-                                <p id="liveness-tip" class="text-xs text-neutral-300 mt-2">Hãy giữ mặt thẳng, cách camera 30cm và đảm bảo đủ ánh sáng.</p>
+                                <p id="liveness-tip" class="text-xs text-neutral-300 mt-2">Keep your face straight, about 30cm from the camera, with good lighting.</p>
                             </div>
                             
                             <!-- Progress Bar -->
@@ -222,7 +222,7 @@
                         @else
                             <div class="mb-6 text-center">
                                 <button type="button" id="backup-otp-btn" class="hidden text-gold text-sm font-bold hover:text-yellow-400 transition flex items-center justify-center gap-2 mx-auto">
-                                    <i class="fas fa-key"></i> Sử dụng mã OTP dự phòng
+                                    <i class="fas fa-key"></i> Use backup OTP code
                                 </button>
                             </div>
                         @endif
@@ -392,7 +392,7 @@
                                         
                                         if(brightness < 80) {
                                             showLowLightWarning(true);
-                                            detailEl.innerText = "Môi trường tối. Đang tăng sáng tự động...";
+                                            detailEl.innerText = "Low light detected. Boosting brightness automatically...";
                                             videoElement.style.filter = "contrast(1.4) brightness(1.5)";
                                             await sleep(1500);
                                             showLowLightWarning(false);

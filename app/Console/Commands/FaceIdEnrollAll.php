@@ -61,7 +61,7 @@ class FaceIdEnrollAll extends Command
                 continue;
             }
 
-            // Dùng flag --enroll để đồng bộ với logic mới trong face_verify.py
+            // Use --enroll flag to stay aligned with the new logic in face_verify.py
             $process = new Process([$python, $script, $fullPath, $fullPath, '--user-id', (string)$user->id, '--enroll']);
             $process->setTimeout(30);
             $process->run();
@@ -74,7 +74,7 @@ class FaceIdEnrollAll extends Command
             $output = trim($process->getOutput());
             $this->info("  -> Result: {$output}");
             
-            // Log thêm thông tin từ stderr
+            // Log extended debug information from stderr
             $stderr = $process->getErrorOutput();
             if (!empty($stderr)) {
                 $this->line("  -> Debug Info: " . trim($stderr));

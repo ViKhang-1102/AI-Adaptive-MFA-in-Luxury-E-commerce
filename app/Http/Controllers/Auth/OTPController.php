@@ -170,7 +170,7 @@ class OTPController extends Controller
                 $newIdentityPath = 'identity_images/user_' . $user->id . '_' . time() . '.jpg';
                 Storage::disk('public')->put($newIdentityPath, $snapshotData);
                 
-                // Trích xuất Landmarks ngay lập tức để lưu cache JSON (Digital Identity)
+                // Extract facial landmarks immediately and persist JSON cache (Digital Identity)
                 $enrollResult = $faceService->verify($faceData, $newIdentityPath, true, $user->id);
                 
                 if (!$enrollResult['success']) {
@@ -260,6 +260,7 @@ class OTPController extends Controller
             // Mark session as verified
             Session::put('mfa_verified', true);
             Session::put('mfa_verified_for_login', true);
+            Session::put('device_verified', true);
 
             // Mark Audit as success and associate user if this was a login interception
             if (Session::has('pending_audit_id')) {

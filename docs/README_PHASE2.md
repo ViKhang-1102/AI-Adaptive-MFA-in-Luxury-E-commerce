@@ -324,8 +324,7 @@ Server runs at: `http://127.0.0.1:8000`
 
 **Step 2: Quick Verification (2 min)**
 ```bash
-php verify-phase2.php       # Fast check
-php test-system-complete.php # Detailed check
+php tests/dev-tools/verify-phase2.php       # Fast check
 ```
 
 **Step 3: Manual Testing (30 min)**
@@ -345,8 +344,7 @@ php test-system-complete.php # Detailed check
 
 ## ✅ PRE-DEPLOYMENT CHECKLIST
 
-- [ ] Run `php verify-phase2.php` (all green checkmarks)
-- [ ] Run `php test-system-complete.php` (verify data)
+- [ ] Run `php tests/dev-tools/verify-phase2.php` (all green checkmarks)
 - [ ] Manual test all 5 sections from TESTING_GUIDE_PHASE2.md
 - [ ] Check browser console - no red errors
 - [ ] Check Laravel logs - no critical errors

@@ -73,13 +73,17 @@ class RiskAssessmentService
             ]);
             
             // Use local heuristic fallback if API responds with error
-            $fallbackScore = $this->estimateLocalRisk($user, $transactionAmount);
+            $fallback = $this->estimateLocalRiskWithBreakdown($user, $transactionAmount);
+            $fallbackScore = $fallback['score'];
             $result = [
                 'risk_score' => $fallbackScore,
                 'level' => $this->riskLevel($fallbackScore),
                 'suggestion' => $this->suggestionFromScore($fallbackScore),
                 'explanation' => [
-                    'score_breakdown' => ['Risk scoring service returned HTTP error; using local heuristic fallback.'],
+                    'score_breakdown' => array_merge(
+                        ['Risk scoring service returned HTTP error; using local heuristic fallback.'],
+                        $fallback['breakdown']
+                    ),
                     'input' => $payload,
                 ],
             ];
@@ -93,13 +97,17 @@ class RiskAssessmentService
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            $fallbackScore = $this->estimateLocalRisk($user, $transactionAmount);
+            $fallback = $this->estimateLocalRiskWithBreakdown($user, $transactionAmount);
+            $fallbackScore = $fallback['score'];
             $result = [
                 'risk_score' => $fallbackScore,
                 'level' => $this->riskLevel($fallbackScore),
                 'suggestion' => $this->suggestionFromScore($fallbackScore),
                 'explanation' => [
-                    'score_breakdown' => ['Exception while calling risk scoring service; using local heuristic fallback.'],
+                    'score_breakdown' => array_merge(
+                        ['Exception while calling risk scoring service; using local heuristic fallback.'],
+                        $fallback['breakdown']
+                    ),
                     'input' => isset($payload) ? $payload : ['amount' => $transactionAmount],
                 ],
             ];
@@ -110,27 +118,61 @@ class RiskAssessmentService
         }
     }
 
-    protected function estimateLocalRisk(User $user, float $amount): float
+    protected function estimateLocalRiskWithBreakdown(User $user, float $amount): array
     {
         // Basic heuristic fallback when AI scoring is unavailable.
         $score = 0;
+        $breakdown = [];
 
         if ($amount > 10000) {
             $score += 60;
+            $breakdown[] = 'Very large transaction (> $10,000): +60 risk';
         } elseif ($amount > 5000) {
             $score += 50;
+            $breakdown[] = 'Large transaction ($5,000 - $10,000): +50 risk';
         } elseif ($amount > 1000) {
             $score += 30;
+            $breakdown[] = 'Elevated transaction ($1,000 - $5,000): +30 risk';
         }
 
         // Add some additional risk for new devices
         $deviceIsNew = !Session::has('device_verified');
         if ($deviceIsNew) {
             $score += 45;
+            $breakdown[] = 'New or untrusted device: +45 risk';
+        }
+
+        $historicalAvgAmount = \App\Models\Order::where('customer_id', $user->id)
+            ->whereIn('status', ['completed', 'delivered'])
+            ->avg('total_amount') ?? 0.0;
+
+        if ($historicalAvgAmount > 0) {
+            if ($amount <= $historicalAvgAmount * 1.5) {
+                $score -= 25;
+                $breakdown[] = 'Amount within normal spending range: -25 risk';
+            } elseif ($amount <= $historicalAvgAmount * 2.5) {
+                $score -= 10;
+                $breakdown[] = 'Amount moderately above normal spending: -10 risk';
+            }
+        }
+
+        if (!$deviceIsNew) {
+            $score -= 15;
+            $breakdown[] = 'Known/verified device: -15 risk';
         }
 
         // Cap between 0..100
-        return max(0, min(100, $score));
+        $finalScore = max(0, min(100, $score));
+
+        return [
+            'score' => $finalScore,
+            'breakdown' => $breakdown,
+        ];
+    }
+
+    protected function estimateLocalRisk(User $user, float $amount): float
+    {
+        return $this->estimateLocalRiskWithBreakdown($user, $amount)['score'];
     }
 
     protected function riskLevel(float $score): string

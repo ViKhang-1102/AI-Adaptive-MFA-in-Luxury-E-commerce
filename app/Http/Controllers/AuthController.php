@@ -175,6 +175,7 @@ class AuthController extends Controller
 
         Auth::login($user);
         $user->update(['last_login' => now()]);
+        Session::put('device_verified', true);
 
         // Auto re-enroll face identity to keep AI vectors up to date with extreme lighting/HOG upgrades
         if ($enableAiMfa && $user->identity_image) {

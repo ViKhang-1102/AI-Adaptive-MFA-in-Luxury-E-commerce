@@ -28,14 +28,14 @@ class FaceVerificationService
             return false;
         }
 
-        // Sử dụng User ID (nếu có) để chỉ kiểm tra file cache của người đó.
+        // Use User ID (when available) to validate the cache file for that specific user.
         $userId = $this->getUserIdFromPath($storedImagePath);
         if ($userId) {
             $cacheFile = $cacheDir . '/user_' . $userId . '.json';
             return file_exists($cacheFile);
         }
 
-        // Fallback cho các cache cũ sử dụng hash của ảnh
+        // Fallback for legacy caches that used a hash of the image path
         $hash = hash_file('sha256', $fullPath);
         $cacheFile = $cacheDir . '/' . $hash . '.json';
         return file_exists($cacheFile);
@@ -76,7 +76,7 @@ class FaceVerificationService
 
             $fullStoredPath = Storage::disk('public')->path($storedImagePath);
 
-            // Đảm bảo file tồn tại và đã được ghi xong hoàn toàn (phòng race condition)
+            // Ensure the file exists and has fully flushed to disk (avoid race conditions)
             if (!file_exists($fullStoredPath)) {
                 clearstatcache(true, $fullStoredPath);
                 if (!file_exists($fullStoredPath)) {
@@ -138,7 +138,7 @@ class FaceVerificationService
                 Log::debug('Python Debug Logs:', ['stderr' => $errorOutput]);
             }
 
-            // Tìm chuỗi JSON trong output
+            // Extract the JSON segment from the Python output
             $jsonStart = strpos($output, '{');
             $jsonEnd = strrpos($output, '}');
             
