@@ -28,6 +28,8 @@
                 </div>
             </div>
         </div>
+
+
     </div>
 
     <!-- Metrics Cards -->
@@ -98,6 +100,49 @@
                     <?php endif; ?>
                 </ul>
             </div>
+        </div>
+    </div>
+
+    <!-- Monthly Customer Revenue (Profit) -->
+    <div class="bg-white rounded-xl shadow-sm border border-neutral-100 p-6 mb-10 overflow-hidden">
+        <h3 class="text-lg font-bold text-primary mb-6">Monthly Revenue by Customer (Trust Index)</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="text-xs font-semibold text-neutral-400 uppercase tracking-wider border-b border-neutral-100">
+                        <th class="pb-3 pr-4">Customer</th>
+                        <th class="pb-3 px-4">Month</th>
+                        <th class="pb-3 px-4 text-right">Total Revenue</th>
+                        <th class="pb-3 px-4 text-right">Seller Profit</th>
+                        <th class="pb-3 px-4 text-right">Orders</th>
+                        <th class="pb-3 pl-4 text-right">Trust Score</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm divide-y divide-neutral-50">
+                    <?php $__empty_1 = true; $__currentLoopData = $customerMonthlyRevenue; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $revenue): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <tr class="hover:bg-neutral-50 transition-colors">
+                        <td class="py-4 pr-4 font-bold text-neutral-700"><?php echo e($revenue->name ?? 'Unknown'); ?></td>
+                        <td class="py-4 px-4 text-neutral-500"><?php echo e($revenue->ym); ?></td>
+                        <td class="py-4 px-4 text-right font-bold text-green-600">$<?php echo e(number_format($revenue->total_amount, 2)); ?></td>
+                        <td class="py-4 px-4 text-right text-blue-600">$<?php echo e(number_format($revenue->seller_profit, 2)); ?></td>
+                        <td class="py-4 px-4 text-right text-neutral-600"><?php echo e($revenue->order_count); ?></td>
+                        <td class="py-4 pl-4 text-right">
+                            <?php if($revenue->trust_score >= 80): ?>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200"><?php echo e($revenue->trust_score); ?></span>
+                            <?php elseif($revenue->trust_score >= 60): ?>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200"><?php echo e($revenue->trust_score); ?></span>
+                            <?php else: ?>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200"><?php echo e($revenue->trust_score); ?></span>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                    <tr>
+                        <td colspan="6" class="py-8 text-center text-neutral-400 text-sm">No customer revenue data available.</td>
+                    </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
         </div>
     </div>
 

@@ -262,6 +262,18 @@ class OTPController extends Controller
             Session::put('mfa_verified_for_login', true);
             Session::put('device_verified', true);
 
+            // Persistent Device Verification (AI Learning)
+            if ($user) {
+                \App\Models\VerifiedDevice::firstOrCreate([
+                    'user_id' => $user->id,
+                    'device_fingerprint' => substr(md5($request->header('User-Agent')), 0, 16),
+                ], [
+                    'ip_address' => $request->ip(),
+                    'location' => app(\App\Services\RiskAssessmentService::class)->getLocationFromIp($request->ip() ?? '127.0.0.1'),
+                    'last_used_at' => now(),
+                ]);
+            }
+
             // Mark Audit as success and associate user if this was a login interception
             if (Session::has('pending_audit_id')) {
                 $auditUpdate = ['result' => 'success'];

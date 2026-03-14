@@ -147,7 +147,7 @@ class AuthController extends Controller
                         'ip_change_count' => 0,
                         'location' => $riskResult['explanation']['input']['location'] ?? 'Unknown',
                         'device' => substr(md5($request->header('User-Agent')), 0, 16),
-                        'device_is_new' => Session::has('device_verified_for_login') ? false : true,
+                        'device_is_new' => $riskResult['explanation']['input']['device_is_new'] ?? true,
                     ],
                 ]
             ]);

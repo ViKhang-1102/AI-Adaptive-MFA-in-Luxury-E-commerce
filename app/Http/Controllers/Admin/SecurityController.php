@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SecurityAudit;
+use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -63,6 +64,29 @@ class SecurityController extends Controller
             ->limit(5)
             ->get();
             
+        $validStatuses = ['confirmed', 'processing', 'shipped', 'delivered'];
+
+        $customerMonthlyRevenue = DB::table('orders')
+            ->join('users', 'orders.customer_id', '=', 'users.id')
+            ->select(
+                'orders.customer_id',
+                'users.name',
+                DB::raw("DATE_FORMAT(orders.created_at, '%Y-%m') as ym"),
+                DB::raw('SUM(orders.total_amount) as total_amount'),
+                DB::raw('SUM(orders.subtotal * 0.95) as seller_profit'), // 5% fee
+                DB::raw('COUNT(orders.id) as order_count'),
+                DB::raw('CASE 
+                    WHEN SUM(orders.total_amount) >= 2000 AND COUNT(orders.id) >= 5 THEN 100
+                    WHEN SUM(orders.total_amount) >= 500 AND COUNT(orders.id) >= 3 THEN 80
+                    WHEN COUNT(orders.id) >= 1 THEN 60
+                    ELSE 40 END as trust_score')
+            )
+            ->whereIn('orders.status', $validStatuses)
+            ->groupBy('orders.customer_id', 'users.name', 'ym')
+            ->orderByDesc('ym')
+            ->orderByDesc('total_amount')
+            ->get();
+
         // 5. Thesis Evaluation Metrics
         $totalAiAudits = $totalTransactions;
         $frictionReductionRate = $totalAiAudits > 0 ? round(($allowedCount / $totalAiAudits) * 100, 1) : 0;
@@ -96,7 +120,8 @@ class SecurityController extends Controller
             'staticInterruptionRate',
             'frictionReductionRate',
             'conclusionText',
-            'aiEnabled'
+            'aiEnabled',
+            'customerMonthlyRevenue'
         ));
     }
 

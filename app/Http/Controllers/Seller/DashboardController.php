@@ -56,12 +56,24 @@ class DashboardController extends Controller
             ->where('read', false)
             ->count();
 
+        // Purchase Statistics (Seller as Customer)
+        $purchaseValidStatuses = ['confirmed', 'processing', 'shipped', 'delivered'];
+        $totalSpent = Order::where('customer_id', $seller->id)
+            ->whereIn('status', $purchaseValidStatuses)
+            ->sum('total_amount');
+        
+        $totalPurchaseOrders = Order::where('customer_id', $seller->id)
+            ->whereIn('status', $purchaseValidStatuses)
+            ->count();
+
         return view('seller.dashboard', compact(
             'totalProducts',
             'totalOrders',
             'totalRevenue',
             'pendingOrders',
             'unreadMessages',
+            'totalSpent',
+            'totalPurchaseOrders',
             'month',
             'year'
         ));

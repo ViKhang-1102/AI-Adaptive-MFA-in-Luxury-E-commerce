@@ -81,6 +81,30 @@
         </div>
     </div>
 
+    <!-- Seller as Customer Statistics -->
+    <h2 class="text-xl font-serif font-bold text-primary mb-6">Purchase Insights (As Buyer)</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div class="bg-white p-6 rounded-2xl shadow-soft border border-neutral-100 flex items-center justify-between group hover:border-gold/50 transition-colors">
+            <div>
+                <p class="text-sm font-medium text-neutral-500 mb-1">Items Bought</p>
+                <div class="text-3xl font-bold text-primary">{{ $totalPurchaseOrders }}</div>
+            </div>
+            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                <i data-lucide="package-check" class="w-6 h-6"></i>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-soft border border-neutral-100 flex items-center justify-between group hover:border-gold/50 transition-colors">
+            <div>
+                <p class="text-sm font-medium text-neutral-500 mb-1">Total Spent</p>
+                <div class="text-3xl font-bold text-primary">${{ number_format($totalSpent, 2) }}</div>
+            </div>
+            <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center group-hover:bg-purple-100 transition-colors">
+                <i data-lucide="wallet" class="w-6 h-6"></i>
+            </div>
+        </div>
+    </div>
+
     <!-- Quick Actions -->
     <h2 class="text-xl font-serif font-bold text-primary mb-6">Quick Actions</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">

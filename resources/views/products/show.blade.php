@@ -4,7 +4,23 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Breadcrumbs / Back Button -->
+    <div class="mb-8 flex items-center justify-between">
+        <a href="{{ route('products.index') }}" class="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary transition-colors group">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
+            Back to Collections
+        </a>
+        
+        <div class="flex items-center gap-2 text-xs font-medium text-neutral-400">
+            <a href="{{ route('home') }}" class="hover:text-primary">Home</a>
+            <i data-lucide="chevron-right" class="w-3 h-3"></i>
+            <a href="{{ route('products.index') }}" class="hover:text-primary">Products</a>
+            <i data-lucide="chevron-right" class="w-3 h-3"></i>
+            <span class="text-neutral-900">{{ $product->name }}</span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
         <!-- Product Images Section -->
         <div class="md:col-span-1">
             @if($product->images->count() > 0)

@@ -100,6 +100,11 @@ class User extends Authenticatable
         return $this->hasMany(SellerCategory::class, 'seller_id');
     }
 
+    public function verifiedDevices()
+    {
+        return $this->hasMany(VerifiedDevice::class);
+    }
+
     // Scopes
     public function scopeActive($query)
     {

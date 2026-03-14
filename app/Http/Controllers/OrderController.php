@@ -268,7 +268,7 @@ class OrderController extends Controller
                         'ip' => $request->ip(),
                         'location' => $riskResult['explanation']['input']['location'] ?? 'Unknown',
                         'device' => substr(md5($request->header('User-Agent')), 0, 16),
-                        'device_is_new' => Session::has('device_verified') ? false : true,
+                        'device_is_new' => $riskResult['explanation']['input']['device_is_new'] ?? true,
                     ],
                 ],
             ]);
