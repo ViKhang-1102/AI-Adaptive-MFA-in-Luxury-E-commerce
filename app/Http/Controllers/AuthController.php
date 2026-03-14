@@ -73,13 +73,31 @@ class AuthController extends Controller
 
         $user = User::where('email', $credentials['email'])->first();
 
-        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+        if (!$user) {
             return back()->with('error', 'Invalid credentials');
+        }
+
+        if ($user->locked_at) {
+            return back()->with('error', 'Your account has been locked due to too many failed attempts. Please use the "Unlock Account" link.');
+        }
+
+        if (!Hash::check($credentials['password'], $user->password)) {
+            $user->increment('login_attempts');
+            
+            if ($user->login_attempts >= 6) {
+                $user->update(['locked_at' => now()]);
+                return back()->with('error', 'Your account has been locked due to 6 failed attempts. Please verify via email to unlock.');
+            }
+
+            return back()->with('error', 'Invalid credentials. Remaining attempts: ' . (6 - $user->login_attempts));
         }
 
         if (!$user->is_active) {
             return back()->with('error', 'Your account has been deactivated');
         }
+
+        // Reset login attempts on success
+        $user->update(['login_attempts' => 0, 'locked_at' => null]);
 
         // --- Check if FaceID Cache is Missing ---
         $faceService = app(FaceVerificationService::class);
@@ -263,5 +281,108 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('home')->with('success', 'Logged out successfully');
+    }
+
+    // --- Forgot Password Methods ---
+
+    public function showForgotPasswordForm()
+    {
+        return view('auth.forgot-password');
+    }
+
+    public function sendResetOtp(Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:users,email']);
+
+        $otp = rand(100000, 999999);
+        Session::put('reset_password_otp', $otp);
+        Session::put('reset_password_email', $request->email);
+
+        \Illuminate\Support\Facades\Mail::to($request->email)->send(new \App\Mail\MfaOtpMail($otp));
+
+        return redirect()->route('password.reset')->with('success', 'Reset code sent to your email.');
+    }
+
+    public function showResetPasswordForm()
+    {
+        if (!Session::has('reset_password_email')) {
+            return redirect()->route('password.request');
+        }
+        return view('auth.reset-password');
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required|numeric',
+            'password' => ['required', 'confirmed', Password::min(6)],
+        ]);
+
+        if ($request->otp != Session::get('reset_password_otp')) {
+            return back()->with('error', 'Invalid OTP code.');
+        }
+
+        $user = User::where('email', Session::get('reset_password_email'))->first();
+        $user->update([
+            'password' => Hash::make($request->password),
+            'login_attempts' => 0,
+            'locked_at' => null,
+        ]);
+
+        Session::forget(['reset_password_otp', 'reset_password_email']);
+
+        return redirect()->route('login')->with('success', 'Password reset successfully. You can now login.');
+    }
+
+    // --- Account Unlock Methods ---
+
+    public function showUnlockForm()
+    {
+        return view('auth.unlock-request');
+    }
+
+    public function sendUnlockOtp(Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:users,email']);
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user->locked_at) {
+            return back()->with('error', 'This account is not locked.');
+        }
+
+        $otp = rand(100000, 999999);
+        Session::put('unlock_account_otp', $otp);
+        Session::put('unlock_account_email', $request->email);
+
+        \Illuminate\Support\Facades\Mail::to($request->email)->send(new \App\Mail\MfaOtpMail($otp));
+
+        return redirect()->route('unlock.verify')->with('success', 'Unlock code sent to your email.');
+    }
+
+    public function showVerifyUnlockForm()
+    {
+        if (!Session::has('unlock_account_email')) {
+            return redirect()->route('unlock.request');
+        }
+        return view('auth.unlock-verify');
+    }
+
+    public function verifyUnlockOtp(Request $request)
+    {
+        $request->validate(['otp' => 'required|numeric']);
+
+        if ($request->otp != Session::get('unlock_account_otp')) {
+            return back()->with('error', 'Invalid OTP code.');
+        }
+
+        $user = User::where('email', Session::get('unlock_account_email'))->first();
+        $user->update([
+            'login_attempts' => 0,
+            'locked_at' => null,
+        ]);
+
+        Session::forget(['unlock_account_otp', 'unlock_account_email']);
+
+        return redirect()->route('login')->with('success', 'Account unlocked successfully. You can now login or reset your password.');
     }
 }

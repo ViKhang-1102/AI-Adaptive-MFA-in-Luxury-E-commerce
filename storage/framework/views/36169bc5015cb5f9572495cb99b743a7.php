@@ -27,7 +27,10 @@ unset($__errorArgs, $__bag); ?>
         </div>
 
         <div class="mb-6">
-            <label class="block text-neutral-700 font-bold mb-2">Password</label>
+            <div class="flex justify-between items-center mb-2">
+                <label class="text-neutral-700 font-bold">Password</label>
+                <a href="<?php echo e(route('password.request')); ?>" class="text-xs text-primary hover:underline">Forgot Password?</a>
+            </div>
             <input type="password" name="password" 
                 class="w-full px-4 py-2 border rounded-md-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 required>
@@ -48,9 +51,14 @@ unset($__errorArgs, $__bag); ?>
         </button>
     </form>
 
-    <p class="text-center text-neutral-600">
-        Don't have an account? <a href="<?php echo e(route('register')); ?>" class="text-primary hover:underline">Register here</a>
-    </p>
+    <div class="mt-4 text-center space-y-2">
+        <p class="text-neutral-600">
+            Don't have an account? <a href="<?php echo e(route('register')); ?>" class="text-primary hover:underline">Register here</a>
+        </p>
+        <p class="text-xs text-neutral-500">
+            Account locked? <a href="<?php echo e(route('unlock.request')); ?>" class="text-primary hover:underline font-bold">Unlock Account</a>
+        </p>
+    </div>
 </div>
 <?php $__env->stopSection(); ?>
 

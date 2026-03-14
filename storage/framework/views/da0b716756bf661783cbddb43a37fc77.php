@@ -1,0 +1,39 @@
+<?php $__env->startSection('title', 'Forgot Password'); ?>
+
+<?php $__env->startSection('content'); ?>
+<div class="max-w-md mx-auto mt-12 bg-white p-8 rounded-md-lg shadow-sm">
+    <h1 class="text-2xl font-bold mb-6 text-center text-primary font-serif">Forgot Password</h1>
+    <p class="text-sm text-neutral-600 mb-6 text-center">Enter your email and we'll send you an OTP to reset your password.</p>
+
+    <form action="<?php echo e(route('password.email')); ?>" method="POST">
+        <?php echo csrf_field(); ?>
+
+        <div class="mb-6">
+            <label class="block text-neutral-700 font-bold mb-2">Email</label>
+            <input type="email" name="email" value="<?php echo e(old('email')); ?>" 
+                class="w-full px-4 py-2 border rounded-md-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                required>
+            <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <span class="text-red-600 text-sm"><?php echo e($message); ?></span>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+        </div>
+
+        <button type="submit" class="w-full bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 py-2 rounded-md-lg hover:bg-primary-light hover:-translate-y-0.5 mb-4">
+            Send Reset Code
+        </button>
+    </form>
+
+    <p class="text-center text-neutral-600">
+        Remembered your password? <a href="<?php echo e(route('login')); ?>" class="text-primary hover:underline">Back to Login</a>
+    </p>
+</div>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\E-commerce2026\resources\views/auth/forgot-password.blade.php ENDPATH**/ ?>

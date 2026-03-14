@@ -30,6 +30,18 @@ Route::middleware('guest')->group(function () {
     // Google Auth Routes
     Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('google.login');
     Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('google.callback');
+
+    // Forgot Password Routes
+    Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+    Route::post('/forgot-password', [AuthController::class, 'sendResetOtp'])->name('password.email');
+    Route::get('/reset-password', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
+    // Account Unlock Routes
+    Route::get('/unlock-account', [AuthController::class, 'showUnlockForm'])->name('unlock.request');
+    Route::post('/unlock-account', [AuthController::class, 'sendUnlockOtp'])->name('unlock.email');
+    Route::get('/verify-unlock', [AuthController::class, 'showVerifyUnlockForm'])->name('unlock.verify');
+    Route::post('/verify-unlock', [AuthController::class, 'verifyUnlockOtp'])->name('unlock.submit');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');

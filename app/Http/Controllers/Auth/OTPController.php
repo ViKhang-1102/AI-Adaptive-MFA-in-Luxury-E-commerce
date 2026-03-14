@@ -277,6 +277,9 @@ class OTPController extends Controller
             // Mark Audit as success and associate user if this was a login interception
             if (Session::has('pending_audit_id')) {
                 $auditUpdate = ['result' => 'success'];
+                if ($isFaceVerified) {
+                    $auditUpdate['suggestion'] = 'faceid';
+                }
                 if ($pendingLoginUserId) {
                     $auditUpdate['user_id'] = $pendingLoginUserId;
                 }

@@ -23,6 +23,8 @@ class User extends Authenticatable
         'paypal_email',
         'is_active',
         'google_id',
+        'login_attempts',
+        'locked_at',
     ];
 
     protected $hidden = [
@@ -36,6 +38,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'locked_at' => 'datetime',
         ];
     }
 
