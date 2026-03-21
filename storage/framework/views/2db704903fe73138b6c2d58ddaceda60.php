@@ -89,6 +89,9 @@
                                 <a href="<?php echo e(route('orders.index')); ?>" class="flex items-center gap-3 px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary rounded-md-xl transition-colors">
                                     <i data-lucide="package" class="w-4 h-4 text-neutral-400"></i> My Orders
                                 </a>
+                                <a href="<?php echo e(route('payments.history')); ?>" class="flex items-center gap-3 px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary rounded-md-xl transition-colors">
+                                    <i data-lucide="receipt" class="w-4 h-4 text-neutral-400"></i> Payment History
+                                </a>
 
                                 <?php if(auth()->user()->isCustomer() || auth()->user()->isSeller()): ?>
                                     <a href="<?php echo e(route('wishlist')); ?>" class="flex items-center gap-3 px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary rounded-md-xl transition-colors">

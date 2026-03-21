@@ -78,9 +78,9 @@
                 
                 <form method="GET" action="{{ route('admin.security.index') }}">
                     <select name="risky_period" onchange="this.form.submit()" class="text-[10px] font-bold uppercase tracking-wider border-none bg-neutral-100 rounded-lg text-neutral-500 focus:ring-0 cursor-pointer py-1.5 pl-3 pr-8">
-                        <option value="all" {{ $riskyPeriod === 'all' ? 'selected' : '' }}>All Time</option>
                         <option value="day" {{ $riskyPeriod === 'day' ? 'selected' : '' }}>Today</option>
                         <option value="month" {{ $riskyPeriod === 'month' ? 'selected' : '' }}>This Month</option>
+                        <option value="all" {{ $riskyPeriod === 'all' ? 'selected' : '' }}>All Time</option>
                     </select>
                 </form>
             </div>

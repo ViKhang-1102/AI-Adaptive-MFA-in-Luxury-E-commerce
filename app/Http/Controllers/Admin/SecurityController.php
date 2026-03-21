@@ -56,7 +56,7 @@ class SecurityController extends Controller
             ->paginate(15);
             
         // 4. Fetch Top Risky Users (Most MFA/Blocks) with filtering
-        $riskyPeriod = $request->get('risky_period', 'all');
+        $riskyPeriod = $request->get('risky_period', 'day');
         $riskyQuery = SecurityAudit::with('user')
             ->select('user_id', DB::raw('count(*) as incident_count'))
             ->whereIn('suggestion', ['otp', 'faceid', 'block'])

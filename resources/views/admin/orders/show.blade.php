@@ -84,33 +84,26 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-4">
                     <div class="rounded-lg border border-neutral-200 bg-white p-4">
                         <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-sm font-semibold text-neutral-700">Identity Profile</h3>
-                            <span class="text-xs text-neutral-500">Stored Image</span>
-                        </div>
-                        @if($order->customer && $order->customer->identity_image)
-                            <img src="{{ asset('storage/' . $order->customer->identity_image) }}" class="w-full h-48 object-cover rounded-md" alt="Identity Image">
-                        @else
-                            <div class="h-48 rounded-md bg-neutral-100 flex items-center justify-center text-neutral-400">
-                                <span>No identity image available</span>
+                            <div class="flex items-center gap-3">
+                                <h3 class="text-sm font-semibold text-neutral-700">Identity Profile</h3>
+                                <span class="text-xs text-neutral-500 border-l pl-3 border-neutral-200">Stored Image</span>
                             </div>
-                        @endif
-                    </div>
-
-                    <div class="rounded-lg border border-neutral-200 bg-white p-4">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-sm font-semibold text-neutral-700">Last Face Scan (Live)</h3>
-                            <span class="text-xs text-neutral-500">Captured at review</span>
+                            <button type="button" onclick="const content = document.getElementById('identity-profile-content'); content.classList.toggle('hidden'); this.textContent = content.classList.contains('hidden') ? 'View Image' : 'Hide Image';" class="text-xs font-medium px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-300">
+                                View Image
+                            </button>
                         </div>
-                        @if($securityAudit && isset($securityAudit->metadata['face_scan_image']))
-                            <img src="{{ asset('storage/' . $securityAudit->metadata['face_scan_image']) }}" class="w-full h-48 object-cover rounded-md" alt="Live Scan">
-                        @else
-                            <div class="h-48 rounded-md bg-neutral-100 flex items-center justify-center text-neutral-400">
-                                <span>No live scan available</span>
-                            </div>
-                        @endif
+                        <div id="identity-profile-content" class="hidden mt-4 transition-all duration-300">
+                            @if($order->customer && $order->customer->identity_image)
+                                <img src="{{ asset('storage/' . $order->customer->identity_image) }}" class="w-full h-64 object-contain bg-neutral-50 rounded-md" alt="Identity Image">
+                            @else
+                                <div class="h-48 rounded-md bg-neutral-100 flex items-center justify-center text-neutral-400">
+                                    <span>No identity image available</span>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
