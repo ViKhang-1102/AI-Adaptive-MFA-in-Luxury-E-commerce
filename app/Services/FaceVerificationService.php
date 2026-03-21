@@ -118,7 +118,7 @@ class FaceVerificationService
             if ($enrollment) {
                 $args[] = '--enroll';
             }
-            
+
             $process = new Process($args);
             $process->setTimeout(30);
             $process->run();
@@ -133,7 +133,7 @@ class FaceVerificationService
 
             $output = trim($process->getOutput());
             $errorOutput = $process->getErrorOutput();
-            
+
             if (!empty($errorOutput)) {
                 Log::debug('Python Debug Logs:', ['stderr' => $errorOutput]);
             }
@@ -141,11 +141,12 @@ class FaceVerificationService
             // Extract the JSON segment from the Python output
             $jsonStart = strpos($output, '{');
             $jsonEnd = strrpos($output, '}');
-            
+
             if ($jsonStart !== false && $jsonEnd !== false) {
                 $jsonStr = substr($output, $jsonStart, $jsonEnd - $jsonStart + 1);
                 $json = json_decode($jsonStr, true);
-            } else {
+            }
+            else {
                 $json = null;
             }
 
@@ -164,7 +165,8 @@ class FaceVerificationService
                 'used_google_vision' => $json['used_google_vision'] ?? false
             ];
 
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             Log::error('Face Verification Exception', ['message' => $e->getMessage()]);
             return ['success' => false, 'reason' => 'Internal verification error.'];
         }

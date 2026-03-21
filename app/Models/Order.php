@@ -71,6 +71,11 @@ class Order extends Model
         return $this->hasMany(\App\Models\OrderNotification::class);
     }
 
+    public function walletTransactions()
+    {
+        return $this->hasMany(\App\Models\WalletTransaction::class);
+    }
+
     // Scopes
     public function scopePending($query)
     {

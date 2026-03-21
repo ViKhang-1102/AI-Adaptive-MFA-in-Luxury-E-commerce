@@ -108,6 +108,26 @@ class User extends Authenticatable
         return $this->hasMany(VerifiedDevice::class);
     }
 
+    public function securityAudits()
+    {
+        return $this->hasMany(SecurityAudit::class);
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(OrderNotification::class, 'customer_id');
+    }
+
+    public function messagesSent()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    public function messagesReceived()
+    {
+        return $this->hasMany(Message::class, 'receiver_id');
+    }
+
     // Scopes
     public function scopeActive($query)
     {

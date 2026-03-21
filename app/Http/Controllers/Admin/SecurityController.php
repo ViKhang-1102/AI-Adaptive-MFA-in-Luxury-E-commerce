@@ -15,7 +15,7 @@ class SecurityController extends Controller
     /**
      * Display the Security Dashboard Insights.
      */
-    public function index()
+    public function index(Request $request)
     {
         // 1. Calculate General Metrics
         $totalTransactions = SecurityAudit::count();
@@ -55,12 +55,21 @@ class SecurityController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(15);
             
-        // 4. Fetch Top Risky Users (Most MFA/Blocks)
-        $topRiskyUsers = SecurityAudit::with('user')
+        // 4. Fetch Top Risky Users (Most MFA/Blocks) with filtering
+        $riskyPeriod = $request->get('risky_period', 'all');
+        $riskyQuery = SecurityAudit::with('user')
             ->select('user_id', DB::raw('count(*) as incident_count'))
             ->whereIn('suggestion', ['otp', 'faceid', 'block'])
-            ->groupBy('user_id')
-            ->orderByDesc('incident_count')
+            ->groupBy('user_id');
+
+        if ($riskyPeriod === 'day') {
+            $riskyQuery->whereDate('created_at', Carbon::today());
+        } elseif ($riskyPeriod === 'month') {
+            $riskyQuery->whereMonth('created_at', Carbon::now()->month)
+                       ->whereYear('created_at', Carbon::now()->year);
+        }
+
+        $topRiskyUsers = $riskyQuery->orderByDesc('incident_count')
             ->limit(5)
             ->get();
             
@@ -121,7 +130,8 @@ class SecurityController extends Controller
             'frictionReductionRate',
             'conclusionText',
             'aiEnabled',
-            'customerMonthlyRevenue'
+            'customerMonthlyRevenue',
+            'riskyPeriod'
         ));
     }
 

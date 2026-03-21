@@ -70,9 +70,19 @@
         
         <!-- Top Risky Users -->
         <div class="bg-white rounded-xl shadow-sm border border-neutral-100 p-6 flex flex-col h-full">
-            <div class="flex items-center gap-3 mb-6">
-                <h3 class="text-lg font-bold text-primary">Top Risky Users</h3>
-                <span class="bg-red-100 text-red-700 text-xs font-bold px-2 py-0.5 rounded">Alert</span>
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <h3 class="text-lg font-bold text-primary">Top Risky Users</h3>
+                    <span class="bg-red-100 text-red-700 text-xs font-bold px-2 py-0.5 rounded">Alert</span>
+                </div>
+                
+                <form method="GET" action="<?php echo e(route('admin.security.index')); ?>">
+                    <select name="risky_period" onchange="this.form.submit()" class="text-[10px] font-bold uppercase tracking-wider border-none bg-neutral-100 rounded-lg text-neutral-500 focus:ring-0 cursor-pointer py-1.5 pl-3 pr-8">
+                        <option value="all" <?php echo e($riskyPeriod === 'all' ? 'selected' : ''); ?>>All Time</option>
+                        <option value="day" <?php echo e($riskyPeriod === 'day' ? 'selected' : ''); ?>>Today</option>
+                        <option value="month" <?php echo e($riskyPeriod === 'month' ? 'selected' : ''); ?>>This Month</option>
+                    </select>
+                </form>
             </div>
             
             <div class="flex-1 overflow-y-auto">

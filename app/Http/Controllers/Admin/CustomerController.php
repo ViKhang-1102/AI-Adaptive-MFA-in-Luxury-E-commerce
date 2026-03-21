@@ -85,35 +85,41 @@ class CustomerController extends Controller
             abort(404);
         }
 
-        // Delete all related data - cart items first, then cart
+        // 1. Delete Cart and items
         if ($user->cart) {
             $user->cart->items()->delete();
             $user->cart->delete();
         }
 
-        // Delete addresses
+        // 2. Delete Personal Data
         $user->addresses()->delete();
-
-        // Delete wishlist items
         $user->wishlist()->delete();
-
-        // Delete reviews
         $user->reviews()->delete();
+        $user->verifiedDevices()->delete();
+        $user->securityAudits()->delete();
+        $user->notifications()->delete();
+        $user->messagesSent()->delete();
+        $user->messagesReceived()->delete();
 
-        // Delete orders and their items
+        // 3. Delete Orders and dependent data (Payments, Items, Notifications, WalletTransactions)
         $user->ordersAsCustomer()->each(function ($order) {
             $order->items()->delete();
+            $order->notifications()->delete();
+            $order->walletTransactions()->delete();
+            if ($order->payment) {
+                $order->payment->delete();
+            }
             $order->delete();
         });
 
-        // Delete wallet and transactions
+        // 4. Delete Wallet
         if ($user->wallet) {
             $user->wallet->delete();
         }
 
-        // Delete user permanently
+        // 5. Finally delete the user
         $user->delete();
 
-        return back()->with('success', 'Customer deleted permanently');
+        return back()->with('success', 'Customer and all associated data deleted permanently');
     }
 }

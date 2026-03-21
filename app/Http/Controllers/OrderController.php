@@ -547,12 +547,23 @@ class OrderController extends Controller
             return back()->with('error', 'Only cancelled orders can be deleted');
         }
 
-        // Delete associated payment record to prevent foreign key constraint violation
+        // 1. Delete associated payment record
         if ($order->payment) {
             $order->payment->delete();
         }
 
+        // 2. Delete order items
+        $order->items()->delete();
+
+        // 3. Delete order notifications
+        $order->notifications()->delete();
+
+        // 4. Delete wallet transactions
+        $order->walletTransactions()->delete();
+
+        // 5. Finally delete the order
         $order->delete();
+
         return redirect()->route('orders.index')->with('success', 'Order removed permanently');
     }
 

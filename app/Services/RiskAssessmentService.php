@@ -84,7 +84,7 @@ class RiskAssessmentService
             ]);
             
             // Use local heuristic fallback if API responds with error
-            $fallback = $this->estimateLocalRiskWithBreakdown($user, $transactionAmount);
+            $fallback = $this->estimateLocalRiskWithBreakdown($user, $transactionAmount, $paymentMethod);
             $fallbackScore = $fallback['score'];
             $result = [
                 'risk_score' => $fallbackScore,
@@ -108,7 +108,7 @@ class RiskAssessmentService
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            $fallback = $this->estimateLocalRiskWithBreakdown($user, $transactionAmount);
+            $fallback = $this->estimateLocalRiskWithBreakdown($user, $transactionAmount, $paymentMethod);
             $fallbackScore = $fallback['score'];
             $result = [
                 'risk_score' => $fallbackScore,
@@ -129,12 +129,13 @@ class RiskAssessmentService
         }
     }
 
-    protected function estimateLocalRiskWithBreakdown(User $user, float $amount): array
+    protected function estimateLocalRiskWithBreakdown(User $user, float $amount, string $paymentMethod = 'unknown'): array
     {
         // Basic heuristic fallback when AI scoring is unavailable.
         $score = 0;
         $breakdown = [];
 
+        // 1. Transaction Amount Analysis
         if ($amount > 10000) {
             $score += 60;
             $breakdown[] = 'Very large transaction (> $10,000): +60 risk';
@@ -148,7 +149,51 @@ class RiskAssessmentService
             $breakdown[] = 'Small transaction (<= $1,000): +0 risk';
         }
 
-        // Add some additional risk for new devices (Persistent DB Check)
+        // 2. Online Payment Baseline
+        if ($paymentMethod === 'online' || $paymentMethod === 'paypal') {
+            $score += 20;
+            $breakdown[] = 'Digital/Online payment baseline (high fraud target): +20 risk';
+        }
+
+        // 3. New Account Suspicion (Velocity of Identity)
+        $accountAgeHours = $user->created_at->diffInHours(now());
+        $accountAgeDays = $user->created_at->diffInDays(now());
+        
+        if ($accountAgeHours < 24) {
+            $score += 35;
+            $breakdown[] = 'Newly created account (< 24h old): +35 risk';
+        } elseif ($accountAgeDays < 7) {
+            $score += 15;
+            $breakdown[] = 'New account (< 7 days old): +15 risk';
+        }
+
+        // 4. Activity Velocity Check (Login/Audit Storm)
+        $recentAuditCount = SecurityAudit::where('user_id', $user->id)
+            ->where('created_at', '>=', now()->subHour())
+            ->count();
+        
+        if ($recentAuditCount >= 10) {
+            $score += 45;
+            $breakdown[] = 'Critical activity velocity (10+ actions/hour): +45 risk';
+        } elseif ($recentAuditCount >= 4) {
+            $score += 20;
+            $breakdown[] = 'High activity velocity (4+ actions/hour): +20 risk';
+        }
+
+        // 5. Daily Order Spree
+        $dailyOrderCount = \App\Models\Order::where('customer_id', $user->id)
+            ->where('created_at', '>=', now()->subDay())
+            ->count();
+        
+        if ($dailyOrderCount >= 5) {
+            $score += 40;
+            $breakdown[] = 'Daily order spree (5+ orders/24h): +40 risk';
+        } elseif ($dailyOrderCount >= 2) {
+            $score += 15;
+            $breakdown[] = 'Frequent daily ordering (2+ orders/24h): +15 risk';
+        }
+
+        // 6. Device Fingerprint & Trust
         $userAgent = request()->header('User-Agent');
         $deviceFingerprint = substr(md5($userAgent), 0, 16);
         
@@ -161,22 +206,26 @@ class RiskAssessmentService
         if ($deviceIsNew) {
             $score += 45;
             $breakdown[] = 'New or untrusted device: +45 risk';
+        } else {
+            // Only reward trusted device if account isn't super new
+            $deviceBonus = ($accountAgeHours < 24) ? 5 : 20;
+            $score -= $deviceBonus;
+            $breakdown[] = "Known/verified device (Bonus adjusted for account age): -{$deviceBonus} risk";
         }
 
+        // 7. Spending Pattern Consistency
         $historicalAvgAmount = \App\Models\Order::where('customer_id', $user->id)
             ->whereIn('status', ['completed', 'delivered'])
             ->avg('total_amount') ?? 0.0;
 
         if ($historicalAvgAmount > 0) {
             if ($amount <= $historicalAvgAmount * 1.5) {
-                $score -= 25;
-                $breakdown[] = 'Amount within normal spending range: -25 risk';
-            } elseif ($amount <= $historicalAvgAmount * 2.5) {
-                $score -= 10;
-                $breakdown[] = 'Amount moderately above normal spending: -10 risk';
+                $score -= 15; // Reduced from 25 to be more conservative
+                $breakdown[] = 'Amount within normal spending range: -15 risk';
             }
         }
 
+        // 8. Long-term Trust Rewards
         $trustedTotals = \App\Models\Order::where('customer_id', $user->id)
             ->whereIn('status', ['completed', 'delivered'])
             ->selectRaw('COUNT(*) as order_count, COALESCE(SUM(total_amount),0) as total_amount')
@@ -186,29 +235,19 @@ class RiskAssessmentService
             $orderCount = (int) $trustedTotals->order_count;
             $totalAmount = (float) $trustedTotals->total_amount;
 
-            if ($totalAmount >= 2000 && $orderCount >= 5) {
-                $score -= 30; // Increased trust reduction
-                $breakdown[] = 'Highly trusted customer (>= $2,000 across 5+ completed orders): -30 risk';
-            } elseif ($totalAmount >= 500 && $orderCount >= 3) {
-                $score -= 15; // Increased trust reduction
-                $breakdown[] = 'Trusted customer (>= $500 across 3+ completed orders): -15 risk';
+            if ($totalAmount >= 5000 && $orderCount >= 10) {
+                $score -= 35;
+                $breakdown[] = 'Elite trusted customer (>= $5,000 across 10+ orders): -35 risk';
+            } elseif ($totalAmount >= 1000 && $orderCount >= 5) {
+                $score -= 20;
+                $breakdown[] = 'Highly trusted customer (>= $1,000 across 5+ orders): -20 risk';
             }
         }
 
-        // Learning: Account age trust
-        $accountAgeDays = $user->created_at->diffInDays(now());
+        // Mature account bonus (non-stacking with new account penalty)
         if ($accountAgeDays > 30) {
             $score -= 5;
-            $breakdown[] = 'Mature account (> 30 days old): -5 risk';
-        }
-        if ($accountAgeDays > 90) {
-            $score -= 5;
-            $breakdown[] = 'Established account (> 90 days old): -5 risk';
-        }
-
-        if (!$deviceIsNew) {
-            $score -= 20; // Increased reward for known devices
-            $breakdown[] = 'Known/verified device: -20 risk';
+            $breakdown[] = 'Mature account (> 30 days): -5 risk';
         }
 
         // Cap between 0..100
@@ -220,9 +259,9 @@ class RiskAssessmentService
         ];
     }
 
-    protected function estimateLocalRisk(User $user, float $amount): float
+    protected function estimateLocalRisk(User $user, float $amount, string $paymentMethod = 'unknown'): float
     {
-        return $this->estimateLocalRiskWithBreakdown($user, $amount)['score'];
+        return $this->estimateLocalRiskWithBreakdown($user, $amount, $paymentMethod)['score'];
     }
 
     protected function riskLevel(float $score): string

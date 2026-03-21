@@ -79,33 +79,54 @@ class SellerController extends Controller
             abort(404);
         }
 
-        // Delete all products and their images
+        // 1. Delete Products and their images
         $seller->products()->each(function ($product) {
             $product->images()->delete();
             $product->reviews()->delete();
             $product->cartItems()->delete();
-            // order items are retained for audit; product_id will be set to NULL by database
             $product->wishlistItems()->delete();
             $product->delete();
         });
 
-        // Delete seller categories
+        // 2. Delete Personal/Business Data
         $seller->sellerCategories()->delete();
+        $seller->addresses()->delete();
+        $seller->verifiedDevices()->delete();
+        $seller->securityAudits()->delete();
+        $seller->notifications()->delete();
+        $seller->messagesSent()->delete();
+        $seller->messagesReceived()->delete();
 
-        // Delete orders and their items
+        // 3. Delete Orders as Seller (Handle related records)
         $seller->ordersAsSeller()->each(function ($order) {
             $order->items()->delete();
+            $order->notifications()->delete();
+            $order->walletTransactions()->delete();
+            if ($order->payment) {
+                $order->payment->delete();
+            }
             $order->delete();
         });
 
-        // Delete wallet
+        // 4. Delete Orders as Customer (In case seller bought things)
+        $seller->ordersAsCustomer()->each(function ($order) {
+            $order->items()->delete();
+            $order->notifications()->delete();
+            $order->walletTransactions()->delete();
+            if ($order->payment) {
+                $order->payment->delete();
+            }
+            $order->delete();
+        });
+
+        // 5. Delete Wallet
         if ($seller->wallet) {
             $seller->wallet->delete();
         }
 
-        // Delete seller permanently
+        // 6. Finally delete the seller
         $seller->delete();
 
-        return back()->with('success', 'Seller deleted permanently');
+        return back()->with('success', 'Seller and all associated data deleted permanently');
     }
 }

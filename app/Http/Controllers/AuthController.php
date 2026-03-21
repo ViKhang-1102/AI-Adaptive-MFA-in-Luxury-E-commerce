@@ -26,7 +26,7 @@ class AuthController extends Controller
     {
         try {
             $googleUser = Socialite::driver('google')->user();
-            
+
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if ($user) {
@@ -35,7 +35,8 @@ class AuthController extends Controller
                     'google_id' => $googleUser->getId(),
                     'last_login' => now(),
                 ]);
-            } else {
+            }
+            else {
                 // Determine random role or assume customer?
                 // For a marketplace, maybe we assume customer first
                 $user = User::create([
@@ -53,7 +54,8 @@ class AuthController extends Controller
             Auth::login($user);
             return redirect()->intended(route('home'))->with('success', 'Logged in with Google successfully!');
 
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Google Auth Error', ['error' => $e->getMessage()]);
             return redirect()->route('login')->with('error', 'Google Authentication Failed.');
         }
@@ -83,7 +85,7 @@ class AuthController extends Controller
 
         if (!Hash::check($credentials['password'], $user->password)) {
             $user->increment('login_attempts');
-            
+
             if ($user->login_attempts >= 6) {
                 $user->update(['locked_at' => now()]);
                 return back()->with('error', 'Your account has been locked due to 6 failed attempts. Please verify via email to unlock.');
@@ -115,7 +117,8 @@ class AuthController extends Controller
                     $suggestion = $riskResult['suggestion'] ?? 'allow';
                     $score = $riskResult['risk_score'] ?? 0;
                     $level = $riskResult['level'] ?? 'low';
-                } else {
+                }
+                else {
                     // Fail-secure: default to MFA if API timeouts
                     $suggestion = 'otp';
                     $score = 50.0;
@@ -127,7 +130,8 @@ class AuthController extends Controller
                         ],
                     ];
                 }
-            } else {
+            }
+            else {
                 // Static MFA - Non AI branch (Always OTP for every login if AI is disabled)
                 $suggestion = 'otp';
                 $score = 50.0;
@@ -179,7 +183,7 @@ class AuthController extends Controller
                 Session::put('pending_login_user_id', $user->id);
 
                 \Illuminate\Support\Facades\Log::channel('single')->info("Login MFA Requested for User [{$user->id}]. OTP Code: [{$otp}]");
-            
+
                 \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\MfaOtpMail($otp));
 
                 Session::flash('ai_warning', "Unusual login activity detected. For your security, please verify your identity.");
@@ -187,7 +191,7 @@ class AuthController extends Controller
                 return redirect()->route('otp.verify');
             }
         }
-        
+
         // Clean up the MFA flag so future distinct logins re-evaluate
         Session::forget('mfa_verified_for_login');
 
@@ -209,7 +213,8 @@ class AuthController extends Controller
                     $process = new \Symfony\Component\Process\Process([$python, $script, $fullPath, $fullPath, '--user-id', (string)$user->id, '--enroll']);
                     $process->start(); // Run async to not block login
                 }
-            } catch (\Exception $e) {
+            }
+            catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error('Auto FaceID re-enroll failed: ' . $e->getMessage());
             }
         }

@@ -390,14 +390,52 @@
                                         }
                                         const brightness = sum / (canvas.width * canvas.height);
                                         
-                                        if(brightness < 80) {
-                                            showLowLightWarning(true);
-                                            detailEl.innerText = "Low light detected. Boosting brightness automatically...";
-                                            videoElement.style.filter = "contrast(1.4) brightness(1.5)";
-                                            await sleep(1500);
-                                            showLowLightWarning(false);
-                                        } else {
-                                            showLowLightWarning(false);
+                                        // Low-light feedback loop
+                                        if(brightness < 70) { // Stricter threshold
+                                            instructionEl.innerText = "Low Light Detected";
+                                            detailEl.innerText = "Boosting screen brightness to illuminate... Hold still.";
+                                            iconEl.className = "fas fa-sun text-amber-400 animate-pulse";
+
+                                            // Create a white overlay to maximize screen brightness
+                                            const flashOverlay = document.createElement('div');
+                                            flashOverlay.style.position = 'fixed';
+                                            flashOverlay.style.top = '0';
+                                            flashOverlay.style.left = '0';
+                                            flashOverlay.style.width = '100vw';
+                                            flashOverlay.style.height = '100vh';
+                                            flashOverlay.style.backgroundColor = 'white';
+                                            flashOverlay.style.zIndex = '9998'; // Below the webcam view
+                                            flashOverlay.style.opacity = '0';
+                                            flashOverlay.style.transition = 'opacity 0.3s ease-in-out';
+                                            document.body.appendChild(flashOverlay);
+
+                                            await sleep(100);
+                                            flashOverlay.style.opacity = '1'; // Flash!
+
+                                            await sleep(500); // Wait for light to stabilize
+
+                                            // Re-check brightness
+                                            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                                            const secondPassImgData = context.getImageData(0, 0, canvas.width, canvas.height).data;
+                                            let secondSum = 0;
+                                            for(let i=0; i<secondPassImgData.length; i+=4) {
+                                                secondSum += (secondPassImgData[i] + secondPassImgData[i+1] + secondPassImgData[i+2]) / 3;
+                                            }
+                                            const secondBrightness = secondSum / (canvas.width * canvas.height);
+
+                                            if (secondBrightness < 85) { // If still too dark, fail gracefully
+                                                instructionEl.innerText = "Scan Failed";
+                                                detailEl.innerText = "Unable to achieve sufficient lighting. Please move to a brighter area and try again.";
+                                                iconEl.className = "fas fa-exclamation-triangle text-red-500";
+                                                flashOverlay.remove();
+                                                stopWebcamAndShowRetry();
+                                                return; // End the sequence
+                                            }
+
+                                            // Fade out the flash
+                                            flashOverlay.style.opacity = '0';
+                                            await sleep(300);
+                                            flashOverlay.remove();
                                         }
 
                                         updateProgress(15);
@@ -479,6 +517,26 @@
                                         instructionEl.innerText = "Scan Failed";
                                         detailEl.innerText = `Scan failed (${scanFailCount}/3). Please adjust lighting and try again.`;
                                         startBtn.style.display = 'flex';
+                                    }
+                                }
+
+                                function stopWebcamAndShowRetry() {
+                                    if (videoStream) {
+                                        videoStream.getTracks().forEach(track => track.stop());
+                                    }
+                                    setCameraActive(false);
+                                    scanFailCount++;
+                                    if (scanFailCount >= 3) {
+                                        showBackupOtpOption();
+                                        instructionEl.innerText = "Scan Failed";
+                                        detailEl.innerText = "Maximum attempts reached. Please use the backup OTP code.";
+                                        iconEl.className = "fas fa-key text-red-500";
+                                        startBtn.style.display = 'none';
+                                    } else {
+                                        instructionEl.innerText = "Scan Failed";
+                                        detailEl.innerText = `Scan failed (${scanFailCount}/3). Please adjust lighting and try again.`;
+                                        startBtn.style.display = 'flex';
+                                        iconEl.className = "fas fa-redo text-gold";
                                     }
                                 }
                                 
