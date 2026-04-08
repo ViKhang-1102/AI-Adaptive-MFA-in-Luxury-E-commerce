@@ -4,7 +4,13 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">My Orders</h1>
+    <div class="flex items-center gap-4 mb-8">
+        <a href="{{ route('home') }}" class="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary transition-colors group">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
+            <span>Back to Home</span>
+        </a>
+        <h1 class="text-3xl font-bold">My Orders</h1>
+    </div>
 
     @if(session('order_notifications'))
     <div class="mb-6">

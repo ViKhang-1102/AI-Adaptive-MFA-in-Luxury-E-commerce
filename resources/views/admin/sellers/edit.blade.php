@@ -2,7 +2,12 @@
 @section('title', 'Edit Seller')
 @section('content')
 <div class="max-w-2xl mx-auto px-4 py-8">
-    <a href="{{ route('admin.sellers.index') }}" class="text-primary hover:underline mb-4 inline-block">← Back</a>
+    <div class="mb-6">
+        <a href="{{ route('admin.sellers.index') }}" class="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary transition-colors group">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
+            <span>Back to Sellers</span>
+        </a>
+    </div>
     <h1 class="text-3xl font-bold mb-8">Edit Seller</h1>
 
     @if ($errors->any())

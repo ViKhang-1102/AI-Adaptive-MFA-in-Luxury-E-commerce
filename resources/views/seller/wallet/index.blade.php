@@ -2,15 +2,17 @@
 @section('title', 'My Wallet')
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="mb-6">
+        <a href="{{ route('seller.dashboard') }}" class="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary transition-colors group">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
+            <span>Back to Dashboard</span>
+        </a>
+    </div>
     <!-- Header -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
         <div>
-            <a href="{{ route('seller.dashboard') }}" class="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary transition-colors group">
-                <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
-                Back to Dashboard
-            </a>
-            <h1 class="text-3xl font-serif font-bold text-primary mt-4">My Wallet</h1>
-            <p class="text-neutral-500 mt-2">Manage your earnings and request withdrawals.</p>
+            <h1 class="text-3xl font-serif font-bold text-primary mt-0">My Wallet</h1>
+            <p class="text-neutral-500 mt-1">Manage your earnings and request withdrawals.</p>
         </div>
 
         <form method="GET" action="{{ route('seller.wallet') }}" class="flex gap-2 items-center bg-white p-2 rounded-xl shadow-sm border border-neutral-100">

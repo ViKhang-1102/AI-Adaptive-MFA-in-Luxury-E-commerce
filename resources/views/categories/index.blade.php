@@ -4,7 +4,15 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">Categories</h1>
+    <div class="mb-6">
+        <a href="{{ route('home') }}" class="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary transition-colors group">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
+            <span>Back to Home</span>
+        </a>
+    </div>
+    <div class="flex items-center gap-4 mb-8">
+        <h1 class="text-3xl font-bold">Categories</h1>
+    </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
         @foreach($categories as $category)

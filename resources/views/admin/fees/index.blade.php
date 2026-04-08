@@ -3,8 +3,8 @@
 @section('content')
 <div class="max-w-2xl mx-auto px-4 py-8">
     <div class="flex items-center gap-4 mb-8">
-        <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 bg-neutral-500 text-white rounded-md hover:bg-gray-600 font-semibold">
-            ← Dashboard
+        <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center px-4 py-2 bg-white border border-neutral-200 text-neutral-700 rounded-full hover:border-gold hover:text-primary transition-all shadow-sm group">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i> Back to Dashboard
         </a>
         <h1 class="text-3xl font-bold">System Fees & Settings</h1>
     </div>

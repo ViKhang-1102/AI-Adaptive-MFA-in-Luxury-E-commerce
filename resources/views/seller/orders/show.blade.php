@@ -3,13 +3,15 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="mb-6">
+        <a href="{{ route('seller.orders.index') }}" class="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary transition-colors group">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
+            <span>Back to Orders</span>
+        </a>
+    </div>
     <!-- Header -->
     <div class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <a href="{{ route('seller.orders.index') }}" class="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary transition-colors group mb-4">
-                <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
-                Back to Orders
-            </a>
             <div class="flex items-center gap-4">
                 <h1 class="text-3xl font-serif font-bold text-primary">Order #{{ $order->id }}</h1>
                 @php

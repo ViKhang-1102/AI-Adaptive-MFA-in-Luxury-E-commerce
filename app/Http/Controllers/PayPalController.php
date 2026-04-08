@@ -29,6 +29,70 @@ class PayPalController extends Controller
             return redirect()->route('login')->with('error', 'Please login to continue.');
         }
 
+        // ==========================================
+        // AI Risk Scoring Perimeter (Online Payment)
+        // ==========================================
+        if (!Session::get('mfa_verified')) {
+            $enableAiMfa = env('ENABLE_AI_MFA', true);
+
+            if ($enableAiMfa) {
+                $riskService = app(RiskAssessmentService::class);
+                $riskResult = $riskService->analyze($user, $order->total_amount, 'online');
+                if ($riskResult) {
+                    $suggestion = $riskResult['suggestion'] ?? 'allow';
+                    $score = $riskResult['risk_score'] ?? 0;
+                    $level = $riskResult['level'] ?? 'low';
+                } else {
+                    $suggestion = 'otp';
+                    $score = 50.0;
+                    $level = 'medium';
+                }
+            } else {
+                // Static MFA - Non AI branch
+                $suggestion = 'otp';
+                $score = 50.0;
+                $level = 'medium';
+                $riskResult = [
+                    'explanation' => [
+                        'score_breakdown' => ['Static (no-AI) MFA mode in use; online payment requires OTP.'],
+                        'input' => ['amount' => $order->total_amount],
+                    ],
+                ];
+            }
+
+            if ($suggestion === 'faceid' || $suggestion === 'otp') {
+                // Create Security Audit Record
+                SecurityAudit::create([
+                    'user_id' => $user->id,
+                    'action' => 'online_payment',
+                    'amount' => $order->total_amount,
+                    'risk_score' => $score,
+                    'level' => $level,
+                    'suggestion' => $suggestion,
+                    'result' => 'pending',
+                    'metadata' => [
+                        'ai_enabled' => $enableAiMfa,
+                        'order_id' => $order->id,
+                        'risk_explanation' => $riskResult['explanation'] ?? null,
+                    ],
+                ]);
+
+                $otp = rand(100000, 999999);
+                Session::put('expected_otp', $otp);
+                // Redirect back to this same route after OTP success
+                Session::put('intended_action_url', route('paypal.create', $order));
+
+                Log::channel('single')->info("MFA Requested for Online Payment Order [{$order->id}]. OTP Code: [{$otp}]");
+                \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\MfaOtpMail($otp));
+
+                Session::flash('ai_warning', "Secure Authentication Required for Online Payment.");
+                return redirect()->route('otp.verify');
+            }
+        }
+        
+        // Clean up flag for next time
+        Session::forget('mfa_verified');
+
         // otherwise proceed to PayPal
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal'));

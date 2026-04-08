@@ -2,7 +2,12 @@
 
 <?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 py-8">
-    <!-- Header Area -->
+    <div class="mb-6">
+        <a href="<?php echo e(route('admin.dashboard')); ?>" class="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary transition-colors group">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
+            <span>Back to Dashboard</span>
+        </a>
+    </div>
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
         <div>
             <h2 class="text-3xl font-bold font-serif text-primary mb-1">Security Insights</h2>

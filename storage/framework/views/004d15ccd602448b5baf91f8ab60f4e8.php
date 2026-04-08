@@ -2,13 +2,14 @@
 <?php $__env->startSection('title', 'Manage Customers'); ?>
 <?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="mb-6">
+        <a href="<?php echo e(route('admin.dashboard')); ?>" class="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary transition-colors group">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
+            <span>Back to Dashboard</span>
+        </a>
+    </div>
     <div class="flex justify-between items-center mb-8">
-        <div class="flex items-center gap-4">
-            <a href="<?php echo e(route('admin.dashboard')); ?>" class="px-4 py-2 bg-neutral-500 text-white rounded-md hover:bg-gray-600 font-semibold">
-                ← Dashboard
-            </a>
-            <h1 class="text-3xl font-bold">Customers Management</h1>
-        </div>
+        <h1 class="text-3xl font-bold">Customers Management</h1>
         <a href="<?php echo e(route('admin.customers.create')); ?>" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 font-semibold">
             <i class="fas fa-plus"></i> Add Customer
         </a>

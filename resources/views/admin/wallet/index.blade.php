@@ -2,13 +2,14 @@
 @section('title', 'Platform Wallet')
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="mb-6">
+        <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary transition-colors group">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
+            <span>Back to Dashboard</span>
+        </a>
+    </div>
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <div class="flex items-center gap-4">
-            <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 bg-neutral-500 text-white rounded-md hover:bg-gray-600 font-semibold">
-                &larr; Dashboard
-            </a>
-            <h1 class="text-3xl font-bold">Platform Wallet Management</h1>
-        </div>
+        <h1 class="text-3xl font-bold">Platform Wallet Management</h1>
 
         <form method="GET" action="{{ route('admin.wallet') }}" class="flex gap-2 items-center bg-white p-2 rounded-md shadow-sm">
             <select name="month" class="border rounded-md px-3 py-2 bg-white text-sm outline-none focus:border-primary">

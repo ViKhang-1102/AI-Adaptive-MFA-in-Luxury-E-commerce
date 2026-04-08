@@ -4,7 +4,13 @@
 
 <?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">Shopping Cart</h1>
+    <div class="flex items-center gap-4 mb-8">
+        <a href="<?php echo e(route('home')); ?>" class="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary transition-colors group">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
+            <span>Back to Home</span>
+        </a>
+        <h1 class="text-3xl font-bold">Shopping Cart</h1>
+    </div>
 
     <?php if($items->isEmpty()): ?>
     <div class="bg-white p-8 rounded-md-lg shadow-sm text-center">
@@ -51,11 +57,19 @@
                                 </td>
                                 <td class="px-6 py-4 text-center">$<?php echo e(number_format($item->product->getDiscountedPrice(), 2)); ?></td>
                                 <td class="px-6 py-4">
-                                    <form action="<?php echo e(route('cart.update', $item)); ?>" method="POST" class="flex justify-center">
-                                        <?php echo csrf_field(); ?>
-                                        <input type="number" name="quantity" value="<?php echo e($item->quantity); ?>" min="1" max="<?php echo e($item->product->stock); ?>" class="w-16 px-2 py-1 border rounded-md">
-                                        <button type="submit" class="ml-2 text-primary hover:text-blue-800">Update</button>
-                                    </form>
+                                    <div class="flex flex-col items-center gap-1">
+                                        <form action="<?php echo e(route('cart.update', $item)); ?>" method="POST" class="flex items-center">
+                                            <?php echo csrf_field(); ?>
+                                            <input type="number" name="quantity" value="<?php echo e($item->quantity); ?>" min="1" max="<?php echo e($item->product->stock); ?>" 
+                                                class="w-16 px-2 py-1 border border-neutral-200 rounded-lg focus:ring-1 focus:ring-gold focus:border-gold outline-none text-sm <?php if($item->quantity > $item->product->stock): ?> border-red-500 text-red-600 <?php endif; ?>">
+                                            <button type="submit" class="ml-2 text-gold-dark hover:text-primary text-xs font-bold uppercase tracking-wider transition-colors">Update</button>
+                                        </form>
+                                        <?php if($item->product->stock <= 5 && $item->product->stock > 0): ?>
+                                            <span class="text-xs text-orange-600 font-bold">Only <?php echo e($item->product->stock); ?> left</span>
+                                        <?php elseif($item->product->stock <= 0): ?>
+                                            <span class="text-xs text-red-600 font-bold uppercase tracking-tighter">Out of Stock</span>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 text-center font-bold">$<?php echo e(number_format(($item->product->getDiscountedPrice() * $item->quantity), 2)); ?></td>
                                 <td class="px-6 py-4 text-center">
@@ -93,7 +107,7 @@
                 <span>Total:</span>
                 <span id="summary-total">$<?php echo e(number_format($subtotal, 2)); ?></span>
             </div>
-            <button id="checkout-btn" type="button" class="block w-full text-center bg-green-600 text-white py-3 rounded-md hover:bg-green-700 font-bold">
+            <button id="checkout-btn" type="button" class="block w-full bg-primary text-white text-center py-4 rounded-xl font-bold hover:bg-primary-light transition-all shadow-soft hover:shadow-hover hover:-translate-y-0.5">
                 Proceed to Checkout
             </button>
             <a href="<?php echo e(route('products.index')); ?>" class="block w-full text-center border-2 border-neutral-200 text-neutral-700 py-2 mt-3 rounded-md hover:bg-neutral-50">
