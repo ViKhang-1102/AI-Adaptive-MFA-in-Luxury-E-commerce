@@ -130,8 +130,23 @@
             <a href="{{ route('admin.orders.index') }}" class="p-4 border rounded-md hover:bg-neutral-50">
                 <i class="fas fa-receipt text-primary mr-2"></i> All Orders
             </a>
-            <a href="{{ route('admin.orders.pending') }}" class="p-4 border rounded-md hover:bg-neutral-50">
-                <i class="fas fa-exclamation-triangle text-primary mr-2"></i> Pending Verifications
+            <a href="{{ route('admin.orders.pending') }}" class="p-4 border rounded-md hover:bg-neutral-50 flex items-center justify-between group">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle text-primary mr-2"></i> Pending Verifications
+                </div>
+                @php
+                    $pendingCount = \App\Models\Order::where(function ($q) {
+                        $q->where('status', 'review')
+                          ->orWhereHas('securityAudit', function ($q2) {
+                              $q2->where('result', 'pending');
+                          });
+                    })->count();
+                @endphp
+                @if($pendingCount > 0)
+                    <span class="bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-sm border border-white group-hover:scale-110 transition-transform">
+                        {{ $pendingCount }}
+                    </span>
+                @endif
             </a>
             <a href="{{ route('profile.show') }}" class="p-4 border rounded-md hover:bg-neutral-50">
                 <i class="fas fa-user text-primary mr-2"></i> My Profile

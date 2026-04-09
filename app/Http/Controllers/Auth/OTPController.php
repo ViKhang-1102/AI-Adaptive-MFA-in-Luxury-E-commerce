@@ -15,6 +15,62 @@ use Illuminate\Support\Facades\Log;
 class OTPController extends Controller
 {
     /**
+     * Show the FaceID Enrollment View (after registration)
+     */
+    public function showEnrollmentForm()
+    {
+        $user = Auth::user();
+        if (!$user) return redirect()->route('login');
+        
+        // If already enrolled, redirect to home
+        if ($user->identity_image) {
+            return redirect()->route('home')->with('info', 'You have already enrolled your FaceID.');
+        }
+
+        return view('auth.face-enrollment', [
+            'user' => $user
+        ]);
+    }
+
+    /**
+     * Handle FaceID Enrollment (after registration)
+     */
+    public function enroll(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) return response()->json(['success' => false, 'reason' => 'User not authenticated.'], 401);
+
+        $faceData = $request->input('face_data');
+        if (!$faceData) return response()->json(['success' => false, 'reason' => 'Face data missing.'], 400);
+
+        $faceService = app(FaceVerificationService::class);
+        
+        // Enrollment Flow
+        $snapshotData = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $faceData));
+        $newIdentityPath = 'identity_images/user_' . $user->id . '_' . time() . '.jpg';
+        Storage::disk('public')->put($newIdentityPath, $snapshotData);
+        
+        // Extract facial landmarks immediately and persist JSON cache (Digital Identity)
+        $enrollResult = $faceService->verify($faceData, $newIdentityPath, true, $user->id);
+        
+        if (!$enrollResult['success']) {
+            Storage::disk('public')->delete($newIdentityPath);
+            return response()->json(['success' => false, 'reason' => 'Face Enrollment failed: ' . $enrollResult['reason'] . '. Please ensure good lighting and look straight.']);
+        }
+
+        $user->identity_image = $newIdentityPath;
+        $user->save();
+        
+        Log::info("FaceID Digital Identity Enrolled after registration: " . $user->id, ['path' => $newIdentityPath]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'FaceID identity registered successfully.',
+            'redirect' => route('home')
+        ]);
+    }
+
+    /**
      * Show the OTP Verification View
      */
     public function showVerifyForm()

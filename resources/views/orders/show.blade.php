@@ -16,6 +16,7 @@
                     $statusStyles = [
                         'pending' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
                         'review' => 'bg-amber-50 text-amber-700 border-amber-200',
+                        'verified_by_admin' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
                         'paid' => 'bg-blue-50 text-blue-700 border-blue-200',
                         'processing' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
                         'confirmed' => 'bg-blue-50 text-blue-700 border-blue-200',
@@ -51,6 +52,12 @@
                 </button>
             </form>
         </div>
+        @elseif($order->status === 'verified_by_admin' && $order->payment_method === 'online' && in_array($order->payment_status, ['unpaid', 'pending']))
+        <div>
+            <button type="button" onclick="openFaceVerifyModal()" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary-light transition-all shadow-soft hover:shadow-hover hover:-translate-y-0.5">
+                <i data-lucide="shield-check" class="w-5 h-5"></i> 🔐 Verify FaceID to Complete Payment
+            </button>
+        </div>
         @endif
     </div>
 
@@ -80,6 +87,7 @@
                         $stages = [
                             'pending' => ['icon' => 'clock', 'label' => 'Order Placed', 'desc' => 'We have received your order'],
                             'review' => ['icon' => 'shield-alert', 'label' => 'Under Review', 'desc' => 'Your order is being reviewed by our support team'],
+                            'verified_by_admin' => ['icon' => 'user-check', 'label' => 'Admin Verified', 'desc' => 'Approved by admin, biometric verification required'],
                             'paid' => ['icon' => 'credit-card', 'label' => 'Payment Completed', 'desc' => 'Payment received successfully'],
                             'processing' => ['icon' => 'settings', 'label' => 'Processing', 'desc' => 'Seller is preparing your items'],
                             'shipped' => ['icon' => 'truck', 'label' => 'Shipped', 'desc' => 'Your item is on the way'],
@@ -92,8 +100,11 @@
                             case 'review':
                                 $completedStages = ['pending', 'review'];
                                 break;
+                            case 'verified_by_admin':
+                                $completedStages = ['pending', 'review', 'verified_by_admin'];
+                                break;
                             case 'paid':
-                                $completedStages = ['pending', 'paid'];
+                                $completedStages = ['pending', 'review', 'verified_by_admin', 'paid'];
                                 break;
                             case 'processing':
                                 $completedStages = ['pending', 'paid', 'processing'];
@@ -303,5 +314,51 @@ document.querySelectorAll('.buy-again-btn').forEach(btn => {
         form.submit();
     });
 });
+
+function openFaceVerifyModal() {
+    const modal = document.getElementById('face-verify-modal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function closeFaceVerifyModal() {
+    const modal = document.getElementById('face-verify-modal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+}
 </script>
+
+<!-- FaceID Verification Modal (Styled like Login/Register FaceID) -->
+<div id="face-verify-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-primary/40 backdrop-blur-sm transition-opacity" aria-hidden="true" onclick="closeFaceVerifyModal()"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+            <div class="bg-white px-8 pt-10 pb-8 sm:p-10">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-8">
+                        <i data-lucide="shield-check" class="w-10 h-10 text-gold"></i>
+                    </div>
+                    <h3 class="text-3xl font-serif font-bold text-primary mb-3" id="modal-title">Biometric Verification</h3>
+                    <p class="text-neutral-500 text-sm mb-10 leading-relaxed">Please scan your face to authorize this high-value transaction.</p>
+                    
+                    @include('partials.face-scanner', [
+                        'id' => 'order-scanner',
+                        'title' => 'Biometric Verification',
+                        'submitUrl' => route('orders.verify-faceid', $order),
+                    ])
+                </div>
+            </div>
+            
+            <div class="bg-neutral-50 px-10 py-5 flex items-center justify-between border-t border-neutral-100">
+                <button type="button" onclick="closeFaceVerifyModal()" class="text-[11px] font-bold text-neutral-400 hover:text-primary transition-colors uppercase tracking-widest">Cancel</button>
+                <div class="flex items-center gap-2">
+                    <i data-lucide="lock" class="w-3.5 h-3.5 text-emerald-500"></i>
+                    <span class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">End-to-End Encrypted</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

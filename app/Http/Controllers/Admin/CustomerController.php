@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\EWallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
@@ -101,8 +102,37 @@ class CustomerController extends Controller
         $user->messagesSent()->delete();
         $user->messagesReceived()->delete();
 
-        // 3. Delete Orders and dependent data (Payments, Items, Notifications, WalletTransactions)
-        $user->ordersAsCustomer()->each(function ($order) {
+        // 3. Handle Orders as Customer
+        $user->ordersAsCustomer()->each(function ($order) use ($user) {
+            // If order is in progress, cancel it and restore stock
+            if (in_array($order->status, ['pending', 'review', 'confirmed', 'paid', 'processing'])) {
+                foreach ($order->items as $item) {
+                    if ($item->product) {
+                        $item->product->increment('stock', $item->quantity);
+                    }
+                }
+                
+                // Notify seller that order was cancelled due to customer deletion
+                if ($order->seller) {
+                    \App\Models\OrderNotification::create([
+                        'order_id' => $order->id,
+                        'customer_id' => $order->customer_id, // Old ID for reference
+                        'message' => "Order #{$order->order_number} has been cancelled because the customer account was deleted by administration.",
+                    ]);
+                    
+                    // Also send a direct message if possible
+                    $firstItem = $order->items->first();
+                    if ($firstItem && $firstItem->product_id) {
+                        \App\Models\Message::create([
+                            'sender_id' => Auth::id(), // Admin
+                            'receiver_id' => $order->seller_id,
+                            'product_id' => $firstItem->product_id,
+                            'message' => "Order #{$order->order_number} from {$user->name} was cancelled as the user account was removed.",
+                        ]);
+                    }
+                }
+            }
+
             $order->items()->delete();
             $order->notifications()->delete();
             $order->walletTransactions()->delete();

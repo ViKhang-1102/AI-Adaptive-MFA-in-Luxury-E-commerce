@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\EWallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class SellerController extends Controller
 {
@@ -97,8 +98,37 @@ class SellerController extends Controller
         $seller->messagesSent()->delete();
         $seller->messagesReceived()->delete();
 
-        // 3. Delete Orders as Seller (Handle related records)
-        $seller->ordersAsSeller()->each(function ($order) {
+        // 3. Handle Orders as Seller
+        $seller->ordersAsSeller()->each(function ($order) use ($seller) {
+            // If order is in progress, cancel it and restore stock
+            if (in_array($order->status, ['pending', 'review', 'confirmed', 'paid', 'processing'])) {
+                foreach ($order->items as $item) {
+                    if ($item->product) {
+                        $item->product->increment('stock', $item->quantity);
+                    }
+                }
+                
+                // Notify customer that order was cancelled due to seller deletion
+                if ($order->customer) {
+                    \App\Models\OrderNotification::create([
+                        'order_id' => $order->id,
+                        'customer_id' => $order->customer_id,
+                        'message' => "Order #{$order->order_number} has been cancelled because the seller account was deleted by administration.",
+                    ]);
+                    
+                    // Also send a direct message if possible
+                    $firstItem = $order->items->first();
+                    if ($firstItem && $firstItem->product_id) {
+                        \App\Models\Message::create([
+                            'sender_id' => Auth::id(), // Admin
+                            'receiver_id' => $order->customer_id,
+                            'product_id' => $firstItem->product_id,
+                            'message' => "Order #{$order->order_number} was cancelled as the seller account was removed.",
+                        ]);
+                    }
+                }
+            }
+
             $order->items()->delete();
             $order->notifications()->delete();
             $order->walletTransactions()->delete();
@@ -108,8 +138,17 @@ class SellerController extends Controller
             $order->delete();
         });
 
-        // 4. Delete Orders as Customer (In case seller bought things)
-        $seller->ordersAsCustomer()->each(function ($order) {
+        // 4. Handle Orders as Customer (In case seller bought things)
+        $seller->ordersAsCustomer()->each(function ($order) use ($seller) {
+            // Same logic for restoration if they were a customer
+            if (in_array($order->status, ['pending', 'review', 'confirmed', 'paid', 'processing'])) {
+                foreach ($order->items as $item) {
+                    if ($item->product) {
+                        $item->product->increment('stock', $item->quantity);
+                    }
+                }
+            }
+
             $order->items()->delete();
             $order->notifications()->delete();
             $order->walletTransactions()->delete();

@@ -42,6 +42,7 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'seller' => \App\Http\Middleware\SellerMiddleware::class,
         'customer' => \App\Http\Middleware\CustomerMiddleware::class,
+        'faceid.enrolled' => \App\Http\Middleware\EnsureFaceIdEnrolled::class,
     ];
 
     protected $middlewareAliases = [
@@ -57,5 +58,6 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'seller' => \App\Http\Middleware\SellerMiddleware::class,
         'customer' => \App\Http\Middleware\CustomerMiddleware::class,
+        'faceid.enrolled' => \App\Http\Middleware\EnsureFaceIdEnrolled::class,
     ];
 }

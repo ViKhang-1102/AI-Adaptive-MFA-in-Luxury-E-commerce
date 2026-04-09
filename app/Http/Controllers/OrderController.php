@@ -67,6 +67,7 @@ class OrderController extends Controller
 
     public function paymentHistory()
     {
+        /** @var User $user */
         $user = Auth::user();
 
         // Only show successful PayPal payments for this customer.
@@ -84,6 +85,7 @@ class OrderController extends Controller
 
     public function checkout()
     {
+        /** @var User $user */
         $user = Auth::user();
 
         // Check if this is "Buy Now" from product page
@@ -161,8 +163,11 @@ class OrderController extends Controller
             'address_id' => 'nullable|exists:customer_addresses,id',
         ]);
 
+        /** @var User $user */
         $user = Auth::user();
         $requiresManualReview = false;
+
+        Log::info("Checkout process started for user: " . $user->id);
 
         // Get address information - either from saved address or new address
         if ($request->has('address_id') && $validated['address_id']) {
@@ -195,74 +200,102 @@ class OrderController extends Controller
         // ==========================================
         // AI Risk Scoring Perimeter (Applies to Both Buy Now & Cart)
         // ==========================================
-        if (!Session::get('mfa_verified')) {
-            $enableAiMfa = env('ENABLE_AI_MFA', true);
+        $enableAiMfa = env('ENABLE_AI_MFA', true);
 
-            // Calculate total amount intent to score
-            $intentTotalAmount = 0;
-            if ($request->has('product_id')) {
-                $product = \App\Models\Product::findOrFail($request->input('product_id'));
-                $quantity = $request->input('quantity', 1);
-                $subtotal = $product->getDiscountedPrice() * $quantity;
-                $shippingFee = SystemFee::first()?->shipping_fee_default ?? 0;
-                $intentTotalAmount = $subtotal + $shippingFee;
-            } else {
-                $cart = $user->cart;
-                if (!$cart || $cart->items->isEmpty()) { return back()->with('error', 'Cart is empty'); }
-                $selectedItemIds = $request->input('item_ids', []);
-                $items = empty($selectedItemIds) ? $cart->items()->with('product')->get() : $cart->items()->whereIn('id', $selectedItemIds)->with('product')->get();
-                if ($items->isEmpty()) { return back()->with('error', 'No items selected'); }
+        // Calculate total amount intent to score
+        $intentTotalAmount = 0;
+        if ($request->has('product_id')) {
+            $product = \App\Models\Product::findOrFail($request->input('product_id'));
+            $quantity = $request->input('quantity', 1);
+            $subtotal = $product->getDiscountedPrice() * $quantity;
+            $shippingFee = SystemFee::first()?->shipping_fee_default ?? 0;
+            $intentTotalAmount = $subtotal + $shippingFee;
+        } else {
+            $cart = $user->cart;
+            if (!$cart || $cart->items->isEmpty()) { return back()->with('error', 'Cart is empty'); }
+            $selectedItemIds = $request->input('item_ids', []);
+            $items = empty($selectedItemIds) ? $cart->items()->with('product')->get() : $cart->items()->whereIn('id', $selectedItemIds)->with('product')->get();
+            if ($items->isEmpty()) { return back()->with('error', 'No items selected'); }
+            
+            $subtotal = $items->sum(function ($item) { return $item->product->getDiscountedPrice() * $item->quantity; });
+            $shippingFee = SystemFee::first()?->shipping_fee_default ?? 0;
+            $intentTotalAmount = $subtotal + $shippingFee; 
+        }
+
+        Log::info("Intent total amount calculated: " . $intentTotalAmount);
+
+        // --- 1. MANDATORY: Customer Profile Check for High-Value Transactions ---
+        // For orders over a certain threshold (e.g., $1000), require phone and base address
+        if ($intentTotalAmount > 1000) {
+            if (empty($user->phone) || $user->addresses()->count() === 0 || !$user->identity_image) {
+                $reason = "For high-value transactions, please complete your profile first:";
+                if (empty($user->phone)) $reason .= " (Phone Number missing)";
+                if ($user->addresses()->count() === 0) $reason .= " (Default Address missing)";
+                if (!$user->identity_image) $reason .= " (FaceID Identity not registered)";
                 
-                $subtotal = $items->sum(function ($item) { return $item->product->getDiscountedPrice() * $item->quantity; });
-                $shippingFee = SystemFee::first()?->shipping_fee_default ?? 0;
-                $intentTotalAmount = $subtotal + $shippingFee; 
+                return redirect()->route('profile.show')->with('error', $reason);
             }
+        }
 
-            if ($enableAiMfa) {
-                $riskService = app(RiskAssessmentService::class);
-                $riskResult = $riskService->analyze($user, $intentTotalAmount, $validated['payment_method'], $request->input('latitude'), $request->input('longitude'));
-                if ($riskResult) {
-                    $suggestion = $riskResult['suggestion'] ?? 'allow';
-                    $score = $riskResult['risk_score'] ?? 0;
-                    $level = $riskResult['level'] ?? 'low';
-                } else {
-                    $suggestion = 'otp';
-                    $score = 50.0;
-                    $level = 'medium';
-                }
+        if ($enableAiMfa) {
+            Log::info("Calling RiskAssessmentService...");
+            $riskService = app(RiskAssessmentService::class);
+            $riskResult = $riskService->analyze($user, $intentTotalAmount, $validated['payment_method'], $request->input('latitude'), $request->input('longitude'));
+            
+            if ($riskResult) {
+                $suggestion = $riskResult['suggestion'] ?? 'allow';
+                $score = $riskResult['risk_score'] ?? 0;
+                $level = $riskResult['level'] ?? 'low';
             } else {
-                // Static MFA - Non AI branch
                 $suggestion = 'otp';
                 $score = 50.0;
                 $level = 'medium';
                 $riskResult = [
                     'explanation' => [
-                        'score_breakdown' => ['Static (no-AI) MFA mode in use; default risk score applied.'],
+                        'score_breakdown' => ['Risk scoring service returned null; using default MFA fallback.'],
                         'input' => ['amount' => $intentTotalAmount],
                     ],
                 ];
             }
-
-            // Centralized Audit Log Create
-            $audit = SecurityAudit::create([
-                'user_id' => $user->id,
-                'action' => 'checkout',
-                'amount' => $intentTotalAmount,
-                'risk_score' => $score,
-                'level' => $level,
-                'suggestion' => $suggestion,
-                'result' => ($suggestion === 'allow' ? 'success' : ($suggestion === 'block' ? 'blocked' : 'pending')),
-                'metadata' => [
-                    'ai_enabled' => $enableAiMfa,
-                    'risk_explanation' => $riskResult['explanation'] ?? null,
+        } else {
+            // Static MFA - Non AI branch
+            $suggestion = 'otp';
+            $score = 50.0;
+            $level = 'medium';
+            $riskResult = [
+                'explanation' => [
+                    'score_breakdown' => ['Static (no-AI) MFA mode in use; default risk score applied.'],
+                    'input' => ['amount' => $intentTotalAmount],
                 ],
-            ]);
-            $auditId = $audit->id;
-            Session::put('pending_audit_id', $auditId);
+            ];
+        }
 
-            $requiresManualReview = $suggestion === 'block';
+        Log::info("Risk score calculated: " . $score . " Suggestion: " . $suggestion);
 
+        // Centralized Audit Log Create
+        $audit = SecurityAudit::create([
+            'user_id' => $user->id,
+            'action' => 'checkout',
+            'amount' => $intentTotalAmount,
+            'risk_score' => $score,
+            'level' => $level,
+            'suggestion' => $suggestion,
+            'result' => ($suggestion === 'allow' ? 'success' : ($suggestion === 'block' ? 'blocked' : 'pending')),
+            'metadata' => [
+                'ai_enabled' => $enableAiMfa,
+                'risk_explanation' => $riskResult['explanation'] ?? null,
+            ],
+        ]);
+        $auditId = $audit->id;
+        Session::put('pending_audit_id', $auditId);
+
+        $requiresManualReview = $suggestion === 'block';
+
+        // Check if we need to trigger MFA challenge
+        // We only skip MFA if they are already verified AND it's NOT a critical risk (which requires admin review)
+        if (!Session::get('mfa_verified') && !$requiresManualReview) {
             if ($suggestion === 'faceid' || $suggestion === 'otp') {
+                Log::info("MFA required. Sending OTP...");
                 $otp = rand(100000, 999999);
                 Session::put('expected_otp', $otp);
                 
@@ -270,15 +303,18 @@ class OrderController extends Controller
                 $requestData = $request->all();
                 Session::put('pending_checkout_request', $requestData);
                 
-                \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\MfaOtpMail($otp));
+                try {
+                    \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\MfaOtpMail($otp));
+                    Log::info("OTP Mail sent successfully.");
+                } catch (\Exception $e) {
+                    Log::error("Failed to send OTP Mail: " . $e->getMessage());
+                    // Continue even if mail fails for local testing, but usually we'd abort
+                }
                 return redirect()->route('otp.verify');
             }
         }
         
-        // Clean up flag for next time will be handled after order creation
-        // Session::forget('mfa_verified'); // Moved down
-
-        // ==== END Risk Scoring Perimeter ====
+        Log::info("Proceeding to order creation. Manual review: " . ($requiresManualReview ? 'Yes' : 'No'));
 
         // Check if this is "Buy Now" from product page
         if ($request->has('product_id')) {
@@ -432,15 +468,26 @@ class OrderController extends Controller
     {
         if ($order->customer_id !== Auth::id()) { abort(403); }
         if (!$order->canBeCancelled()) { return back()->with('error', 'Order cannot be cancelled'); }
+        
         $order->update(['status' => 'cancelled', 'cancelled_at' => now()]);
-        foreach ($order->items as $item) { $item->product->increment('stock', $item->quantity); }
-        return back()->with('success', 'Order cancelled successfully');
+        
+        // Return stock back to product
+        foreach ($order->items as $item) {
+            if ($item->product) {
+                $item->product->increment('stock', $item->quantity);
+            }
+        }
+        
+        return back()->with('success', 'Order cancelled successfully and stock returned');
     }
 
     public function destroy(Order $order)
     {
         if ($order->customer_id !== Auth::id()) { abort(403); }
         if ($order->status !== 'cancelled') { return back()->with('error', 'Only cancelled orders can be deleted'); }
+        
+        // Items are already back to stock during cancellation in cancel() method
+        
         if ($order->payment) { $order->payment->delete(); }
         $order->items()->delete();
         $order->notifications()->delete();
@@ -453,13 +500,85 @@ class OrderController extends Controller
     {
         if ($order->customer_id !== Auth::id()) { abort(403); }
         if ($order->payment_status === 'paid') { return back()->with('error', 'Order already paid'); }
+
+        // If order was verified by admin, it MUST pass FaceID before PayPal
+        if ($order->status === 'verified_by_admin' && !Session::get("order_{$order->id}_face_verified")) {
+            return back()->with('error', 'Biometric verification required to proceed with this high-risk transaction.');
+        }
+
         return redirect()->route('paypal.create', $order);
+    }
+
+    /**
+     * Final biometric verification for high-risk orders approved by admin.
+     */
+    public function verifyFaceID(Request $request, Order $order)
+    {
+        if ($order->customer_id !== Auth::id()) { abort(403); }
+        if ($order->status !== 'verified_by_admin') {
+            return response()->json(['success' => false, 'reason' => 'Invalid order status for FaceID verification.'], 422);
+        }
+
+        $request->validate([
+            'face_data' => 'required|string',
+        ]);
+
+        /** @var User $user */
+        $user = Auth::user();
+        $faceService = app(\App\Services\FaceVerificationService::class);
+        
+        // Use the user's registered identity image for comparison
+        $result = $faceService->verify($request->input('face_data'), $user->identity_image, false, $user->id);
+
+        if ($result['success']) {
+            // Mark as verified for this specific order in this session
+            Session::put("order_{$order->id}_face_verified", true);
+            
+            // Move order to pending so it can be paid
+            $order->update(['status' => 'pending']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Biometric verification successful. Proceeding to payment...',
+                'redirect' => route('paypal.create', $order)
+            ]);
+        }
+
+        // FAILURE: Revert order back to 'review' status and notify admin
+        $order->update(['status' => 'review']);
+        
+        // Update the security audit if it exists
+        if ($order->securityAudit) {
+            $audit = $order->securityAudit;
+            $meta = $audit->metadata ?? [];
+            $meta['faceid_failure'] = [
+                'attempted_at' => now()->toDateTimeString(),
+                'reason' => $result['reason'] ?? 'Face match failed',
+            ];
+            $audit->metadata = $meta;
+            $audit->save();
+        }
+
+        // Create a critical notification for Admin/Support
+        \App\Models\OrderNotification::create([
+            'order_id' => $order->id,
+            'customer_id' => $order->customer_id,
+            'message' => 'CRITICAL: FaceID verification failed for a verified high-risk order. Order reverted to review.',
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'reason' => 'Biometric match failed. For your security, this order has been reverted to manual review.',
+            'redirect' => route('orders.show', $order)
+        ]);
     }
 
     public function buyAgain(Order $order)
     {
         if ($order->customer_id !== Auth::id()) { abort(403); }
-        $cart = Auth::user()->cart ?? \App\Models\Cart::create(['customer_id' => Auth::id()]);
+        /** @var User $user */
+        $user = Auth::user();
+        $cart = $user->cart ?? \App\Models\Cart::create(['customer_id' => $user->id]);
         foreach ($order->items as $item) {
             if (!$item->product || $item->product->stock <= 0) continue;
             $quantityToAdd = min($item->quantity, $item->product->stock);

@@ -1,4 +1,4 @@
-<header class="bg-white/80 backdrop-blur-md border-b border-neutral-100 shadow-sm-sm sticky top-0 z-50">
+<header class="bg-white/80 backdrop-blur-md border-b border-neutral-100 shadow-sm-sm fixed top-0 left-0 right-0 z-[9999]">
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div class="flex justify-between items-center gap-8">
             <!-- Logo -->

@@ -14,11 +14,13 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SupportController;
 
 // Public Routes
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
-Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
+Route::middleware('faceid.enrolled')->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
+});
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -45,6 +47,19 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+// Convenience: handle accidental GET /logout by auto-submitting a CSRF-protected POST
+Route::get('/logout', function () {
+    if (!auth()->check()) {
+        return redirect()->route('home');
+    }
+    $html = '<!doctype html><html><head><meta charset="utf-8"><title>Logging out...</title></head><body>'
+        . '<form id="logoutForm" method="POST" action="' . route('logout') . '">'
+        . csrf_field()
+        . '</form>'
+        . '<script>document.getElementById("logoutForm").submit();</script>'
+        . '</body></html>';
+    return response($html);
+})->middleware('auth');
 
 // OTP Verification Routes for Adaptive MFA
 // NOTE: This must not require auth, because the user is not logged in yet when MFA is triggered.
@@ -52,8 +67,14 @@ Route::get('/verify-otp', [\App\Http\Controllers\Auth\OTPController::class, 'sho
 Route::post('/verify-otp', [\App\Http\Controllers\Auth\OTPController::class, 'verify'])->name('otp.verify.submit');
 Route::post('/verify-otp/identity', [\App\Http\Controllers\Auth\OTPController::class, 'uploadIdentity'])->name('otp.identity.upload');
 
-// Protected Routes for All Authenticated Users
+// FaceID Enrollment (after registration)
 Route::middleware('auth')->group(function () {
+    Route::get('/face-enrollment', [\App\Http\Controllers\Auth\OTPController::class, 'showEnrollmentForm'])->name('face.enrollment.show');
+    Route::post('/face-enrollment', [\App\Http\Controllers\Auth\OTPController::class, 'enroll'])->name('face.enrollment.submit');
+});
+
+// Protected Routes for All Authenticated Users
+Route::middleware(['auth', 'faceid.enrolled'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
@@ -99,6 +120,7 @@ Route::middleware(['auth', \App\Http\Middleware\CustomerMiddleware::class])->gro
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('/orders/{order}/payment', [OrderController::class, 'payment'])->name('orders.payment');
+    Route::post('/orders/{order}/verify-faceid', [OrderController::class, 'verifyFaceID'])->name('orders.verify-faceid');
     Route::post('/orders/{order}/buy-again', [OrderController::class, 'buyAgain'])->name('orders.buyAgain');
     Route::get('/order/success', function () {
         return view('orders.success');
@@ -169,4 +191,5 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix
 
 // PayPal callbacks
 Route::get('paypal/success', [App\Http\Controllers\PayPalController::class, 'paymentSuccess'])->name('paypal.success');
+Route::post('paypal/capture/{order}', [App\Http\Controllers\PayPalController::class, 'capturePayment'])->name('paypal.capture');
 Route::get('paypal/cancel', [App\Http\Controllers\PayPalController::class, 'paymentCancel'])->name('paypal.cancel');

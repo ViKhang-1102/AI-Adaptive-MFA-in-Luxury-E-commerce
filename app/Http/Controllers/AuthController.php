@@ -234,10 +234,9 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users',
             'password' => ['required', 'confirmed', Password::min(6)],
             'role' => 'required|in:customer,seller',
-            'face_data' => 'required|string', // Live scan is now mandatory
         ]);
 
-        // 1. Create User record first (identity_image will be set after storing the photo)
+        // Create User record
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -246,25 +245,6 @@ class AuthController extends Controller
             'is_active' => true,
             'identity_image' => null,
         ]);
-
-        // 2. Save Physical Identity (.jpg) using user ID to tie cache directly to profile
-        $faceData = $validated['face_data'];
-        $snapshotData = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $faceData));
-        $identityPath = 'identity_images/user_' . $user->id . '_' . time() . '.jpg';
-        Storage::disk('public')->put($identityPath, $snapshotData);
-        $user->identity_image = $identityPath;
-        $user->save();
-
-        // 3. Extract Landmarks and Save Digital Identity (.json cache)
-        $faceService = app(FaceVerificationService::class);
-        $enrollResult = $faceService->verify($faceData, $identityPath, true, $user->id);
-
-        if (!$enrollResult['success']) {
-            // Fail registration if AI cannot extract landmarks from the live scan
-            $user->delete();
-            Storage::disk('public')->delete($identityPath);
-            return back()->with('error', 'Biometric extraction failed: ' . $enrollResult['reason'] . '. Please ensure good lighting and look straight at the camera.');
-        }
 
         // Create wallet for user
         EWallet::create([
@@ -276,7 +256,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('home')->with('success', 'Account created successfully with Digital Identity secured.');
+        return redirect()->route('face.enrollment.show')->with('success', 'Account created successfully. Please enroll your FaceID for full security.');
     }
 
     public function logout(Request $request)

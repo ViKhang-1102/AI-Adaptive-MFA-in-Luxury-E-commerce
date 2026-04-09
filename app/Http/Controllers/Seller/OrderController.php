@@ -55,7 +55,8 @@ class OrderController extends Controller
 
     public function cancel(Request $request, Order $order)
     {
-        if ($order->seller_id !== Auth::id() || !in_array($order->status, ['pending', 'confirmed'])) {
+        // Allow seller to cancel if it hasn't shipped yet
+        if ($order->seller_id !== Auth::id() || !in_array($order->status, ['pending', 'paid', 'processing', 'confirmed'])) {
             abort(403);
         }
 

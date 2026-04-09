@@ -297,7 +297,7 @@ def rotate_image(img, angle: float):
     return rotated
 
 
-MAX_TEMPLATES = 5
+MAX_TEMPLATES = 20
 
 
 def save_to_cache(reference_path, descriptor, cache_dir, user_id: str = None):

@@ -17,17 +17,17 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        // If this is the pending-verifications filter, always redirect to the dedicated pending queue.
-        // This prevents the admin list view from showing a full order list when the intent is manual review.
-        if ($request->query('filter') === 'pending_verifications') {
-            return redirect()->route('admin.orders.pending');
-        }
-
         $query = Order::with('customer', 'seller', 'items.product.images')->latest();
 
         // Allow filtering by status for the standard order list
         if ($request->query('status')) {
-            $query->where('status', $request->query('status'));
+            if ($request->query('status') !== 'all') {
+                $query->where('status', $request->query('status'));
+            }
+        } else {
+            // Default: Hide handled orders (cancelled, delivered, verified_by_admin if paid)
+            // Show pending, review, confirmed, shipped, paid, processing
+            $query->whereIn('status', ['pending', 'review', 'confirmed', 'shipped', 'paid', 'processing', 'verified_by_admin']);
         }
 
         $orders = $query->paginate(15)->withQueryString();
@@ -36,22 +36,21 @@ class OrderController extends Controller
 
     public function pending()
     {
-        // Show one pending order at a time (oldest first). If none are pending, show an empty state.
-        $order = Order::with('customer', 'seller', 'items.product.images', 'securityAudit')
+        // Show the list of orders needing manual review
+        $query = Order::with('customer', 'seller', 'items.product.images', 'securityAudit')
             ->where(function ($q) {
                 $q->where('status', 'review')
                     ->orWhereHas('securityAudit', function ($q2) {
                         $q2->where('result', 'pending');
                     });
             })
-            ->oldest('created_at')
-            ->first();
+            ->latest();
 
-        if ($order) {
-            return redirect()->route('admin.orders.show', $order);
-        }
-
-        return view('admin.orders.pending');
+        $orders = $query->paginate(15)->withQueryString();
+        return view('admin.orders.index', [
+            'orders' => $orders,
+            'isPendingVerifications' => true
+        ]);
     }
 
     public function show(Order $order)
@@ -112,7 +111,7 @@ class OrderController extends Controller
         }
 
         // Update order status so customer can proceed to payment
-        $order->status = 'pending';
+        $order->status = 'verified_by_admin';
         $order->payment_status = 'pending';
         $order->save();
 

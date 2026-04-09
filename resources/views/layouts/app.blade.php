@@ -48,30 +48,35 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Font Awesome (Legacy - to be removed gradually) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    @stack('styles')
+    
     <style>
         /* Reset browser default spacing */
         html, body {
             margin: 0;
             padding: 0;
-            /* The header is fixed-position; content padding is handled by `.content-wrapper` so it stays below the header. */
         }
 
-        /* Keep header pinned at the top and ensure it is visible above other content */
+        /* Fixed Header Styles */
         header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 9999;
-            width: 100%;
-            background-color: rgba(255,255,255,0.92); /* ensure header stays readable over content */
-            backdrop-filter: blur(12px);
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            z-index: 9999 !important;
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(12px) !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
         }
 
-        /* Content padding is adjusted via JS based on the header's height (and this acts as a fallback). */
-        .content-wrapper {
-            padding-top: 0; /* allow JS to place content directly below header */
+        /* Default padding for all pages to account for the fixed header */
+        body {
+            padding-top: 64px !important;
+        }
+
+        /* Admin Order pages need more space due to sub-headers/filters */
+        body.admin-order-page {
+            padding-top: 140px !important;
         }
 
         #scroll-to-top {
@@ -88,8 +93,9 @@
             visibility: visible;
         }
     </style>
+    @stack('styles')
 </head>
-<body class="bg-neutral-50 font-sans text-neutral-900 antialiased selection:bg-gold-light selection:text-primary">
+<body class="bg-neutral-50 font-sans text-neutral-900 antialiased selection:bg-gold-light selection:text-primary @yield('body_class')">
     <!-- Header -->
     @include('layouts.header')
 
@@ -98,34 +104,7 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <!-- Alert Messages -->
-    @if ($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md m-4 auto-hide-alert shadow-sm z-50 relative">
-            <ul class="list-disc list-inside">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
 
-    @if (session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md m-4 auto-hide-alert shadow-sm z-50 relative">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if (session('info'))
-        <div class="bg-blue-50 border border-blue-300 text-blue-700 px-4 py-3 rounded-md m-4 auto-hide-alert shadow-sm z-50 relative">
-            {{ session('info') }}
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md m-4 auto-hide-alert shadow-sm z-50 relative">
-            {{ session('error') }}
-        </div>
-    @endif
 
     <!-- AI Security Toast -->
     @if (session('ai_warning'))
@@ -216,7 +195,76 @@
     @endauth
 
     <!-- Main Content -->
-    <div class="min-h-screen content-wrapper">
+    <div class="min-h-screen">
+        <!-- Alert Messages -->
+        <div id="global-alerts" class="fixed inset-x-0 top-20 z-[10001] flex flex-col items-center gap-3 px-4 pointer-events-none">
+            @if ($errors->any())
+                <div class="toast-alert w-full max-w-3xl pointer-events-auto bg-red-700/95 border border-red-600/80 text-white px-4 py-3 rounded-3xl shadow-2xl backdrop-blur-sm border-opacity-80 auto-hide-alert" role="alert" aria-live="polite">
+                    <div class="flex items-start gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/15 text-white text-lg">
+                            <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                        </span>
+                        <div class="min-w-0 flex-1 text-sm leading-relaxed">
+                            <ul class="list-disc list-inside text-sm">
+                                @if($errors->count() > 1)
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                @else
+                                    {{ $errors->first() }}
+                                @endif
+                            </ul>
+                        </div>
+                        <button type="button" onclick="this.closest('.toast-alert').remove()" class="text-white/80 hover:text-white transition-colors rounded-full p-1.5">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            @endif
+
+            @if (session('success'))
+                <div class="toast-alert w-full max-w-3xl pointer-events-auto bg-emerald-700/95 border border-emerald-600/80 text-white px-4 py-3 rounded-3xl shadow-2xl backdrop-blur-sm border-opacity-80 auto-hide-alert" role="status" aria-live="polite">
+                    <div class="flex items-center gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/15 text-white text-lg">
+                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        </span>
+                        <div class="min-w-0 flex-1 text-sm leading-relaxed">{{ session('success') }}</div>
+                        <button type="button" onclick="this.closest('.toast-alert').remove()" class="text-white/80 hover:text-white transition-colors rounded-full p-1.5">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            @endif
+
+            @if (session('info'))
+                <div class="toast-alert w-full max-w-3xl pointer-events-auto bg-sky-700/95 border border-sky-600/80 text-white px-4 py-3 rounded-3xl shadow-2xl backdrop-blur-sm border-opacity-80 auto-hide-alert" role="status" aria-live="polite">
+                    <div class="flex items-center gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/15 text-white text-lg">
+                            <i data-lucide="info" class="w-5 h-5"></i>
+                        </span>
+                        <div class="min-w-0 flex-1 text-sm leading-relaxed">{{ session('info') }}</div>
+                        <button type="button" onclick="this.closest('.toast-alert').remove()" class="text-white/80 hover:text-white transition-colors rounded-full p-1.5">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="toast-alert w-full max-w-3xl pointer-events-auto bg-red-700/95 border border-red-600/80 text-white px-4 py-3 rounded-3xl shadow-2xl backdrop-blur-sm border-opacity-80 auto-hide-alert" role="alert" aria-live="polite">
+                    <div class="flex items-center gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/15 text-white text-lg">
+                            <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                        </span>
+                        <div class="min-w-0 flex-1 text-sm leading-relaxed">{{ session('error') }}</div>
+                        <button type="button" onclick="this.closest('.toast-alert').remove()" class="text-white/80 hover:text-white transition-colors rounded-full p-1.5">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            @endif
+        </div>
+
         @yield('content')
     </div>
 

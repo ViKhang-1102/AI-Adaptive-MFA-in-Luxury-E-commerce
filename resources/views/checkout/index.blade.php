@@ -12,7 +12,7 @@
         <h1 class="text-3xl font-bold text-primary font-serif">Checkout</h1>
     </div>
 
-    <form action="{{ route('orders.store') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <form id="checkout-form" action="{{ route('orders.store') }}" method="POST" onsubmit="return handleCheckoutSubmit(event)" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         @csrf
         <input type="hidden" name="latitude">
         <input type="hidden" name="longitude">
@@ -73,28 +73,28 @@
                         class="w-full px-3 py-2 border rounded-md" maxlength="255">
 
                     <input type="text" name="recipient_name" placeholder="Recipient Name" 
-                        class="w-full px-3 py-2 border rounded-md" required>
+                        class="w-full px-3 py-2 border rounded-md">
 
                     <input type="text" name="recipient_phone" placeholder="Phone Number" 
-                        class="w-full px-3 py-2 border rounded-md" required>
+                        class="w-full px-3 py-2 border rounded-md">
 
                     <div class="border-t pt-3">
                         <label class="block text-sm font-bold mb-2">Province/City *</label>
-                        <select id="checkoutProvince" class="w-full px-3 py-2 border rounded-md" required>
+                        <select id="checkoutProvince" class="w-full px-3 py-2 border rounded-md">
                             <option value="">Select Province/City</option>
                         </select>
                     </div>
 
                     <div>
                         <label class="block text-sm font-bold mb-2">District *</label>
-                        <select id="checkoutDistrict" class="w-full px-3 py-2 border rounded-md" required>
+                        <select id="checkoutDistrict" class="w-full px-3 py-2 border rounded-md">
                             <option value="">Select District</option>
                         </select>
                     </div>
 
                     <div>
                         <label class="block text-sm font-bold mb-2">Ward/Commune *</label>
-                        <select id="checkoutWard" class="w-full px-3 py-2 border rounded-md" required>
+                        <select id="checkoutWard" class="w-full px-3 py-2 border rounded-md">
                             <option value="">Select Ward/Commune</option>
                         </select>
                     </div>
@@ -169,7 +169,7 @@
                 </div>
             </div>
 
-            <button type="submit" onclick="validateCheckoutForm(event)" class="w-full bg-primary text-white shadow-sm-soft hover:shadow-sm-hover hover:-translate-y-0.5 transition-all duration-300 py-3 rounded-md hover:bg-primary-light font-bold mt-6">
+            <button type="submit" class="w-full bg-primary text-white shadow-sm-soft hover:shadow-sm-hover hover:-translate-y-0.5 transition-all duration-300 py-3 rounded-md hover:bg-primary-light font-bold mt-6">
                 Place Order
             </button>
         </div>
@@ -178,56 +178,98 @@
 
 <script src="{{ asset('js/vietnam-addresses.js') }}"></script>
 <script>
-let checkoutAddressInitialized = false;
+console.log("Checkout script loading...");
 
-function validateCheckoutForm(event) {
-    event.preventDefault();
+function handleCheckoutSubmit(event) {
+    const form = event.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
     
-    const form = document.querySelector('form[action="{{ route("orders.store") }}"]');
-    
-    const isNewAddressOpen = !document.getElementById('newAddressForm').classList.contains('hidden');
-    let selectedAddressId = null;
-    
-    if (!isNewAddressOpen) {
-        selectedAddressId = form.querySelector('input[name="address_id"]:checked');
-        if (!selectedAddressId) {
-            alert('Please select or add a delivery address');
-            return false;
-        }
-    } else {
-        // Uncheck existing if creating a new form submission
-        const addressRadios = document.querySelectorAll('input[name="address_id"]');
-        addressRadios.forEach(radio => radio.checked = false);
-        
-        const province = document.getElementById('checkoutProvince').value;
-        const district = document.getElementById('checkoutDistrict').value;
-        const ward = document.getElementById('checkoutWard').value;
-        const street = document.getElementById('checkoutStreet').value.trim();
-        const recipientName = document.querySelector('#newAddressForm input[name="recipient_name"]').value;
-        const recipientPhone = document.querySelector('#newAddressForm input[name="recipient_phone"]').value;
-        
-        if (!province || !district || !ward || !recipientName || !recipientPhone) {
-            alert('Please enter all required delivery information (Name, Phone, Province/City, District, Ward/Commune)');
-            return false;
-        }
-        
-        const fullAddress = [street, ward, district, province].filter(x => x).join(', ');
-        
-        let recipientNameInput = form.querySelector('input[name="recipient_name"][type="hidden"]');
-        let recipientPhoneInput = form.querySelector('input[name="recipient_phone"][type="hidden"]');
-        let deliveryAddressInput = form.querySelector('input[name="delivery_address"]');
-        
-        if (!recipientNameInput) { recipientNameInput = document.createElement('input'); recipientNameInput.type='hidden'; recipientNameInput.name='recipient_name'; form.appendChild(recipientNameInput); }
-        if (!recipientPhoneInput) { recipientPhoneInput = document.createElement('input'); recipientPhoneInput.type='hidden'; recipientPhoneInput.name='recipient_phone'; form.appendChild(recipientPhoneInput); }
-        if (!deliveryAddressInput) { deliveryAddressInput = document.createElement('input'); deliveryAddressInput.type='hidden'; deliveryAddressInput.name='delivery_address'; form.appendChild(deliveryAddressInput); }
-        
-        recipientNameInput.value = recipientName;
-        recipientPhoneInput.value = recipientPhone;
-        deliveryAddressInput.value = fullAddress;
+    // Check validation first
+    if (!validateCheckoutForm(form)) {
+        return false;
     }
-    
-    // Form is valid, submit it
-    form.submit();
+
+    // Add GPS Coordinates if available
+    const lat = sessionStorage.getItem('user_lat');
+    const lng = sessionStorage.getItem('user_lng');
+    if (lat && lng) {
+        form.querySelector('input[name="latitude"]').value = lat;
+        form.querySelector('input[name="longitude"]').value = lng;
+    }
+
+    // Show Loading state
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Processing Order...
+        `;
+    }
+
+    return true; // Allow form submission
+}
+
+function validateCheckoutForm(form) {
+    try {
+        console.log("Validating checkout form...");
+        const isNewAddressOpen = !document.getElementById('newAddressForm').classList.contains('hidden');
+        
+        if (!isNewAddressOpen) {
+            const selectedAddress = form.querySelector('input[name="address_id"]:checked');
+            if (!selectedAddress) {
+                alert('Please select a delivery address from your saved list or add a new one.');
+                return false;
+            }
+        } else {
+            const provinceSelect = document.getElementById('checkoutProvince');
+            const districtSelect = document.getElementById('checkoutDistrict');
+            const wardSelect = document.getElementById('checkoutWard');
+            const streetInput = document.getElementById('checkoutStreet');
+            const recipientNameInput = document.querySelector('#newAddressForm input[name="recipient_name"]');
+            const recipientPhoneInput = document.querySelector('#newAddressForm input[name="recipient_phone"]');
+            
+            if (!recipientNameInput || !recipientPhoneInput) {
+                console.error("New address inputs not found!");
+                return false;
+            }
+
+            const province = provinceSelect ? provinceSelect.value : "";
+            const district = districtSelect ? districtSelect.value : "";
+            const ward = wardSelect ? wardSelect.value : "";
+            const street = streetInput ? streetInput.value.trim() : "";
+            const recipientName = recipientNameInput.value;
+            const recipientPhone = recipientPhoneInput.value;
+            
+            if (!province || !district || !ward || !recipientName || !recipientPhone) {
+                alert('Please fill in all required delivery information (Name, Phone, Province/City, District, Ward/Commune)');
+                return false;
+            }
+            
+            const fullAddress = [street, ward, district, province].filter(x => x).join(', ');
+            
+            // Ensure hidden fields exist in the form
+            let h_name = form.querySelector('input[name="recipient_name"][type="hidden"]');
+            let h_phone = form.querySelector('input[name="recipient_phone"][type="hidden"]');
+            let h_addr = form.querySelector('input[name="delivery_address"]');
+            
+            if (!h_name) { h_name = document.createElement('input'); h_name.type='hidden'; h_name.name='recipient_name'; form.appendChild(h_name); }
+            if (!h_phone) { h_phone = document.createElement('input'); h_phone.type='hidden'; h_phone.name='recipient_phone'; form.appendChild(h_phone); }
+            if (!h_addr) { h_addr = document.createElement('input'); h_addr.type='hidden'; h_addr.name='delivery_address'; form.appendChild(h_addr); }
+            
+            h_name.value = recipientName;
+            h_phone.value = recipientPhone;
+            h_addr.value = fullAddress;
+        }
+        
+        return true;
+    } catch (err) {
+        console.error("Validation error:", err);
+        alert("An error occurred during validation. Please try again.");
+        return false;
+    }
 }
 
 function toggleAddressForm() {

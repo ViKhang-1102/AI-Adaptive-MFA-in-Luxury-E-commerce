@@ -19,8 +19,8 @@ class RiskAssessmentService
      */
     public function analyze(User $user, float $amount, string $paymentMethod = 'unknown', ?float $lat = null, ?float $lng = null): ?array
     {
+        $transactionAmount = round($amount, 2);
         try {
-            $transactionAmount = round($amount, 2);
             $loginTime = now()->toIso8601String(); 
             
             // Collect context for Guard Agent
@@ -71,9 +71,8 @@ class RiskAssessmentService
             
             $apiUrl = env('RISK_SCORE_API_URL', 'http://localhost:5000/risk-score');
             
-            // Retry Mechanism: 3 attempts, 100ms delay, 3s timeout
-            $response = Http::retry(3, 100)
-                ->timeout(3)
+            // Reduced timeout for better UX, retry removed for now to avoid long hangs
+            $response = Http::timeout(1.5)
                 ->post($apiUrl, $payload);
             
             if ($response->successful()) {
@@ -270,7 +269,7 @@ class RiskAssessmentService
 
     protected function riskLevel(float $score): string
     {
-        if ($score >= 80) {
+        if ($score >= 85) {
             return 'critical';
         }
         if ($score >= 65) {
@@ -284,7 +283,7 @@ class RiskAssessmentService
 
     protected function suggestionFromScore(float $score): string
     {
-        if ($score >= 80) {
+        if ($score >= 85) {
             return 'block';
         }
         if ($score >= 65) {

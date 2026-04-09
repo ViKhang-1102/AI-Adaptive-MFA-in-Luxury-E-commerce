@@ -116,6 +116,7 @@ class Order extends Model
     public function canBeCancelled()
     {
         // Orders requiring manual review are still cancellable by the customer.
-        return in_array($this->status, ['pending', 'confirmed', 'review']);
+        // Also allow cancelling if it's paid but not yet shipped.
+        return in_array($this->status, ['pending', 'confirmed', 'review', 'paid', 'processing']);
     }
 }

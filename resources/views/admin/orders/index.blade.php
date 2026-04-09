@@ -1,5 +1,7 @@
 @extends('layouts.app')
 @section('title', 'All Orders')
+@section('body_class', 'admin-order-page')
+
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -7,15 +9,35 @@
             <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 bg-neutral-500 text-white rounded-md hover:bg-gray-600 font-semibold">
                 ← Dashboard
             </a>
-            <h1 class="text-3xl font-bold">Orders</h1>
-            <a id="pending-verifications-btn" href="{{ route('admin.orders.pending') }}" class="px-4 py-2 bg-gold text-primary font-semibold rounded-md hover:bg-gold-light transition">
+            <h1 class="text-3xl font-bold">{{ isset($isPendingVerifications) ? 'Pending Verifications' : 'Orders' }}</h1>
+            @if(!isset($isPendingVerifications))
+            <a href="{{ route('admin.orders.pending') }}" class="px-4 py-2 bg-gold text-primary font-semibold rounded-md hover:bg-gold-light transition flex items-center gap-2">
                 Pending Verifications
+                @php
+                    $pendingCount = \App\Models\Order::where(function ($q) {
+                        $q->where('status', 'review')
+                          ->orWhereHas('securityAudit', function ($q2) {
+                              $q2->where('result', 'pending');
+                          });
+                    })->count();
+                @endphp
+                @if($pendingCount > 0)
+                    <span class="bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-sm border border-white">
+                        {{ $pendingCount }}
+                    </span>
+                @endif
             </a>
+            @else
+            <a href="{{ route('admin.orders.index') }}" class="px-4 py-2 bg-neutral-200 text-neutral-700 font-semibold rounded-md hover:bg-neutral-300 transition">
+                All Orders
+            </a>
+            @endif
         </div>
         <div class="flex gap-2 items-center">
             <label for="status-filter" class="text-sm text-neutral-600">Filter:</label>
             <select id="status-filter" class="px-4 py-2 border rounded-md">
-                <option value="">All Status</option>
+                <option value="">{{ isset($isPendingVerifications) ? 'All Pending' : 'Default (Active)' }}</option>
+                <option value="all" {{ request('status') === 'all' ? 'selected' : '' }}>All Orders (Incl. Handled)</option>
                 <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
                 <option value="review" {{ request('status') === 'review' ? 'selected' : '' }}>On Hold</option>
                 <option value="confirmed" {{ request('status') === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
