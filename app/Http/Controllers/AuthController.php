@@ -111,7 +111,7 @@ class AuthController extends Controller
             if ($enableAiMfa) {
                 $riskService = app(RiskAssessmentService::class);
                 // We pass in an arbitrary 'amount' of 0 for log-in assessments
-                $riskResult = $riskService->analyze($user, 0);
+                $riskResult = $riskService->analyze($user, 0, 'login', $request->input('latitude'), $request->input('longitude'));
 
                 if ($riskResult) {
                     $suggestion = $riskResult['suggestion'] ?? 'allow';
@@ -219,7 +219,7 @@ class AuthController extends Controller
             }
         }
 
-        return redirect()->intended(route('home'));
+        return redirect()->intended(route('home'))->with('login_success_location_prompt', true);
     }
 
     public function showRegister()

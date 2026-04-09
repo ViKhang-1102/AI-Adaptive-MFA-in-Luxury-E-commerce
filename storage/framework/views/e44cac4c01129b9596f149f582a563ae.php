@@ -150,6 +150,74 @@
         </div>
     <?php endif; ?>
 
+    <?php if(auth()->guard()->check()): ?>
+        <!-- Location Consent Modal (Client-side controlled) -->
+        <div id="location-consent-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-primary/40 backdrop-blur-sm px-4 hidden">
+            <div class="bg-white rounded-3xl shadow-hover border border-neutral-100 max-w-md w-full overflow-hidden transform transition-all duration-500 scale-95 opacity-0">
+                <div class="p-8 text-center">
+                    <div class="w-20 h-20 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i data-lucide="map-pin" class="w-10 h-10 text-gold"></i>
+                    </div>
+                    <h3 class="text-2xl font-serif font-bold text-primary mb-4">Enhance Your Security</h3>
+                    <p class="text-neutral-500 leading-relaxed mb-8">
+                        To protect your account from unauthorized access, our AI needs to verify your login location. Would you like to enable precise location security?
+                    </p>
+                    <div class="flex flex-col gap-3">
+                        <button onclick="handleLocationConsent(true)" class="w-full bg-primary text-white py-3.5 rounded-xl font-bold hover:bg-primary-light transition-all shadow-soft hover:shadow-hover hover:-translate-y-0.5">
+                            Enable & Synchronize
+                        </button>
+                        <button onclick="handleLocationConsent(false)" class="w-full bg-white text-neutral-500 py-3.5 rounded-xl font-bold hover:bg-neutral-50 transition-all border border-neutral-100">
+                            Maybe Later
+                        </button>
+                    </div>
+                </div>
+                <div class="bg-neutral-50 px-8 py-4 border-t border-neutral-100 flex items-center gap-2 justify-center">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                    <span class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">AI-Driven Protection Active</span>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function checkLocationConsent() {
+                const modal = document.getElementById('location-consent-modal');
+                const content = modal.querySelector('div > div');
+                const userId = "<?php echo e(auth()->id()); ?>";
+                const consentKey = `location_consent_v1_${userId}`;
+
+                if (!localStorage.getItem(consentKey)) {
+                    modal.classList.remove('hidden');
+                    setTimeout(() => {
+                        content.classList.remove('scale-95', 'opacity-0');
+                        content.classList.add('scale-100', 'opacity-100');
+                    }, 100);
+                }
+            }
+
+            function handleLocationConsent(agreed) {
+                const modal = document.getElementById('location-consent-modal');
+                const content = modal.querySelector('div > div');
+                const userId = "<?php echo e(auth()->id()); ?>";
+                const consentKey = `location_consent_v1_${userId}`;
+
+                // Mark as asked for this user
+                localStorage.setItem(consentKey, agreed ? 'agreed' : 'dismissed');
+
+                if (agreed) {
+                    capturePreciseLocation(true);
+                }
+                
+                // Animate out
+                content.classList.add('scale-95', 'opacity-0');
+                modal.classList.add('opacity-0');
+                setTimeout(() => modal.remove(), 500);
+            }
+
+            // Run check on load
+            window.addEventListener('DOMContentLoaded', checkLocationConsent);
+        </script>
+    <?php endif; ?>
+
     <!-- Main Content -->
     <div class="min-h-screen content-wrapper">
         <?php echo $__env->yieldContent('content'); ?>
@@ -163,6 +231,93 @@
     <script>
         // Initialize Lucide Icons
         lucide.createIcons();
+
+        // --- GPS Geolocation Capture ---
+        function capturePreciseLocation(force = false) {
+            if (!("geolocation" in navigator)) {
+                console.error("Geolocation is not supported by this browser.");
+                return;
+            }
+
+            // Secure context check (Geolocation requires HTTPS or localhost)
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                console.warn("Geolocation requires a secure context (HTTPS or localhost). Current: " + location.protocol);
+                return;
+            }
+
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            };
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                
+                // Store in sessionStorage for this session
+                sessionStorage.setItem('user_lat', lat);
+                sessionStorage.setItem('user_lng', lng);
+                
+                // Auto-fill any hidden inputs in forms that need GPS data
+                updateLocationFields(lat, lng);
+                
+                console.log("GPS Location Captured:", lat, lng);
+                
+                // Optional: Show a small toast for success if forced
+                if (force) {
+                    showLocationStatus("Location synchronized successfully.");
+                }
+            }, function(error) {
+                console.warn("Geolocation Error (" + error.code + "): " + error.message);
+                if (force) {
+                    let msg = "Could not get location. ";
+                    if (error.code === 1) msg += "Please enable location permissions in your browser.";
+                    else if (error.code === 2) msg += "Position unavailable.";
+                    else if (error.code === 3) msg += "Request timed out.";
+                    showLocationStatus(msg, true);
+                }
+            }, options);
+        }
+
+        function updateLocationFields(lat, lng) {
+            document.querySelectorAll('input[name="latitude"]').forEach(el => el.value = lat);
+            document.querySelectorAll('input[name="longitude"]').forEach(el => el.value = lng);
+        }
+
+        function showLocationStatus(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-24 right-6 px-6 py-3 rounded-xl shadow-lg text-sm font-bold transition-all duration-500 transform translate-x-full opacity-0 z-50 ${isError ? 'bg-red-600 text-white' : 'bg-green-600 text-white'}`;
+            toast.innerHTML = `<div class="flex items-center gap-2"><i data-lucide="${isError ? 'alert-circle' : 'check-circle'}" class="w-4 h-4"></i>${message}</div>`;
+            document.body.appendChild(toast);
+            lucide.createIcons({attrs: { class: 'w-4 h-4' }});
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full', 'opacity-0');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 500);
+            }, 5000);
+        }
+
+        // Try to capture on load
+        capturePreciseLocation();
+
+        // Re-check periodically or on form interactions
+        document.addEventListener('focusin', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+                 const lat = sessionStorage.getItem('user_lat');
+                 const lng = sessionStorage.getItem('user_lng');
+                 if (lat && lng) {
+                     updateLocationFields(lat, lng);
+                 } else {
+                     // If we don't have it yet, try capturing again
+                     capturePreciseLocation();
+                 }
+             }
+        });
 
         // Scroll to Top Button
         const scrollBtn = document.getElementById('scroll-to-top');

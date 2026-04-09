@@ -17,7 +17,7 @@ class RiskAssessmentService
     /**
      * Analyze a transaction using the AI-Driven Risk Scoring API.
      */
-    public function analyze(User $user, float $amount, string $paymentMethod = 'unknown'): ?array
+    public function analyze(User $user, float $amount, string $paymentMethod = 'unknown', ?float $lat = null, ?float $lng = null): ?array
     {
         try {
             $transactionAmount = round($amount, 2);
@@ -34,10 +34,14 @@ class RiskAssessmentService
             
             $ipChangeCount = max(0, count($knownIps) - 1);
             
-            // Enhanced Context: User Agent and Mock Location (for demo)
+            // Enhanced Context: User Agent and Precise Location
             $userAgent = request()->header('User-Agent');
             $deviceFingerprint = substr(md5($userAgent), 0, 16);
-            $location = $this->getLocationFromIp($currentIp);
+            
+            // Prioritize GPS coordinates over IP geolocation
+            $location = ($lat && $lng) 
+                ? $this->getLocationFromCoords($lat, $lng) 
+                : $this->getLocationFromIp($currentIp);
 
             // Persistent Device Check
             $isPersistentVerified = VerifiedDevice::where('user_id', $user->id)
@@ -290,6 +294,47 @@ class RiskAssessmentService
             return 'otp';
         }
         return 'allow';
+    }
+
+    public function getLocationFromCoords(float $lat, float $lng): string
+    {
+        // Add a small delay for demo/visual consistency if needed, but not here
+        return Cache::remember("coords_location_{$lat}_{$lng}", 86400, function() use ($lat, $lng) {
+            try {
+                $response = Http::withHeaders([
+                        'User-Agent' => 'LuxGuard/1.0',
+                        'Accept-Language' => 'en' // Force English results
+                    ])
+                    ->timeout(5)
+                    ->get("https://nominatim.openstreetmap.org/reverse", [
+                        'lat' => $lat,
+                        'lon' => $lng,
+                        'format' => 'json',
+                        'addressdetails' => 1,
+                        'zoom' => 10,
+                        'accept-language' => 'en' // Also as parameter for extra certainty
+                    ]);
+
+                if ($response->successful()) {
+                    $address = $response->json('address');
+                    // Look for city, town, village, or suburb
+                    $city = $address['city'] ?? $address['town'] ?? $address['village'] ?? $address['suburb'] ?? $address['county'] ?? 'Unknown City';
+                    $country = $address['country'] ?? 'Unknown Country';
+                    
+                    // Specific check for Vietnam cities to ensure they are capitalized correctly in English
+                    if (str_contains(strtolower($city), 'can tho')) $city = 'Can Tho';
+                    if (str_contains(strtolower($city), 'ho chi minh') || str_contains(strtolower($city), 'saigon')) $city = 'Ho Chi Minh City';
+                    if (str_contains(strtolower($city), 'ha noi')) $city = 'Hanoi';
+                    if (str_contains(strtolower($city), 'da nang')) $city = 'Da Nang';
+                    if (str_contains(strtolower($city), 'hai phong')) $city = 'Haiphong';
+
+                    return $city . ', ' . $country;
+                }
+            } catch (\Exception $e) {
+                Log::warning('Reverse Geocoding failed', ['lat' => $lat, 'lng' => $lng, 'error' => $e->getMessage()]);
+            }
+            return 'Unknown (GPS Fallback)';
+        });
     }
 
     public function getLocationFromIp(string $ip): string

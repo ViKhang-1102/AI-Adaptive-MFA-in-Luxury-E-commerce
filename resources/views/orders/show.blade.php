@@ -43,9 +43,13 @@
         
         @if($order->status === 'pending' && $order->payment_method === 'online' && in_array($order->payment_status, ['unpaid', 'pending']))
         <div>
-            <a href="{{ route('paypal.create', $order) }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gold text-primary font-bold rounded-xl hover:bg-gold-light transition-all shadow-soft hover:shadow-hover hover:-translate-y-0.5">
-                <i data-lucide="credit-card" class="w-5 h-5"></i> Pay Now (${{ number_format($order->total_amount, 2) }})
-            </a>
+            <form action="{{ route('paypal.create', $order) }}" method="GET" class="inline">
+                <input type="hidden" name="latitude">
+                <input type="hidden" name="longitude">
+                <button type="submit" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gold text-primary font-bold rounded-xl hover:bg-gold-light transition-all shadow-soft hover:shadow-hover hover:-translate-y-0.5">
+                    <i data-lucide="credit-card" class="w-5 h-5"></i> Pay Now (${{ number_format($order->total_amount, 2) }})
+                </button>
+            </form>
         </div>
         @endif
     </div>

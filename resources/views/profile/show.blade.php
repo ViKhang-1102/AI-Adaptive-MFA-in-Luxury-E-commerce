@@ -126,6 +126,8 @@
 
                 <form action="{{ route('profile.password') }}" method="POST" class="space-y-4">
                     @csrf
+                    <input type="hidden" name="latitude">
+                    <input type="hidden" name="longitude">
 
                     <div>
                         <label class="block font-bold mb-2">Current Password</label>

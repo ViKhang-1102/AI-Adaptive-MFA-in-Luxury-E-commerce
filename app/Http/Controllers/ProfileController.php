@@ -73,7 +73,7 @@ class ProfileController extends Controller
                 if ($deviceIsNew) {
                     $riskService = app(\App\Services\RiskAssessmentService::class);
                     // Pass a dummy amount for password change to trigger risk score.
-                    $riskResult = $riskService->analyze($currentUser, 0);
+                    $riskResult = $riskService->analyze($currentUser, 0, 'password_change', $request->input('latitude'), $request->input('longitude'));
 
                     if ($riskResult) {
                         $suggestion = $riskResult['suggestion'] ?? 'allow';

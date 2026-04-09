@@ -4,8 +4,10 @@
 <?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-8">
-        <div>
-            <a href="<?php echo e(route('seller.dashboard')); ?>" class="text-primary hover:underline mb-4 inline-block">&larr; Back to Dashboard</a>
+        <div class="flex items-center gap-4">
+            <a href="<?php echo e(route('seller.dashboard')); ?>" class="inline-flex items-center px-4 py-2 bg-white border border-neutral-200 text-neutral-700 rounded-full hover:border-gold hover:text-primary transition-all shadow-sm group">
+                <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i> Back to Dashboard
+            </a>
             <h1 class="text-3xl font-bold">My Products</h1>
         </div>
         <a href="<?php echo e(route('seller.products.create')); ?>" class="bg-primary text-white shadow-sm-soft transition-all duration-300 hover:shadow-sm-hover hover:-translate-y-0.5 px-6 py-2 rounded-md hover:bg-primary-light hover:-translate-y-0.5 transition">

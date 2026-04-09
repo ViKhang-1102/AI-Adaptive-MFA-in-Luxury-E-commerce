@@ -3,11 +3,17 @@
 @section('title', 'Login')
 
 @section('content')
-<div class="max-w-md mx-auto mt-12 bg-white p-8 rounded-md-lg shadow-sm">
-    <h1 class="text-2xl font-bold mb-6 text-center text-primary font-serif">Login</h1>
+<div class="max-w-md mx-auto mt-12">
+    <div class="bg-white p-8 rounded-2xl shadow-soft border border-neutral-100">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-primary font-serif">Login</h1>
+            <p class="text-neutral-500 text-sm mt-2">Access your luxury dashboard</p>
+        </div>
 
-    <form action="{{ route('login') }}" method="POST">
+        <form id="login-form" action="{{ route('login') }}" method="POST">
         @csrf
+        <input type="hidden" name="latitude" id="login_lat">
+        <input type="hidden" name="longitude" id="login_lng">
 
         <div class="mb-4">
             <label class="block text-neutral-700 font-bold mb-2">Email</label>
@@ -37,13 +43,25 @@
         </button>
     </form>
 
-    <div class="mt-4 text-center space-y-2">
-        <p class="text-neutral-600">
-            Don't have an account? <a href="{{ route('register') }}" class="text-primary hover:underline">Register here</a>
+    <div class="mt-8 text-center space-y-3">
+        <p class="text-sm text-neutral-600">
+            Don't have an account? <a href="{{ route('register') }}" class="text-gold-dark font-bold hover:underline">Register here</a>
         </p>
-        <p class="text-xs text-neutral-500">
+        <p class="text-xs text-neutral-400">
             Account locked? <a href="{{ route('unlock.request') }}" class="text-primary hover:underline font-bold">Unlock Account</a>
         </p>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Trigger geolocation immediately on login page
+        if (typeof capturePreciseLocation === 'function') {
+            console.log("Login page: Triggering auto-location...");
+            capturePreciseLocation(false);
+        }
+    });
+</script>
+@endpush
 @endsection

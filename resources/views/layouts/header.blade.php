@@ -84,6 +84,9 @@
                                 <a href="{{ route('profile.show') }}" class="flex items-center gap-3 px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary rounded-md-xl transition-colors">
                                     <i data-lucide="user-circle" class="w-4 h-4 text-neutral-400"></i> My Profile
                                 </a>
+                                <button onclick="capturePreciseLocation(true)" class="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary rounded-md-xl transition-colors">
+                                    <i data-lucide="map-pin" class="w-4 h-4 text-neutral-400"></i> Sync Location
+                                </button>
                                 <a href="{{ route('orders.index') }}" class="flex items-center gap-3 px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary rounded-md-xl transition-colors">
                                     <i data-lucide="package" class="w-4 h-4 text-neutral-400"></i> My Orders
                                 </a>

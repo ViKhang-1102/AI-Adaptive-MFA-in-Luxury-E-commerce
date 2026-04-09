@@ -126,6 +126,8 @@
 
                 <form action="<?php echo e(route('profile.password')); ?>" method="POST" class="space-y-4">
                     <?php echo csrf_field(); ?>
+                    <input type="hidden" name="latitude">
+                    <input type="hidden" name="longitude">
 
                     <div>
                         <label class="block font-bold mb-2">Current Password</label>

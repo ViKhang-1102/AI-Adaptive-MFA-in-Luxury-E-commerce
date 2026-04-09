@@ -14,6 +14,8 @@
 
     <form action="{{ route('orders.store') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         @csrf
+        <input type="hidden" name="latitude">
+        <input type="hidden" name="longitude">
 
         <!-- Hidden fields for Buy Now -->
         @if(request()->has('product_id'))

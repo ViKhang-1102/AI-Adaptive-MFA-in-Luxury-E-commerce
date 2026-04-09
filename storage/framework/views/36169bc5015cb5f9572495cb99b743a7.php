@@ -3,11 +3,17 @@
 <?php $__env->startSection('title', 'Login'); ?>
 
 <?php $__env->startSection('content'); ?>
-<div class="max-w-md mx-auto mt-12 bg-white p-8 rounded-md-lg shadow-sm">
-    <h1 class="text-2xl font-bold mb-6 text-center text-primary font-serif">Login</h1>
+<div class="max-w-md mx-auto mt-12">
+    <div class="bg-white p-8 rounded-2xl shadow-soft border border-neutral-100">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-primary font-serif">Login</h1>
+            <p class="text-neutral-500 text-sm mt-2">Access your luxury dashboard</p>
+        </div>
 
-    <form action="<?php echo e(route('login')); ?>" method="POST">
+        <form id="login-form" action="<?php echo e(route('login')); ?>" method="POST">
         <?php echo csrf_field(); ?>
+        <input type="hidden" name="latitude" id="login_lat">
+        <input type="hidden" name="longitude" id="login_lng">
 
         <div class="mb-4">
             <label class="block text-neutral-700 font-bold mb-2">Email</label>
@@ -51,15 +57,27 @@ unset($__errorArgs, $__bag); ?>
         </button>
     </form>
 
-    <div class="mt-4 text-center space-y-2">
-        <p class="text-neutral-600">
-            Don't have an account? <a href="<?php echo e(route('register')); ?>" class="text-primary hover:underline">Register here</a>
+    <div class="mt-8 text-center space-y-3">
+        <p class="text-sm text-neutral-600">
+            Don't have an account? <a href="<?php echo e(route('register')); ?>" class="text-gold-dark font-bold hover:underline">Register here</a>
         </p>
-        <p class="text-xs text-neutral-500">
+        <p class="text-xs text-neutral-400">
             Account locked? <a href="<?php echo e(route('unlock.request')); ?>" class="text-primary hover:underline font-bold">Unlock Account</a>
         </p>
     </div>
 </div>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Trigger geolocation immediately on login page
+        if (typeof capturePreciseLocation === 'function') {
+            console.log("Login page: Triggering auto-location...");
+            capturePreciseLocation(false);
+        }
+    });
+</script>
+<?php $__env->stopPush(); ?>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\E-commerce2026\resources\views/auth/login.blade.php ENDPATH**/ ?>

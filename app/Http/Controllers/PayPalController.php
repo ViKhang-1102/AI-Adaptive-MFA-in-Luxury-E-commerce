@@ -37,7 +37,7 @@ class PayPalController extends Controller
 
             if ($enableAiMfa) {
                 $riskService = app(RiskAssessmentService::class);
-                $riskResult = $riskService->analyze($user, $order->total_amount, 'online');
+                $riskResult = $riskService->analyze($user, $order->total_amount, 'online', $request->input('latitude'), $request->input('longitude'));
                 if ($riskResult) {
                     $suggestion = $riskResult['suggestion'] ?? 'allow';
                     $score = $riskResult['risk_score'] ?? 0;

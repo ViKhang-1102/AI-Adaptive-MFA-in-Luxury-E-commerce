@@ -1,191 +1,191 @@
-// Vietnamese Provinces, Districts, and Wards Data - Complete list
+// Vietnamese Provinces, Districts, and Wards Data - English version
 const vietnamAddresses = {
-  "Hà Nội": {
-    "Hoàn Kiếm": ["Cửa Đông", "Cửa Nam", "Cửa Bắc", "Hàng Bạc", "Hàng Buồm", "Hàng Gai", "Hàng Ngang", "Hàng Trống", "Tràng Tiền"],
-    "Ba Đình": ["Ba Đình", "Cống Vị", "Điện Biên Phủ", "Hoàn Kiếm", "Liễu Giai", "Quảng An", "Thanh Vân"],
-    "Hai Bà Trưng": ["Bách Khoa", "Hàng Bột", "Kham Thiên", "Minh Khai", "Thống Nhất"],
-    "Đống Đa": ["Hàng Bún", "Kim Mã", "Láng", "Láng Hạ", "Phương Mai", "Trung Liệt"],
-    "Tây Hồ": ["Cầu Giấy", "Hải Bà Trưng", "Phú Thượng", "Quảng An", "Thụy Khuê", "Tứ Liên", "Tú Hoa", "Vĩnh Phúc"],
-    "Cầu Giấy": ["Dịch Vọng", "Dịch Vọng Hậu", "Hoàng Minh Giám", "Liễu Giai", "Nghĩa Đô", "Nghĩa Tân", "Quan Hoa", "Yên Phụ"],
-    "Thanh Xuân": ["Khương Thượng", "Khương Đình", "Phương Liệt", "Phương Mai", "Thanh Xuân Bắc", "Thanh Xuân Nam", "Thanh Xuân Trung"],
-    "Hoàng Mai": ["Cầu Diễn", "Hạ Dình", "Hoàng Liệt", "Liên Mạc", "Mai Động", "Minh Khai", "Vĩnh Hưởng", "Viêt Hương"],
-    "Long Biên": ["Gia Thụy", "Giang Biên", "Long Biên", "Thạch Bàn", "Uyên Hưởng", "Việt Hùng"],
-    "Bắc Từ Liêm": ["Cầu Giấy", "Tây Mỗ", "Thượng Cát", "Xuân Phương"],
-    "Nam Từ Liêm": ["Hà Cầu", "Mỗ Lao", "Từ Liêm", "Cầu Giấy"],
-    "Hà Đông": ["Buôn", "Công Hoàng", "Dương Nội", "Hà Cầu", "Lê Lợi", "Minh Khai", "Thanh Am", "Tây Mỗ"],
-    "Sơn Tây": ["Ba Sao", "Chúc Sơn", "Minh Phú", "Phú Cát"],
+  "Hanoi": {
+    "Hoan Kiem District": ["Cua Dong Ward", "Cua Nam Ward", "Cua Bac Ward", "Hang Bac Ward", "Hang Buom Ward", "Hang Gai Ward", "Hang Ngang Ward", "Hang Trong Ward", "Trang Tien Ward"],
+    "Ba Dinh District": ["Ba Dinh Ward", "Cong Vi Ward", "Dien Bien Phu Ward", "Hoan Kiem Ward", "Lieu Giai Ward", "Quang An Ward", "Thanh Van Ward"],
+    "Hai Ba Trung District": ["Bach Khoa Ward", "Hang Bot Ward", "Kham Thien Ward", "Minh Khai Ward", "Thong Nhat Ward"],
+    "Dong Da District": ["Hang Bun Ward", "Kim Ma Ward", "Lang Ward", "Lang Ha Ward", "Phuong Mai Ward", "Trung Liet Ward"],
+    "Tay Ho District": ["Cau Giay Ward", "Hai Ba Trung Ward", "Phu Thuong Ward", "Quang An Ward", "Thuy Khue Ward", "Tu Lien Ward", "Tu Hoa Ward", "Vinh Phuc Ward"],
+    "Cau Giay District": ["Dich Vong Ward", "Dich Vong Hau Ward", "Hoang Minh Giam Ward", "Lieu Giai Ward", "Nghia Do Ward", "Nghia Tan Ward", "Quan Hoa Ward", "Yen Phu Ward"],
+    "Thanh Xuan District": ["Khuong Thuong Ward", "Khuong Dinh Ward", "Phuong Liet Ward", "Phuong Mai Ward", "Thanh Xuan Bac Ward", "Thanh Xuan Nam Ward", "Thanh Xuan Trung Ward"],
+    "Hoang Mai District": ["Cau Dien Ward", "Ha Dinh Ward", "Hoang Liet Ward", "Lien Mac Ward", "Mai Dong Ward", "Minh Khai Ward", "Vinh Huong Ward", "Viet Huong Ward"],
+    "Long Bien District": ["Gia Thuy Ward", "Giang Bien Ward", "Long Bien Ward", "Thach Ban Ward", "Uyen Huong Ward", "Viet Hung Ward"],
+    "Bac Tu Liem District": ["Cau Giay Ward", "Tay Mo Ward", "Thuong Cat Ward", "Xuan Phuong Ward"],
+    "Nam Tu Liem District": ["Ha Cau Ward", "Mo Lao Ward", "Tu Liem Ward", "Cau Giay Ward"],
+    "Ha Dong District": ["Buon Ward", "Cong Hoang Ward", "Duong Noi Ward", "Ha Cau Ward", "Le Loi Ward", "Minh Khai Ward", "Thanh Am Ward", "Tay Mo Ward"],
+    "Son Tay Town": ["Ba Sao Ward", "Chuc Son Ward", "Minh Phu Ward", "Phu Cat Ward"],
   },
-  "Hà Giang": {
-    "Thành Phố Hà Giang": ["Thành Phố"],
-    "Vị Xuyên": ["Thủy Toàn", "Lùng Khê"],
-    "Quản Bạ": ["Lũng Cảng", "Vân Chùa"],
+  "Ha Giang": {
+    "Ha Giang City": ["City Center"],
+    "Vi Xuyen District": ["Thuy Toan Ward", "Lung Khe Ward"],
+    "Quan Ba District": ["Lung Cang Ward", "Van Chua Ward"],
   },
-  "Cao Bằng": {
-    "Thành Phố Cao Bằng": ["Thành Phố"],
-    "Bảo Lâm": ["Pác Hà", "Rặng Đông"],
+  "Cao Bang": {
+    "Cao Bang City": ["City Center"],
+    "Bao Lam District": ["Pac Ha Ward", "Rang Dong Ward"],
   },
-  "Bắc Kạn": {
-    "Thành Phố Bắc Kạn": ["Thành Phố"],
-    "Chợ Mới": ["Tây Hợp", "Thung Nham"],
+  "Bac Kan": {
+    "Bac Kan City": ["City Center"],
+    "Cho Moi District": ["Tay Hop Ward", "Thung Nham Ward"],
   },
-  "Tuyên Quang": {
-    "Thành Phố Tuyên Quang": ["Thành Phố"],
-    "Nà Hang": ["Cẩm Thượng", "Chiêu Lương"],
+  "Tuyen Quang": {
+    "Tuyen Quang City": ["City Center"],
+    "Na Hang District": ["Cam Thuong Ward", "Chieu Luong Ward"],
   },
-  "Lào Cai": {
-    "Thành Phố Lào Cai": ["Thành Phố"],
-    "Sa Pa": ["Sa Pa", "Tả Phìn"],
+  "Lao Cai": {
+    "Lao Cai City": ["City Center"],
+    "Sa Pa Town": ["Sa Pa Ward", "Ta Phin Ward"],
   },
-  "Yên Bái": {
-    "Thành Phố Yên Bái": ["Thành Phố"],
-    "Lục Yên": ["Tân Hợp"],
+  "Yen Bai": {
+    "Yen Bai City": ["City Center"],
+    "Luc Yen District": ["Tan Hop Ward"],
   },
-  "Thái Nguyên": {
-    "Thành Phố Thái Nguyên": ["Thành Phố"],
-    "Định Hóa": ["Cẩm Thượng"],
+  "Thai Nguyen": {
+    "Thai Nguyen City": ["City Center"],
+    "Dinh Hoa District": ["Cam Thuong Ward"],
   },
-  "Phú Thọ": {
-    "Thành Phố Việt Trì": ["Thành Phố"],
-    "Phú Xuyên": ["Tân Hợp"],
+  "Phu Tho": {
+    "Viet Tri City": ["City Center"],
+    "Phu Xuyen District": ["Tan Hop Ward"],
   },
-  "Vĩnh Phúc": {
-    "Thành Phố Vĩnh Yên": ["Thành Phố"],
-    "Bình Xuyên": ["Tân Hợp"],
+  "Vinh Phuc": {
+    "Vinh Yen City": ["City Center"],
+    "Binh Xuyen District": ["Tan Hop Ward"],
   },
-  "Bắc Giang": {
-    "Thành Phố Bắc Giang": ["Thành Phố"],
-    "Yên Thế": ["Tân Hợp"],
+  "Bac Giang": {
+    "Bac Giang City": ["City Center"],
+    "Yen The District": ["Tan Hop Ward"],
   },
-  "Quảng Ninh": {
-    "Thành Phố Hạ Long": ["Thành Phố"],
-    "Cẩm Phả": ["Tân Hợp"],
+  "Quang Ninh": {
+    "Ha Long City": ["City Center"],
+    "Cam Pha City": ["Tan Hop Ward"],
   },
-  "Hải Dương": {
-    "Thành Phố Hải Dương": ["Thành Phố"],
-    "Kinh Môn": ["Tân Hợp"],
+  "Hai Duong": {
+    "Hai Duong City": ["City Center"],
+    "Kinh Mon Town": ["Tan Hop Ward"],
   },
-  "Hải Phòng": {
-    "Hồng Bàng": ["Hồng Bàng"],
-    "Ngô Quyền": ["Ngô Quyền"],
-    "Lê Chân": ["Lê Chân"],
-    "Kiến An": ["Kiến An"],
+  "Haiphong": {
+    "Hong Bang District": ["Hong Bang Ward"],
+    "Ngo Quyen District": ["Ngo Quyen Ward"],
+    "Le Chan District": ["Le Chan Ward"],
+    "Kien An District": ["Kien An Ward"],
   },
-  "Hưng Yên": {
-    "Thành Phố Hưng Yên": ["Thành Phố"],
-    "Ân Thi": ["Tân Hợp"],
+  "Hung Yen": {
+    "Hung Yen City": ["City Center"],
+    "An Thi District": ["Tan Hop Ward"],
   },
-  "Thái Bình": {
-    "Thành Phố Thái Bình": ["Thành Phố"],
-    "Kiến Xương": ["Tân Hợp"],
+  "Thai Binh": {
+    "Thai Binh City": ["City Center"],
+    "Kien Xuong District": ["Tan Hop Ward"],
   },
-  "Hà Nam": {
-    "Thành Phố Phủ Lý": ["Thành Phố"],
-    "Duy Tiên": ["Tân Hợp"],
+  "Ha Nam": {
+    "Phu Ly City": ["City Center"],
+    "Duy Tien District": ["Tan Hop Ward"],
   },
-  "Nam Định": {
-    "Thành Phố Nam Định": ["Thành Phố"],
-    "Trực Ninh": ["Tân Hợp"],
+  "Nam Dinh": {
+    "Nam Dinh City": ["City Center"],
+    "Truc Ninh District": ["Tan Hop Ward"],
   },
-  "Ninh Bình": {
-    "Thành Phố Ninh Bình": ["Thành Phố"],
-    "Hoa Lư": ["Hoa Lư"],
+  "Ninh Binh": {
+    "Ninh Binh City": ["City Center"],
+    "Hoa Lu District": ["Hoa Lu Ward"],
   },
-  "TP. Hồ Chí Minh": {
-    "Quận 1": ["Bến Nghé", "Bến Thành", "Cô Giang", "Cầu Kho", "Cầu Ông Lãnh", "Da Kao", "Nguyễn Cư Trinh"],
-    "Quận 2": ["An Khánh", "An Phú", "Bạch Đằng", "Cát Lái", "Hiệp Phú", "Phú Nhuận", "Thảo Điền", "Thanh Bình", "Thanh Lộc"],
-    "Quận 3": ["Võ Thị Sáu", "Nguyễn Trung Trực", "Calmette", "Phạm Ngũ Lão"],
-    "Quận 4": ["Bến Vân Đồn", "Cát Dài", "Long Toàn", "Phú Thuận", "Tân Hưng"],
-    "Quận 5": ["Công Quang", "Ghép", "Kiến An", "Phú Thọ", "Tân An"],
-    "Quận 6": ["Phú Trung", "Phú Thạnh", "Tân Thành", "Tân Định"],
-    "Quận 7": ["Bình Thuận", "Phú Mỹ", "Tân Hưng", "Tân Kiểng", "Tân Phong"],
-    "Quận 8": ["An Khánh", "Bình Kiên", "Bình Trị Đông", "Linh Trung", "Linh Xuân"],
-    "Quận 9": ["An Phú", "Hiệp Phú", "Long Bình", "Long Phước", "Phước Long A"],
-    "Quận 10": ["Cô Giang", "Cầu Kho", "Đa Kao"],
-    "Quận 11": ["Phú Thạnh", "Phú Trung", "Tân Thành"],
-    "Quận 12": ["Đông Hưng Thuận", "Hiệp Thành", "Tân Chánh Hiệp"],
+  "Ho Chi Minh City": {
+    "District 1": ["Ben Nghe Ward", "Ben Thanh Ward", "Co Giang Ward", "Cau Kho Ward", "Cau Ong Lanh Ward", "Da Kao Ward", "Nguyen Cu Trinh Ward"],
+    "District 2": ["An Khanh Ward", "An Phu Ward", "Bach Dang Ward", "Cat Lai Ward", "Hiep Phu Ward", "Phu Nhuan Ward", "Thao Dien Ward", "Thanh Binh Ward", "Thanh Loc Ward"],
+    "District 3": ["Vo Thi Sau Ward", "Nguyen Trung Truc Ward", "Calmette Ward", "Pham Ngu Lao Ward"],
+    "District 4": ["Ben Van Don Ward", "Cat Dai Ward", "Long Toan Ward", "Phu Thuan Ward", "Tan Hung Ward"],
+    "District 5": ["Cong Quang Ward", "Ghep Ward", "Kien An Ward", "Phu Tho Ward", "Tan An Ward"],
+    "District 6": ["Phu Trung Ward", "Phu Thanh Ward", "Tan Thanh Ward", "Tan Dinh Ward"],
+    "District 7": ["Binh Thuan Ward", "Phu My Ward", "Tan Hung Ward", "Tan Kieng Ward", "Tan Phong Ward"],
+    "District 8": ["An Khanh Ward", "Binh Kien Ward", "Binh Tri Dong Ward", "Linh Trung Ward", "Linh Xuan Ward"],
+    "District 9": ["An Phu Ward", "Hiep Phu Ward", "Long Binh Ward", "Long Phuoc Ward", "Phuoc Long A Ward"],
+    "District 10": ["Co Giang Ward", "Cau Kho Ward", "Da Kao Ward"],
+    "District 11": ["Phu Thanh Ward", "Phu Trung Ward", "Tan Thanh Ward"],
+    "District 12": ["Dong Hung Thuan Ward", "Hiep Thanh Ward", "Tan Chanh Hiep Ward"],
   },
-  "Bình Dương": {
-    "Thành Phố Thủ Dầu Một": ["Thành Phố"],
-    "Bến Cát": ["Tân Hợp"],
+  "Binh Duong": {
+    "Thu Dau Mot City": ["City Center"],
+    "Ben Cat Town": ["Tan Hop Ward"],
   },
-  "Bình Phước": {
-    "Thành Phố Đồng Xoài": ["Thành Phố"],
+  "Binh Phuoc": {
+    "Dong Xoai City": ["City Center"],
   },
-  "Đồng Nai": {
-    "Thành Phố Biên Hòa": ["Thành Phố"],
+  "Dong Nai": {
+    "Bien Hoa City": ["City Center"],
   },
-  "Tây Ninh": {
-    "Thành Phố Tây Ninh": ["Thành Phố"],
+  "Tay Ninh": {
+    "Tay Ninh City": ["City Center"],
   },
   "An Giang": {
-    "Thành Phố Long Xuyên": ["Thành Phố"],
+    "Long Xuyen City": ["City Center"],
   },
-  "Kiên Giang": {
-    "Thành Phố Hạ Phát": ["Thành Phố"],
+  "Kien Giang": {
+    "Rach Gia City": ["City Center"],
   },
-  "Cần Thơ": {
-    "Quận 1": ["An Hoà", "An Khánh", "Cái Khế"],
-    "Quận 2": ["Bình Thủy", "Cái Khế", "Long Hòa"],
-    "Quận 3": ["An Hòa", "Bình Thủy"],
-    "Quận 4": ["Cái Khế", "Hòa An"],
-    "Quận 5": ["Hòa Bình", "Long Tuyền"],
+  "Can Tho": {
+    "Ninh Kieu District": ["An Hoa Ward", "An Khanh Ward", "Cai Khe Ward"],
+    "Binh Thuy District": ["Binh Thuy Ward", "Cai Khe Ward", "Long Hoa Ward"],
+    "Cai Rang District": ["An Hoa Ward", "Binh Thuy Ward"],
+    "O Mon District": ["Cai Khe Ward", "Hoa An Ward"],
+    "Thot Not District": ["Hoa Binh Ward", "Long Tuyen Ward"],
   },
-  "Đà Nẵng": {
-    "Hải Châu": ["Bình Hiên", "Bình Thuận", "Hải Châu 1", "Hải Châu 2", "Nại Hiên Đông", "Thanh Bình"],
-    "Cẩm Lệ": ["Cẩm Chánh", "Cẩm Lệ"],
-    "Ngũ Hành Sơn": ["Mỹ An", "Mỹ Khê"],
-    "Liên Chiểu": ["Chính Gián", "Hoà Minh"],
+  "Da Nang": {
+    "Hai Chau District": ["Binh Hien Ward", "Binh Thuan Ward", "Hai Chau 1 Ward", "Hai Chau 2 Ward", "Nai Hien Dong Ward", "Thanh Binh Ward"],
+    "Cam Le District": ["Cam Chanh Ward", "Cam Le Ward"],
+    "Ngu Hanh Son District": ["My An Ward", "My Khe Ward"],
+    "Lien Chieu District": ["Chinh Gian Ward", "Hoa Minh Ward"],
   },
-  "Quảng Nam": {
-    "Thành Phố Tam Kỳ": ["Thành Phố"],
+  "Quang Nam": {
+    "Tam Ky City": ["City Center"],
   },
-  "Quảng Ngãi": {
-    "Thành Phố Quảng Ngãi": ["Thành Phố"],
+  "Quang Ngãi": {
+    "Quang Ngai City": ["City Center"],
   },
-  "Bình Định": {
-    "Thành Phố Quy Nhơn": ["Thành Phố"],
+  "Binh Dinh": {
+    "Quy Nhon City": ["City Center"],
   },
-  "Phú Yên": {
-    "Thành Phố Tuy Hòa": ["Thành Phố"],
+  "Phu Yen": {
+    "Tuy Hoa City": ["City Center"],
   },
-  "Khánh Hòa": {
-    "Thành Phố Nha Trang": ["Thành Phố"],
+  "Khanh Hoa": {
+    "Nha Trang City": ["City Center"],
   },
-  "Ninh Thuận": {
-    "Thành Phố Phan Rang": ["Thành Phố"],
+  "Ninh Thuan": {
+    "Phan Rang City": ["City Center"],
   },
-  "Bình Thuận": {
-    "Thành Phố Phan Thiết": ["Thành Phố"],
+  "Binh Thuan": {
+    "Phan Thiet City": ["City Center"],
   },
-  "Đắk Lắk": {
-    "Thành Phố Buôn Ma Thuột": ["Thành Phố"],
+  "Dak Lak": {
+    "Buon Ma Thuot City": ["City Center"],
   },
-  "Đắk Nông": {
-    "Thành Phố Gia Nghĩa": ["Thành Phố"],
+  "Dak Nong": {
+    "Gia Nghia City": ["City Center"],
   },
-  "Lâm Đồng": {
-    "Thành Phố Đà Lạt": ["Thành Phố"],
+  "Lam Dong": {
+    "Da Lat City": ["City Center"],
   },
-  "Hà Tĩnh": {
-    "Thành Phố Hà Tĩnh": ["Thành Phố"],
+  "Ha Tinh": {
+    "Ha Tinh City": ["City Center"],
   },
-  "Nghệ An": {
-    "Thành Phố Vinh": ["Thành Phố"],
+  "Nghe An": {
+    "Vinh City": ["City Center"],
   },
-  "Thanh Hóa": {
-    "Thành Phố Thanh Hóa": ["Thành Phố"],
+  "Thanh Hoa": {
+    "Thanh Hoa City": ["City Center"],
   },
-  "Hòa Bình": {
-    "Thành Phố Hòa Bình": ["Thành Phố"],
+  "Hoa Binh": {
+    "Hoa Binh City": ["City Center"],
   },
-  "Sơn La": {
-    "Thành Phố Sơn La": ["Thành Phố"],
+  "Son La": {
+    "Son La City": ["City Center"],
   },
-  "Điện Biên": {
-    "Thành Phố Điện Biên Phủ": ["Thành Phố"],
+  "Dien Bien": {
+    "Dien Bien Phu City": ["City Center"],
   },
-  "Lai Châu": {
-    "Thành Phố Lai Châu": ["Thành Phố"],
+  "Lai Chau": {
+    "Lai Chau City": ["City Center"],
   },
 };
 
@@ -338,38 +338,36 @@ function validateAddressForm(event) {
   
   // Store in hidden field
   document.getElementById('address').value = fullAddress;
-
   return true;
 }
 
-// Function to save checkout address
-function saveCheckoutAddress() {
-  const province = document.getElementById('checkoutProvince').value;
-  const district = document.getElementById('checkoutDistrict').value;
-  const ward = document.getElementById('checkoutWard').value;
-  const street = document.getElementById('checkoutStreet').value.trim();
+// Also handle checkout form validation
+function validateCheckoutForm(event) {
+  // If user is adding a new address during checkout
+  const addressId = document.querySelector('input[name="address_id"]:checked')?.value;
+  
+  if (!addressId) {
+    const province = document.getElementById('checkoutProvince').value;
+    const district = document.getElementById('checkoutDistrict').value;
+    const ward = document.getElementById('checkoutWard').value;
+    const street = document.getElementById('checkoutStreet').value;
+    const name = document.querySelector('input[name="recipient_name"]').value;
+    const phone = document.querySelector('input[name="recipient_phone"]').value;
 
-  if (!province || !district || !ward) {
-    alert('Please select Province/City, District, and Ward/Commune');
-    return false;
+    if (!province || !district || !ward || !street || !name || !phone) {
+      alert('Please provide complete delivery address information');
+      if (event) event.preventDefault();
+      return false;
+    }
+
+    const fullAddress = [street, ward, district, province].filter(x => x).join(', ');
+    document.getElementById('checkoutAddressHidden').value = fullAddress;
   }
-
-  // Build full address
-  const fullAddress = [street, ward, district, province].filter(x => x).join(', ');
-  
-  // Store in hidden field
-  document.getElementById('checkoutAddress').value = fullAddress;
-  
-  // Close form
-  document.getElementById('newAddressForm').classList.add('hidden');
-  
-  // Show message
-  alert('Address saved successfully');
-  
   return true;
 }
 
-// Initialize on DOM ready
-document.addEventListener('DOMContentLoaded', function() {
+// Run initializers
+document.addEventListener('DOMContentLoaded', () => {
   initAddressAutocomplete();
+  initCheckoutAddress();
 });

@@ -4,6 +4,12 @@
 
 <?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="mb-6">
+        <a href="<?php echo e(route('home')); ?>" class="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary transition-colors group">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
+            <span>Back to Home</span>
+        </a>
+    </div>
     <!-- Header -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div>
@@ -26,10 +32,6 @@
                 </select>
                 <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-light transition-colors text-sm font-medium">Filter</button>
             </form>
-
-            <a href="<?php echo e(route('home')); ?>" class="inline-flex items-center px-5 py-2.5 bg-white border border-neutral-200 text-neutral-700 rounded-full hover:border-gold hover:text-primary transition-all shadow-sm">
-                <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Back to Home
-            </a>
         </div>
     </div>
 
@@ -77,6 +79,30 @@
             </div>
             <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center group-hover:bg-orange-100 transition-colors">
                 <i data-lucide="clock" class="w-6 h-6"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seller as Customer Statistics -->
+    <h2 class="text-xl font-serif font-bold text-primary mb-6">Purchase Insights (As Buyer)</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div class="bg-white p-6 rounded-2xl shadow-soft border border-neutral-100 flex items-center justify-between group hover:border-gold/50 transition-colors">
+            <div>
+                <p class="text-sm font-medium text-neutral-500 mb-1">Items Bought</p>
+                <div class="text-3xl font-bold text-primary"><?php echo e($totalPurchaseOrders); ?></div>
+            </div>
+            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                <i data-lucide="package-check" class="w-6 h-6"></i>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-soft border border-neutral-100 flex items-center justify-between group hover:border-gold/50 transition-colors">
+            <div>
+                <p class="text-sm font-medium text-neutral-500 mb-1">Total Spent</p>
+                <div class="text-3xl font-bold text-primary">$<?php echo e(number_format($totalSpent, 2)); ?></div>
+            </div>
+            <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center group-hover:bg-purple-100 transition-colors">
+                <i data-lucide="wallet" class="w-6 h-6"></i>
             </div>
         </div>
     </div>
