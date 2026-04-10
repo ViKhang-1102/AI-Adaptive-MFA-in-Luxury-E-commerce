@@ -10,13 +10,13 @@
             <h1 class="text-3xl font-bold">My Orders</h1>
         </div>
         <div class="flex gap-2">
-            <select id="status-filter" class="px-4 py-2 border rounded-md">
-                <option value="">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="shipped">Shipped</option>
-                <option value="delivered">Delivered</option>
-                <option value="cancelled">Cancelled</option>
+            <select id="status-filter" class="px-4 py-2 border rounded-md" onchange="window.location.href = '{{ route('seller.orders.index') }}?status=' + this.value">
+                <option value="">All (Active)</option>
+                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                <option value="confirmed" {{ request('status') === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                <option value="shipped" {{ request('status') === 'shipped' ? 'selected' : '' }}>Shipped</option>
+                <option value="delivered" {{ request('status') === 'delivered' ? 'selected' : '' }}>Delivered</option>
+                <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
             </select>
         </div>
     </div>
@@ -80,7 +80,7 @@
                                         </button>
                                     </form>
                                 @endif
-                                @if(in_array($order->status, ['pending', 'confirmed']))
+                                @if(in_array($order->status, ['pending', 'confirmed', 'processing', 'paid']))
                                     <form method="POST" action="{{ route('seller.orders.cancel', $order) }}" class="inline" onsubmit="
                                         event.preventDefault(); 
                                         let reason = prompt('Please enter a reason for cancelling this order:'); 

@@ -44,6 +44,53 @@ class SupportController extends Controller
         return view('support.contact', compact('order', 'messages'));
     }
 
+    public function cancelOrder(Request $request, Order $order)
+    {
+        if ($order->customer_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if ($order->status !== 'review') {
+            return back()->with('error', 'Only orders under review can be cancelled this way.');
+        }
+
+        \Illuminate\Support\Facades\DB::transaction(function() use ($order) {
+            $user = Auth::user();
+            $cart = \App\Models\Cart::firstOrCreate(['customer_id' => $user->id]);
+
+            // 1. Move items back to cart
+            foreach ($order->items as $item) {
+                $cartItem = \App\Models\CartItem::where('cart_id', $cart->id)
+                    ->where('product_id', $item->product_id)
+                    ->first();
+
+                if ($cartItem) {
+                    $cartItem->increment('quantity', $item->quantity);
+                } else {
+                    \App\Models\CartItem::create([
+                        'cart_id' => $cart->id,
+                        'product_id' => $item->product_id,
+                        'quantity' => $item->quantity
+                    ]);
+                }
+
+                // 2. Restore stock
+                if ($item->product) {
+                    $item->product->increment('stock', $item->quantity);
+                }
+            }
+
+            // 3. Delete order and related records
+            $order->payment()->delete();
+            $order->items()->delete();
+            $order->notifications()->delete();
+            $order->walletTransactions()->delete();
+            $order->delete();
+        });
+
+        return redirect()->route('cart.index')->with('success', 'Order cancelled and items moved back to your cart.');
+    }
+
     public function submitContact(Request $request)
     {
         $validated = $request->validate([

@@ -160,7 +160,11 @@
     const unreadCountUrl = "{{ auth()->user()->isSeller() ? route('seller.messages.unread-count') : route('messages.unread-count') }}";
 
     function updateMessageBadge() {
-        fetch(unreadCountUrl)
+        fetch(unreadCountUrl, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();

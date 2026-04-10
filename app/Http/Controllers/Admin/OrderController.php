@@ -37,11 +37,16 @@ class OrderController extends Controller
     public function pending()
     {
         // Show the list of orders needing manual review
+        // We only show orders that are either in 'review' status 
+        // OR have a pending security audit AND are not yet paid/processed.
         $query = Order::with('customer', 'seller', 'items.product.images', 'securityAudit')
             ->where(function ($q) {
                 $q->where('status', 'review')
-                    ->orWhereHas('securityAudit', function ($q2) {
-                        $q2->where('result', 'pending');
+                    ->orWhere(function($q2) {
+                        $q2->whereNotIn('status', ['paid', 'processing', 'shipped', 'delivered', 'confirmed', 'canceled'])
+                           ->whereHas('securityAudit', function ($q3) {
+                               $q3->where('result', 'pending');
+                           });
                     });
             })
             ->latest();

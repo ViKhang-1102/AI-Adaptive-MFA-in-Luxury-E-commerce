@@ -9,13 +9,21 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
-        $orders = $user->ordersAsSeller()
-            ->where('status', '<>', 'review')
-            ->with('customer', 'items.product.images')
+        $query = $user->ordersAsSeller()->where('status', '<>', 'review');
+
+        // Handle status filter
+        if ($request->has('status') && $request->status !== '') {
+            $query->where('status', $request->status);
+        } else {
+            // By default, exclude cancelled orders to keep the list clean
+            $query->where('status', '<>', 'cancelled');
+        }
+
+        $orders = $query->with('customer', 'items.product.images')
             ->latest()
             ->paginate(10);
 
@@ -40,7 +48,7 @@ class OrderController extends Controller
         }
 
         $order->update([
-            'status' => 'processing',
+            'status' => 'confirmed',
             'confirmed_at' => now(),
         ]);
 
@@ -64,24 +72,57 @@ class OrderController extends Controller
             'reason' => 'required|string',
         ]);
 
-        $order->update([
-            'status' => 'cancelled',
-            'cancellation_reason' => $validated['reason'],
-            'cancelled_at' => now(),
-        ]);
+        \Illuminate\Support\Facades\DB::transaction(function() use ($order, $validated) {
+            // 1. Handle Refund if order was already paid
+            if ($order->payment_status === 'paid') {
+                $customer = $order->customer;
+                $wallet = $customer->wallet;
+                
+                if ($wallet) {
+                    $refundAmount = $order->total_amount;
+                    
+                    // Add balance back to customer wallet
+                    $wallet->increment('balance', $refundAmount);
+                    $wallet->increment('total_received', $refundAmount);
+                    
+                    // Record refund transaction
+                    \App\Models\WalletTransaction::create([
+                        'wallet_id' => $wallet->id,
+                        'type' => 'credit',
+                        'amount' => $refundAmount,
+                        'description' => "Refund for cancelled order #{$order->id} (Cancelled by Seller)",
+                        'order_id' => $order->id,
+                        'reference_type' => 'refund',
+                        'status' => 'completed'
+                    ]);
+                    
+                    $order->payment_status = 'refunded';
+                }
+            }
 
-        \App\Models\OrderNotification::create([
-            'order_id' => $order->id,
-            'customer_id' => $order->customer_id,
-            'message' => "Your order {$order->order_number} has been cancelled. Reason: {$validated['reason']}",
-        ]);
+            // 2. Update order status
+            $order->update([
+                'status' => 'cancelled',
+                'cancellation_reason' => $validated['reason'],
+                'cancelled_at' => now(),
+            ]);
 
-        // Restore stock
-        foreach ($order->items as $item) {
-            $item->product->increment('stock', $item->quantity);
-        }
+            // 3. Restore stock
+            foreach ($order->items as $item) {
+                if ($item->product) {
+                    $item->product->increment('stock', $item->quantity);
+                }
+            }
 
-        return back()->with('success', 'Order cancelled');
+            // 4. Notify customer
+            \App\Models\OrderNotification::create([
+                'order_id' => $order->id,
+                'customer_id' => $order->customer_id,
+                'message' => "Your order {$order->id} has been cancelled by the seller. Reason: {$validated['reason']}. If you paid, funds have been refunded to your wallet.",
+            ]);
+        });
+
+        return back()->with('success', 'Order cancelled and refunded if necessary');
     }
 
     public function ship(Request $request, Order $order)
@@ -137,27 +178,20 @@ class OrderController extends Controller
         if ($order->seller_id !== Auth::id()) {
             abort(403);
         }
+        
         if ($order->status !== 'cancelled') {
-            return back()->with('error', 'Only cancelled orders can be deleted');
+            return back()->with('error', 'Only cancelled orders can be deleted. Please cancel the order first.');
         }
 
-        // 1. Delete associated payment record
-        if ($order->payment) {
-            $order->payment->delete();
-        }
+        \Illuminate\Support\Facades\DB::transaction(function() use ($order) {
+            // Delete all related records explicitly
+            $order->payment()->delete();
+            $order->items()->delete();
+            $order->notifications()->delete();
+            $order->walletTransactions()->delete();
+            $order->delete();
+        });
 
-        // 2. Delete order items
-        $order->items()->delete();
-
-        // 3. Delete order notifications
-        $order->notifications()->delete();
-
-        // 4. Delete wallet transactions
-        $order->walletTransactions()->delete();
-
-        // 5. Finally delete the order
-        $order->delete();
-
-        return redirect()->route('seller.orders.index')->with('success', 'Order deleted permanently');
+        return redirect()->route('seller.orders.index')->with('success', 'Order removed permanently');
     }
 }

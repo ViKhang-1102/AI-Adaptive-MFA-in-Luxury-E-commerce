@@ -16,7 +16,6 @@ class Product extends Model
         'slug',
         'description',
         'price',
-        'discount_price',
         'discount_start_date',
         'discount_end_date',
         'discount_percent',
@@ -103,8 +102,8 @@ class Product extends Model
     public function getDiscountedPrice()
     {
         if ($this->hasDiscount()) {
-            // Calculate discount amount with proper rounding for VND (no decimals)
-            $discountAmount = round($this->price * ($this->discount_percent / 100), 0);
+            // Calculate discount amount with 2 decimal points for precision (USD)
+            $discountAmount = round($this->price * ($this->discount_percent / 100), 2);
             return $this->price - $discountAmount;
         }
         return $this->price;

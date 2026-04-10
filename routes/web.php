@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
@@ -49,7 +50,7 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 // Convenience: handle accidental GET /logout by auto-submitting a CSRF-protected POST
 Route::get('/logout', function () {
-    if (!auth()->check()) {
+    if (!Auth::check()) {
         return redirect()->route('home');
     }
     $html = '<!doctype html><html><head><meta charset="utf-8"><title>Logging out...</title></head><body>'
@@ -126,10 +127,11 @@ Route::middleware(['auth', \App\Http\Middleware\CustomerMiddleware::class])->gro
         return view('orders.success');
     })->name('orders.success');
 
-        // Contact Admin (for review/verification cases)
-        Route::get('/contact-admin', [\App\Http\Controllers\SupportController::class, 'showContactForm'])->name('support.contact');
-        Route::post('/contact-admin', [\App\Http\Controllers\SupportController::class, 'submitContact'])->name('support.contact.submit');
-    Route::get('/support/messages', [\App\Http\Controllers\SupportController::class, 'messages'])->name('support.messages');
+    // Contact Admin (for review/verification cases)
+    Route::get('/support/contact', [SupportController::class, 'showContactForm'])->name('support.contact');
+    Route::post('/support/contact', [SupportController::class, 'submitContact'])->name('support.contact.submit');
+    Route::post('/support/order/{order}/cancel', [SupportController::class, 'cancelOrder'])->name('support.order.cancel');
+    Route::get('/support/messages', [SupportController::class, 'messages'])->name('support.messages');
     Route::get('/messages', [App\Http\Controllers\MessageController::class, 'customerInbox'])->name('customer.messages.index');
     Route::get('/messages/unread/count', [App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unread-count');
     Route::get('/messages/{product}/{other}', [App\Http\Controllers\MessageController::class, 'customerConversation'])->name('customer.messages.conversation');

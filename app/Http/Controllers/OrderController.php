@@ -272,6 +272,16 @@ class OrderController extends Controller
 
         Log::info("Risk score calculated: " . $score . " Suggestion: " . $suggestion);
 
+        $isMfaVerified = Session::get('mfa_verified') === true;
+
+        // Determine final result for the audit record
+        $auditResult = 'pending';
+        if ($suggestion === 'allow' || $isMfaVerified) {
+            $auditResult = 'success';
+        } elseif ($suggestion === 'block') {
+            $auditResult = 'blocked';
+        }
+
         // Centralized Audit Log Create
         $audit = SecurityAudit::create([
             'user_id' => $user->id,
@@ -280,10 +290,11 @@ class OrderController extends Controller
             'risk_score' => $score,
             'level' => $level,
             'suggestion' => $suggestion,
-            'result' => ($suggestion === 'allow' ? 'success' : ($suggestion === 'block' ? 'blocked' : 'pending')),
+            'result' => $auditResult,
             'metadata' => [
                 'ai_enabled' => $enableAiMfa,
                 'risk_explanation' => $riskResult['explanation'] ?? null,
+                'already_verified' => $isMfaVerified,
             ],
         ]);
         $auditId = $audit->id;
@@ -293,9 +304,9 @@ class OrderController extends Controller
 
         // Check if we need to trigger MFA challenge
         // We only skip MFA if they are already verified AND it's NOT a critical risk (which requires admin review)
-        if (!Session::get('mfa_verified') && !$requiresManualReview) {
+        if (!$isMfaVerified && !$requiresManualReview) {
             if ($suggestion === 'faceid' || $suggestion === 'otp') {
-                Log::info("MFA required. Sending OTP...");
+                Log::info("MFA required for checkout. Sending OTP...");
                 $otp = rand(100000, 999999);
                 Session::put('expected_otp', $otp);
                 
@@ -305,13 +316,15 @@ class OrderController extends Controller
                 
                 try {
                     \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\MfaOtpMail($otp));
-                    Log::info("OTP Mail sent successfully.");
                 } catch (\Exception $e) {
-                    Log::error("Failed to send OTP Mail: " . $e->getMessage());
-                    // Continue even if mail fails for local testing, but usually we'd abort
+                    Log::error("Failed to send Checkout MFA OTP: " . $e->getMessage());
                 }
                 return redirect()->route('otp.verify');
             }
+        }
+        
+        if ($isMfaVerified) {
+            Log::info("Checkout proceeding with verified MFA session.");
         }
         
         Log::info("Proceeding to order creation. Manual review: " . ($requiresManualReview ? 'Yes' : 'No'));
@@ -374,10 +387,13 @@ class OrderController extends Controller
             }
 
             if ($validated['payment_method'] === 'online') {
+                // Keep mfa_verified for PayPalController
                 return redirect()->route('paypal.create', $order)->with('success', 'Order placed. Proceeding to PayPal.');
             }
 
-            Session::forget('mfa_verified');
+            if (Session::has('mfa_verified')) {
+                Session::forget('mfa_verified');
+            }
             return redirect()->route('orders.show', $order)->with('success', 'Order placed successfully');
         }
 
@@ -457,10 +473,14 @@ class OrderController extends Controller
         }
 
         if ($validated['payment_method'] === 'online' && $lastOrder) {
+            // Keep mfa_verified session for PayPalController to trust this checkout-level verification
             return redirect()->route('paypal.create', $lastOrder)->with('success', 'Order placed. Proceeding to PayPal.');
         }
 
-        Session::forget('mfa_verified');
+        // Clean up verification flag for non-online payment flows
+        if (Session::has('mfa_verified')) {
+            Session::forget('mfa_verified');
+        }
         return redirect()->route('orders.index')->with('success', 'Orders placed successfully!');
     }
 
@@ -469,16 +489,48 @@ class OrderController extends Controller
         if ($order->customer_id !== Auth::id()) { abort(403); }
         if (!$order->canBeCancelled()) { return back()->with('error', 'Order cannot be cancelled'); }
         
-        $order->update(['status' => 'cancelled', 'cancelled_at' => now()]);
-        
-        // Return stock back to product
-        foreach ($order->items as $item) {
-            if ($item->product) {
-                $item->product->increment('stock', $item->quantity);
+        \Illuminate\Support\Facades\DB::transaction(function() use ($order) {
+            // 1. Handle Refund if order was already paid
+            if ($order->payment_status === 'paid') {
+                $user = Auth::user();
+                $wallet = $user->wallet;
+                
+                if ($wallet) {
+                    $refundAmount = $order->total_amount;
+                    
+                    // Add balance back to user wallet
+                    $wallet->increment('balance', $refundAmount);
+                    $wallet->increment('total_received', $refundAmount);
+                    
+                    // Record refund transaction
+                    WalletTransaction::create([
+                        'wallet_id' => $wallet->id,
+                        'type' => 'credit',
+                        'amount' => $refundAmount,
+                        'description' => "Refund for cancelled order #{$order->order_number}",
+                        'order_id' => $order->id,
+                        'reference_type' => 'refund',
+                        'status' => 'completed'
+                    ]);
+                    
+                    $order->payment_status = 'refunded';
+                }
             }
-        }
+
+            // 2. Update order status
+            $order->status = 'cancelled';
+            $order->cancelled_at = now();
+            $order->save();
+            
+            // 3. Return stock back to product
+            foreach ($order->items as $item) {
+                if ($item->product) {
+                    $item->product->increment('stock', $item->quantity);
+                }
+            }
+        });
         
-        return back()->with('success', 'Order cancelled successfully and stock returned');
+        return back()->with('success', 'Order cancelled successfully. If paid, funds have been refunded to your wallet.');
     }
 
     public function destroy(Order $order)
@@ -486,13 +538,16 @@ class OrderController extends Controller
         if ($order->customer_id !== Auth::id()) { abort(403); }
         if ($order->status !== 'cancelled') { return back()->with('error', 'Only cancelled orders can be deleted'); }
         
-        // Items are already back to stock during cancellation in cancel() method
+        // Use database transaction for safe deletion
+        \Illuminate\Support\Facades\DB::transaction(function() use ($order) {
+            // Delete all related records explicitly to prevent foreign key issues
+            $order->payment()->delete();
+            $order->items()->delete();
+            $order->notifications()->delete();
+            $order->walletTransactions()->delete();
+            $order->delete();
+        });
         
-        if ($order->payment) { $order->payment->delete(); }
-        $order->items()->delete();
-        $order->notifications()->delete();
-        $order->walletTransactions()->delete();
-        $order->delete();
         return redirect()->route('orders.index')->with('success', 'Order removed permanently');
     }
 

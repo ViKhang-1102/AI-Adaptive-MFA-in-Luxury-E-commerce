@@ -81,13 +81,22 @@
                     @endif
 
                     @if($order && $order->status === 'review')
-                        <div class="mb-8 p-6 bg-amber-50 border border-amber-100 rounded-xl">
-                            <div class="flex items-center gap-3 text-amber-800 mb-3">
-                                <i data-lucide="alert-triangle" class="w-5 h-5"></i>
-                                <h3 class="font-bold">Action Required</h3>
+                        <div class="mb-8 p-6 bg-amber-50 border border-amber-100 rounded-xl shadow-sm">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3 text-amber-800">
+                                    <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                                    <h3 class="font-bold">Security Review in Progress</h3>
+                                </div>
+                                <form action="{{ route('support.order.cancel', $order) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this order and move items back to your cart?')">
+                                    @csrf
+                                    <button type="submit" class="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1 transition-colors">
+                                        <i data-lucide="trash-2" class="w-3 h-3"></i>
+                                        Cancel & Back to Cart
+                                    </button>
+                                </form>
                             </div>
                             <p class="text-sm text-amber-700 leading-relaxed mb-4">
-                                Your order is currently under manual review for security purposes. To expedite the process, please use the pre-filled template below to contact our verification team.
+                                Your order is currently under manual review for security purposes. You can either contact our team to verify this purchase or cancel it to return the items to your cart.
                             </p>
                             <div class="flex flex-wrap gap-2">
                                 <button type="button" onclick="useTemplate('verification')" class="text-xs font-bold px-4 py-2 bg-amber-100 text-amber-800 rounded-lg hover:bg-amber-200 transition-colors border border-amber-200">

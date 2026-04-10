@@ -210,6 +210,17 @@ class OTPController extends Controller
             $user = Auth::user();
         }
 
+        // Helper to handle error response based on request type
+        $handleError = function($message) use ($request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'reason' => $message
+                ], 422);
+            }
+            return back()->with('error', $message);
+        };
+
         // --- Server-Side Face Verification / Enrollment ---
         if ($isFaceVerified && $faceData && $user) {
             $faceService = app(FaceVerificationService::class);
@@ -231,7 +242,7 @@ class OTPController extends Controller
                 
                 if (!$enrollResult['success']) {
                     Storage::disk('public')->delete($newIdentityPath);
-                    return back()->with('error', 'Face Enrollment failed: ' . $enrollResult['reason'] . '. Please ensure good lighting and look straight.');
+                    return $handleError('Face Enrollment failed: ' . $enrollResult['reason'] . '. Please ensure good lighting and look straight.');
                 }
 
                 $user->identity_image = $newIdentityPath;
@@ -254,8 +265,9 @@ class OTPController extends Controller
                             $audit->save();
                         }
                     }
-                    return back()->with('error', $comparison['reason']);
+                    return $handleError($comparison['reason']);
                 } else {
+                    // Face verification SUCCESSFUL - mark the audit as verified and reduce risk
                     if (Session::has('pending_audit_id')) {
                         $audit = SecurityAudit::find(Session::get('pending_audit_id'));
                         if ($audit) {
@@ -273,17 +285,50 @@ class OTPController extends Controller
                                 'reason' => $comparison['reason'] ?? null,
                                 'confidence' => $comparison['confidence'] ?? null,
                                 'used_google_vision' => $comparison['used_google_vision'] ?? null,
+                                'verified_at' => now()->toDateTimeString(),
                             ];
 
+                            // **CRITICAL FIX**: Update risk score after successful face verification
+                            // Reduce risk score by 30-50 points based on confidence level
+                            $confidenceScore = (float)($comparison['confidence'] ?? 0);
+                            $riskReduction = 0;
+                            
+                            if ($confidenceScore >= 0.95) {
+                                $riskReduction = 50; // High confidence - major reduction
+                            } elseif ($confidenceScore >= 0.85) {
+                                $riskReduction = 40; // Good confidence
+                            } elseif ($confidenceScore >= 0.75) {
+                                $riskReduction = 30; // Moderate confidence
+                            } else {
+                                $riskReduction = 20; // Still reduces even with lower confidence
+                            }
+
+                            $previousScore = $audit->risk_score;
+                            $newScore = max(0, $previousScore - $riskReduction);
+                            
+                            // Update the audit record with reduced risk
+                            $audit->risk_score = $newScore;
+                            $audit->level = $this->getRiskLevel($newScore);
+                            $audit->suggestion = 'allow'; // Face verification passed, now allow
+                            $audit->result = 'success';
                             $audit->metadata = $meta;
                             $audit->save();
+
+                            Log::info("Face Verification Success - Risk Score Updated", [
+                                'user_id' => $user->id,
+                                'audit_id' => $audit->id,
+                                'previous_score' => $previousScore,
+                                'new_score' => $newScore,
+                                'reduction' => $riskReduction,
+                                'confidence' => $confidenceScore,
+                            ]);
                         }
                     }
                 }
             }
         } elseif ($isFaceVerified && !$faceData) {
             // Suspicious: face_verified is true but no image data sent
-            return back()->with('error', 'Face data missing. Please try scanning again.');
+            return $handleError('Face data missing. Please try scanning again.');
         }
 
         if (!$isFaceVerified) {
@@ -294,6 +339,16 @@ class OTPController extends Controller
 
         $expectedOtp = Session::get('expected_otp');
         $attempts = Session::get('otp_attempts', 0);
+        $pendingAuditId = Session::get('pending_audit_id');
+
+        // --- Adaptive Security: Enforce FaceID for high-risk actions ---
+        if (!$isFaceVerified && $pendingAuditId) {
+            $audit = SecurityAudit::find($pendingAuditId);
+            // If risk is critical (>= 80) and user has enrolled, they MUST use FaceID
+            if ($audit && $audit->risk_score >= 80 && $user && $user->identity_image) {
+                return $handleError('Critical risk detected. Biometric verification (FaceID) is mandatory for this action.');
+            }
+        }
 
         // --- Handle Locked Out State ---
         if ($attempts >= 3) {
@@ -301,36 +356,52 @@ class OTPController extends Controller
             if (Session::has('pending_audit_id')) {
                 SecurityAudit::where('id', Session::get('pending_audit_id'))->update(['result' => 'blocked']);
             }
-            return redirect()->route('home')->with('error', 'Maximum security verification attempts (3) exceeded. Your action has been blocked for your protection.');
+            
+            $lockoutMsg = 'Maximum security verification attempts (3) exceeded. Your action has been blocked for your protection.';
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'reason' => $lockoutMsg,
+                    'redirect' => route('home')
+                ], 422);
+            }
+            return redirect()->route('home')->with('error', $lockoutMsg);
         }
 
         // --- Verify Success ---
         if ($isFaceVerified || (int)$request->otp === (int)$expectedOtp) {
+            // Mark session as verified FIRST before clearing or calling internal methods
+            Session::put('mfa_verified', true);
+            Session::put('mfa_verified_for_login', true);
+            Session::put('device_verified', true);
+            
             // Capture pending actions before we clear the session storage
             $pendingLoginUserId = Session::get('pending_login_user_id');
             $pendingCheckoutRequest = Session::get('pending_checkout_request');
 
-            // OTP is correct, clear it
+            // Clear the specific OTP/Identity session markers but keep verification flags
             $this->clearOtpSessions();
             
-            // Mark session as verified
+            // Re-ensure flags are set after clearing (in case clearOtpSessions was modified)
             Session::put('mfa_verified', true);
-            Session::put('mfa_verified_for_login', true);
-            Session::put('device_verified', true);
-
+            
             // Persistent Device Verification (AI Learning)
             if ($user) {
-                \App\Models\VerifiedDevice::firstOrCreate([
-                    'user_id' => $user->id,
-                    'device_fingerprint' => substr(md5($request->header('User-Agent')), 0, 16),
-                ], [
-                    'ip_address' => $request->ip(),
-                    'location' => app(\App\Services\RiskAssessmentService::class)->getLocationFromIp($request->ip() ?? '127.0.0.1'),
-                    'last_used_at' => now(),
-                ]);
+                try {
+                    \App\Models\VerifiedDevice::firstOrCreate([
+                        'user_id' => $user->id,
+                        'device_fingerprint' => substr(md5($request->header('User-Agent')), 0, 16),
+                    ], [
+                        'ip_address' => $request->ip(),
+                        'location' => app(\App\Services\RiskAssessmentService::class)->getLocationFromIp($request->ip() ?? '127.0.0.1'),
+                        'last_used_at' => now(),
+                    ]);
+                } catch (\Exception $e) {
+                    Log::warning('Failed to register verified device: ' . $e->getMessage());
+                }
             }
 
-            // Mark Audit as success and associate user if this was a login interception
+            // Mark Audit as success
             if (Session::has('pending_audit_id')) {
                 $auditUpdate = ['result' => 'success'];
                 if ($isFaceVerified) {
@@ -343,6 +414,21 @@ class OTPController extends Controller
                 Session::forget('pending_audit_id');
             }
 
+            // Explicitly save session before redirects or internal calls to ensure persistence
+            Session::save();
+
+            // Helper to handle response based on request type (AJAX vs Standard Form)
+            $handleSuccessResponse = function($redirectResponse) use ($request) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Verification successful.',
+                        'redirect' => $redirectResponse->getTargetUrl()
+                    ]);
+                }
+                return $redirectResponse;
+            };
+
             // 1. Was this a Login Interception?
             if ($pendingLoginUserId) {
                 $user = User::find($pendingLoginUserId);
@@ -351,20 +437,19 @@ class OTPController extends Controller
                     $user->update(['last_login' => now()]);
                     
                     $intendedUrl = Session::get('intended_action_url');
-                    if ($intendedUrl) {
-                        return redirect()->to($intendedUrl)->with('success', 'Identity verified. Welcome back.');
-                    }
-                    return redirect()->intended(route('home'))->with('success', 'Identity verified. Welcome back.');
+                    return $handleSuccessResponse(redirect()->to($intendedUrl ?? route('home'))->with('success', 'Identity verified. Welcome back.'));
                 }
             }
 
             // 2. Was this a Checkout Interception?
             if ($pendingCheckoutRequest) {
+                Log::info("Resuming pending checkout request for user: " . ($user?->id ?? 'unknown'));
                 // Re-instantiate the request to send it back to OrderController->store
                 $internalRequest = Request::create(route('orders.store'), 'POST', $pendingCheckoutRequest);
                 $internalRequest->headers->set('X-CSRF-TOKEN', csrf_token());
 
-                return app(\App\Http\Controllers\OrderController::class)->store($internalRequest);
+                $checkoutResponse = app(\App\Http\Controllers\OrderController::class)->store($internalRequest);
+                return $handleSuccessResponse($checkoutResponse);
             }
 
             // 3. Was this a Password Change Interception?
@@ -373,16 +458,17 @@ class OTPController extends Controller
                 $internalRequest = Request::create(route('profile.password'), 'POST', $pendingPasswordChange);
                 $internalRequest->headers->set('X-CSRF-TOKEN', csrf_token());
                 
-                return app(\App\Http\Controllers\ProfileController::class)->updatePassword($internalRequest);
+                $passwordResponse = app(\App\Http\Controllers\ProfileController::class)->updatePassword($internalRequest);
+                return $handleSuccessResponse($passwordResponse);
             }
 
             // 4. Fallback to generic intended action URL (for any GET requests intercepted)
             $intendedUrl = Session::get('intended_action_url');
             if ($intendedUrl) {
-                return redirect()->to($intendedUrl)->with('success', 'Identity verified. Continuing action...');
+                return $handleSuccessResponse(redirect()->to($intendedUrl)->with('success', 'Identity verified. Continuing action...'));
             }
 
-            return redirect()->route('home')->with('success', 'Verification complete.');
+            return $handleSuccessResponse(redirect()->route('home')->with('success', 'Verification complete.'));
         }
 
         // --- Verify Failed ---
@@ -396,14 +482,30 @@ class OTPController extends Controller
 
         $remaining = 3 - $attempts;
         if ($remaining > 0) {
-            return back()->withInput()->with('error', "Invalid OTP code. You have {$remaining} attempt(s) remaining.");
+            $failMsg = "Invalid OTP code. You have {$remaining} attempt(s) remaining.";
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'reason' => $failMsg
+                ], 422);
+            }
+            return back()->withInput()->with('error', $failMsg);
         } else {
             // Block them immediately on the 3rd fail
             $this->clearOtpSessions();
             if (Session::has('pending_audit_id')) {
                 SecurityAudit::where('id', Session::get('pending_audit_id'))->update(['result' => 'blocked']);
             }
-            return redirect()->route('home')->with('error', 'Maximum security verification attempts exceeded. Action blocked.');
+            
+            $blockedMsg = 'Maximum security verification attempts exceeded. Action blocked.';
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'reason' => $blockedMsg,
+                    'redirect' => route('home')
+                ], 422);
+            }
+            return redirect()->route('home')->with('error', $blockedMsg);
         }
     }
 
@@ -419,5 +521,22 @@ class OTPController extends Controller
             'intended_action_url',
             'pending_password_change',
         ]);
+    }
+
+    /**
+     * Helper to determine risk level from score
+     */
+    private function getRiskLevel(float $score): string
+    {
+        if ($score >= 85) {
+            return 'critical';
+        }
+        if ($score >= 65) {
+            return 'high';
+        }
+        if ($score >= 30) {
+            return 'medium';
+        }
+        return 'low';
     }
 }

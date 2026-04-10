@@ -29,6 +29,9 @@ class EnsureFaceIdEnrolled
             ];
 
             if (!in_array($request->route()->getName(), $allowedRoutes)) {
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json(['error' => 'FaceID enrollment required.'], 403);
+                }
                 return redirect()->route('face.enrollment.show')
                     ->with('error', 'Please enroll your FaceID to continue using your account.');
             }

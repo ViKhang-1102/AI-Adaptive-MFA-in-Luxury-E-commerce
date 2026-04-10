@@ -32,7 +32,13 @@ class PayPalController extends Controller
         // ==========================================
         // AI Risk Scoring Perimeter (Online Payment)
         // ==========================================
-        if (!Session::get('mfa_verified')) {
+        
+        // Trust checkout-level verification if already performed for this order
+        $checkoutAudit = $order->securityAudit;
+        $isAlreadyVerified = $checkoutAudit && 
+            ($checkoutAudit->result === 'success' || $checkoutAudit->suggestion === 'allow');
+
+        if (!Session::get('mfa_verified') && !$isAlreadyVerified) {
             $enableAiMfa = env('ENABLE_AI_MFA', true);
 
             if ($enableAiMfa) {
@@ -83,15 +89,23 @@ class PayPalController extends Controller
                 Session::put('intended_action_url', route('paypal.create', $order));
 
                 Log::channel('single')->info("MFA Requested for Online Payment Order [{$order->id}]. OTP Code: [{$otp}]");
-                \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\MfaOtpMail($otp));
+                
+                try {
+                    \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\MfaOtpMail($otp));
+                } catch (\Exception $e) {
+                    Log::error("Failed to send PayPal MFA OTP: " . $e->getMessage());
+                }
 
                 Session::flash('ai_warning', "Secure Authentication Required for Online Payment.");
                 return redirect()->route('otp.verify');
             }
         }
         
-        // Clean up flag for next time
-        Session::forget('mfa_verified');
+        // MFA check passed (either skipped or verified)
+        // Only forget the flag AFTER we are sure we are proceeding to PayPal
+        if (Session::has('mfa_verified')) {
+            Session::forget('mfa_verified');
+        }
 
         // otherwise proceed to PayPal
         $provider = new PayPalClient;
@@ -163,6 +177,17 @@ class PayPalController extends Controller
      */
     public function capturePayment(Request $request, Order $order)
     {
+        // If the order is already paid, just show the success view
+        if ($order->payment_status === 'paid') {
+            $adminPercentage = SystemFee::getPlatformCommission();
+            $sellerPercentage = 100 - $adminPercentage;
+            $adminFee = round($order->total_amount * ($adminPercentage / 100), 2);
+            $sellerAmount = round($order->total_amount * ($sellerPercentage / 100), 2);
+            $sellerPayPalEmail = $order->seller?->paypal_email;
+            
+            return view('paypal.success', compact('order', 'adminFee', 'sellerAmount', 'sellerPayPalEmail', 'adminPercentage', 'sellerPercentage'));
+        }
+
         $token = $request->input('token');
 
         $provider = new PayPalClient;

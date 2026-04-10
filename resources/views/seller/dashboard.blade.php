@@ -51,7 +51,10 @@
         <!-- Orders -->
         <div class="bg-white p-6 rounded-2xl shadow-soft border border-neutral-100 flex items-center justify-between group hover:border-gold/50 transition-colors">
             <div>
-                <p class="text-sm font-medium text-neutral-500 mb-1">Total Orders</p>
+                <div class="flex items-center gap-2 mb-1">
+                    <p class="text-sm font-medium text-neutral-500">Total Orders</p>
+                    <span class="px-2 py-0.5 bg-green-50 text-green-600 text-[10px] font-bold rounded-full border border-green-100">+{{ $todayOrders }} today</span>
+                </div>
                 <div class="text-3xl font-bold text-primary group-hover:text-gold transition-colors">{{ $totalOrders }}</div>
             </div>
             <div class="w-12 h-12 bg-green-50 text-green-600 rounded-xl flex items-center justify-center group-hover:bg-green-100 transition-colors">
@@ -63,7 +66,10 @@
         <div class="bg-primary p-6 rounded-2xl shadow-hover flex items-center justify-between relative overflow-hidden group">
             <div class="absolute -right-4 -top-4 w-24 h-24 bg-gold rounded-full opacity-10 group-hover:scale-150 transition-transform duration-500"></div>
             <div class="relative z-10">
-                <p class="text-sm font-medium text-neutral-300 mb-1">Total Revenue</p>
+                <div class="flex items-center gap-2 mb-1">
+                    <p class="text-sm font-medium text-neutral-300">Total Revenue</p>
+                    <span class="px-2 py-0.5 bg-gold/20 text-gold text-[10px] font-bold rounded-full border border-gold/20">+${{ number_format($todayRevenue, 2) }} today</span>
+                </div>
                 <div class="text-3xl font-bold text-gold">${{ number_format($totalRevenue, 2) }}</div>
             </div>
             <div class="relative z-10 w-12 h-12 bg-white/10 text-gold rounded-xl flex items-center justify-center border border-white/10">

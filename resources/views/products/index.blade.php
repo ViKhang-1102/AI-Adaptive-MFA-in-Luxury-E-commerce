@@ -54,7 +54,12 @@
         <div class="lg:col-span-3">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($products as $product)
-                <a href="{{ route('products.show', $product) }}" class="block bg-white rounded-md-lg shadow-sm hover:shadow-sm-lg transition overflow-hidden text-decoration-none group">
+                <a href="{{ route('products.show', $product) }}" class="block bg-white rounded-md-lg shadow-sm hover:shadow-sm-lg transition overflow-hidden text-decoration-none group relative">
+                    @if($product->hasDiscount())
+                    <div class="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 text-xs font-bold tracking-wider z-10 shadow-sm">
+                        -{{ $product->discount_percent }}%
+                    </div>
+                    @endif
                     @if($product->images->first())
                     <img src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-full h-48 object-cover group-hover:opacity-90 transition" alt="{{ $product->name }}">
                     @else

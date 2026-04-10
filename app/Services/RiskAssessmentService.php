@@ -20,6 +20,20 @@ class RiskAssessmentService
     public function analyze(User $user, float $amount, string $paymentMethod = 'unknown', ?float $lat = null, ?float $lng = null): ?array
     {
         $transactionAmount = round($amount, 2);
+
+        // Immediate trust for Admin users to prevent false positives in the dashboard
+        if ($user->isAdmin()) {
+            return [
+                'risk_score' => 0,
+                'level' => 'low',
+                'suggestion' => 'allow',
+                'explanation' => [
+                    'score_breakdown' => ["🛡️ Administrative account: Trusted system actor (0 pts)"],
+                    'input' => ['amount' => $transactionAmount, 'role' => 'admin'],
+                ],
+            ];
+        }
+
         try {
             $loginTime = now()->toIso8601String(); 
             
@@ -71,8 +85,8 @@ class RiskAssessmentService
             
             $apiUrl = env('RISK_SCORE_API_URL', 'http://localhost:5000/risk-score');
             
-            // Reduced timeout for better UX, retry removed for now to avoid long hangs
-            $response = Http::timeout(1.5)
+            // Increased timeout for better AI processing reliability
+            $response = Http::timeout(3.0)
                 ->post($apiUrl, $payload);
             
             if ($response->successful()) {
@@ -132,71 +146,150 @@ class RiskAssessmentService
         }
     }
 
-    protected function estimateLocalRiskWithBreakdown(User $user, float $amount, string $paymentMethod = 'unknown'): array
+    public function estimateLocalRiskWithBreakdown(User $user, float $amount, string $paymentMethod = 'unknown'): array
     {
-        // Basic heuristic fallback when AI scoring is unavailable.
+        // Admin accounts have zero risk by default as they are trusted system actors
+        if ($user->isAdmin()) {
+            return [
+                'score' => 0,
+                'breakdown' => ["🛡️ Administrative account: Trusted system actor (0 pts)"],
+            ];
+        }
+
+        // Tier-based risk scoring system for balanced evaluation
         $score = 0;
         $breakdown = [];
-
-        // 1. Transaction Amount Analysis
-        if ($amount > 10000) {
-            $score += 60;
-            $breakdown[] = 'Very large transaction (> $10,000): +60 risk';
-        } elseif ($amount > 5000) {
-            $score += 50;
-            $breakdown[] = 'Large transaction ($5,000 - $10,000): +50 risk';
-        } elseif ($amount > 1000) {
-            $score += 30;
-            $breakdown[] = 'Elevated transaction ($1,000 - $5,000): +30 risk';
-        } elseif ($amount > 0) {
-            $breakdown[] = 'Small transaction (<= $1,000): +0 risk';
-        }
-
-        // 2. Online Payment Baseline
-        if ($paymentMethod === 'online' || $paymentMethod === 'paypal') {
-            $score += 20;
-            $breakdown[] = 'Digital/Online payment baseline (high fraud target): +20 risk';
-        }
-
-        // 3. New Account Suspicion (Velocity of Identity)
         $accountAgeHours = $user->created_at->diffInHours(now());
         $accountAgeDays = $user->created_at->diffInDays(now());
-        
-        if ($accountAgeHours < 24) {
-            $score += 35;
-            $breakdown[] = 'Newly created account (< 24h old): +35 risk';
-        } elseif ($accountAgeDays < 7) {
-            $score += 15;
-            $breakdown[] = 'New account (< 7 days old): +15 risk';
+
+        // === TIER DEFINITIONS (Exclusive ranges to prevent overlap) ===
+        $isMicro = $amount <= 100;
+        $isSmall = $amount > 100 && $amount <= 500;
+        $isMedium = $amount > 500 && $amount <= 2000;
+        $isLarge = $amount > 2000 && $amount <= 10000;
+        $isVeryLarge = $amount > 10000;
+
+        // ===== 1. TRANSACTION AMOUNT (Base Risk) =====
+        if ($isVeryLarge) {
+            $score += 60;
+            $breakdown[] = "🔴 Very large transaction (>$10,000): +60 pts";
+        } elseif ($isLarge) {
+            $score += 40;
+            $breakdown[] = "🟠 Large transaction ($2,000-$10,000): +40 pts";
+        } elseif ($isMedium) {
+            $score += 20;
+            $breakdown[] = "🟡 Medium transaction ($500-$2,000): +20 pts";
+        } elseif ($isSmall) {
+            $score += 5;
+            $breakdown[] = "🟢 Small transaction ($100-$500): +5 pts";
+        } else {
+            // $amount <= 100
+            $breakdown[] = $amount > 0 
+                ? "🟢 Micro transaction (<$100): +0 pts" 
+                : "ℹ️ Non-transactional activity ($0): +0 pts";
         }
 
-        // 4. Activity Velocity Check (Login/Audit Storm)
+        // ===== 2. PAYMENT METHOD (Baseline Fraud Risk) =====
+        $isCod = $paymentMethod === 'cod' || $paymentMethod === 'cash_on_delivery' || $paymentMethod === 'offline';
+        
+        if ($paymentMethod === 'online' || $paymentMethod === 'paypal') {
+            // Adjust based on transaction tier
+            if ($isVeryLarge || $isLarge) {
+                $score += 15;
+                $breakdown[] = "Digital payment (high-value): +15 pts";
+            } elseif ($isMedium) {
+                $score += 10;
+                $breakdown[] = "Digital payment (medium-value): +10 pts";
+            } else {
+                $score += 5;
+                $breakdown[] = "Digital payment (low-value): +5 pts";
+            }
+        } elseif ($isCod) {
+            // COD is inherently safer for the platform as no digital funds are at risk initially
+            if ($isMicro || $isSmall || $isMedium) {
+                // Major bonus to ensure small/medium COD orders skip MFA
+                $score -= 40;
+                $breakdown[] = "✅ Cash on Delivery (Safe Tier): -40 pts (major bonus)";
+            } else {
+                $breakdown[] = "Cash on Delivery (High Value): +0 pts";
+            }
+        } else {
+            $breakdown[] = "Unknown payment method: +0 pts";
+        }
+
+        // ===== 3. ACCOUNT AGE (Trust Signal) =====
+        if ($accountAgeHours < 1) {
+            $basePenalty = $isSmall ? 20 : 30;
+            $score += $basePenalty;
+            $breakdown[] = "⏰ Brand new account (<1 hour): +{$basePenalty} pts";
+        } elseif ($accountAgeHours < 24) {
+            // Tier-aware new account penalty
+            if ($isVeryLarge) {
+                $score += 35;
+                $breakdown[] = "⏰ New account (<24h) + very large amount: +35 pts";
+            } elseif ($isLarge) {
+                $score += 28;
+                $breakdown[] = "⏰ New account (<24h) + large amount: +28 pts";
+            } elseif ($isMedium) {
+                $score += 20;
+                $breakdown[] = "⏰ New account (<24h) + medium amount: +20 pts";
+            } elseif ($isSmall) {
+                $score += 12;
+                $breakdown[] = "⏰ New account (<24h) + small amount: +12 pts";
+            } else {
+                $score += 8;
+                $breakdown[] = "⏰ New account (<24h) + micro amount: +8 pts";
+            }
+        } elseif ($accountAgeDays < 7) {
+            $score += 10;
+            $breakdown[] = "⏰ New account (1-7 days): +10 pts";
+        } elseif ($accountAgeDays > 30) {
+            $score -= 5;
+            $breakdown[] = "✅ Established account (>30 days): -5 pts (bonus)";
+        }
+
+        // ===== 4. ACTIVITY VELOCITY (Abuse Pattern Detection) =====
+        // We exclude successful MFA verifications from velocity to avoid punishing legitimate users
         $recentAuditCount = SecurityAudit::where('user_id', $user->id)
             ->where('created_at', '>=', now()->subHour())
+            ->where('result', '<>', 'success') 
             ->count();
         
-        if ($recentAuditCount >= 10) {
-            $score += 45;
-            $breakdown[] = 'Critical activity velocity (10+ actions/hour): +45 risk';
-        } elseif ($recentAuditCount >= 4) {
-            $score += 20;
-            $breakdown[] = 'High activity velocity (4+ actions/hour): +20 risk';
+        if ($recentAuditCount >= 100) {
+            $score += 50;
+            $breakdown[] = "🚨 Extreme activity velocity (100+ actions/hour): +50 pts";
+        } elseif ($recentAuditCount >= 75) {
+            $score += 35;
+            $breakdown[] = "⚠️ Critical velocity (75+ actions/hour): +35 pts";
+        } elseif ($recentAuditCount >= 50) { // Increased from 7 to 50 for video recording
+            $score += 18;
+            $breakdown[] = "⚠️ High velocity (50+ failed/pending actions/hour): +18 pts";
         }
 
-        // 5. Daily Order Spree
+        // ===== 4b. MFA TRUST BONUS =====
+        // If the user just passed an MFA check in this session, give a massive trust bonus
+        if (Session::get('mfa_verified') === true) {
+            $score -= 50;
+            $breakdown[] = "🛡️ Identity recently verified (MFA): -50 pts (major trust)";
+        }
+
+        // ===== 5. DAILY ORDER PATTERN (Spree Detection) =====
         $dailyOrderCount = \App\Models\Order::where('customer_id', $user->id)
             ->where('created_at', '>=', now()->subDay())
             ->count();
         
-        if ($dailyOrderCount >= 5) {
+        if ($dailyOrderCount >= 8) {
             $score += 40;
-            $breakdown[] = 'Daily order spree (5+ orders/24h): +40 risk';
-        } elseif ($dailyOrderCount >= 2) {
-            $score += 15;
-            $breakdown[] = 'Frequent daily ordering (2+ orders/24h): +15 risk';
+            $breakdown[] = "📦 Extreme order spree (8+ orders/24h): +40 pts";
+        } elseif ($dailyOrderCount >= 5) {
+            $score += 25;
+            $breakdown[] = "📦 High order spree (5+ orders/24h): +25 pts";
+        } elseif ($dailyOrderCount >= 3) {
+            $score += 12;
+            $breakdown[] = "📦 Multiple orders today (3+ orders): +12 pts";
         }
 
-        // 6. Device Fingerprint & Trust
+        // ===== 6. DEVICE FINGERPRINT & TRUST =====
         $userAgent = request()->header('User-Agent');
         $deviceFingerprint = substr(md5($userAgent), 0, 16);
         
@@ -207,28 +300,45 @@ class RiskAssessmentService
         $deviceIsNew = !Session::has('device_verified') && !$isPersistentVerified;
         
         if ($deviceIsNew) {
-            $score += 45;
-            $breakdown[] = 'New or untrusted device: +45 risk';
+            if ($isVeryLarge || $isLarge) {
+                $score += 40;
+                $breakdown[] = "🖥️ New device + high-value transaction: +40 pts";
+            } elseif ($isMedium) {
+                $score += 25;
+                $breakdown[] = "🖥️ New device + medium transaction: +25 pts";
+            } elseif ($isSmall) {
+                $score += 15;
+                $breakdown[] = "🖥️ New device + small transaction: +15 pts";
+            } else {
+                $score += 8;
+                $breakdown[] = "🖥️ New device + micro transaction: +8 pts";
+            }
         } else {
-            // Only reward trusted device if account isn't super new
-            $deviceBonus = ($accountAgeHours < 24) ? 5 : 20;
+            // Trusted device reward (scaled by account age)
+            $deviceBonus = ($accountAgeHours < 24) ? 5 : 15;
             $score -= $deviceBonus;
-            $breakdown[] = "Known/verified device (Bonus adjusted for account age): -{$deviceBonus} risk";
+            $breakdown[] = "✅ Verified device: -{$deviceBonus} pts (bonus)";
         }
 
-        // 7. Spending Pattern Consistency
+        // ===== 7. SPENDING PATTERN CONSISTENCY =====
         $historicalAvgAmount = \App\Models\Order::where('customer_id', $user->id)
             ->whereIn('status', ['completed', 'delivered'])
             ->avg('total_amount') ?? 0.0;
 
         if ($historicalAvgAmount > 0) {
-            if ($amount <= $historicalAvgAmount * 1.5) {
-                $score -= 15; // Reduced from 25 to be more conservative
-                $breakdown[] = 'Amount within normal spending range: -15 risk';
+            if ($amount <= $historicalAvgAmount * 1.2) {
+                $score -= 12;
+                $breakdown[] = "📊 Within normal spending range (±20%): -12 pts (bonus)";
+            } elseif ($amount <= $historicalAvgAmount * 1.5) {
+                $score -= 5;
+                $breakdown[] = "📊 Slightly above typical spending: -5 pts";
+            } elseif ($amount > $historicalAvgAmount * 3) {
+                $score += 15;
+                $breakdown[] = "📊 Significantly above typical (3x+): +15 pts";
             }
         }
 
-        // 8. Long-term Trust Rewards
+        // ===== 8. LONG-TERM TRUST REWARDS (Loyalty) =====
         $trustedTotals = \App\Models\Order::where('customer_id', $user->id)
             ->whereIn('status', ['completed', 'delivered'])
             ->selectRaw('COUNT(*) as order_count, COALESCE(SUM(total_amount),0) as total_amount')
@@ -238,22 +348,22 @@ class RiskAssessmentService
             $orderCount = (int) $trustedTotals->order_count;
             $totalAmount = (float) $trustedTotals->total_amount;
 
-            if ($totalAmount >= 5000 && $orderCount >= 10) {
-                $score -= 35;
-                $breakdown[] = 'Elite trusted customer (>= $5,000 across 10+ orders): -35 risk';
-            } elseif ($totalAmount >= 1000 && $orderCount >= 5) {
+            if ($totalAmount >= 10000 && $orderCount >= 20) {
+                $score -= 40;
+                $breakdown[] = "⭐ VIP customer ($10k+ / 20+ orders): -40 pts (major bonus)";
+            } elseif ($totalAmount >= 5000 && $orderCount >= 10) {
+                $score -= 30;
+                $breakdown[] = "⭐ Elite customer ($5k+ / 10+ orders): -30 pts";
+            } elseif ($totalAmount >= 2000 && $orderCount >= 5) {
                 $score -= 20;
-                $breakdown[] = 'Highly trusted customer (>= $1,000 across 5+ orders): -20 risk';
+                $breakdown[] = "⭐ Trusted customer ($2k+ / 5+ orders): -20 pts";
+            } elseif ($totalAmount >= 500 && $orderCount >= 2) {
+                $score -= 10;
+                $breakdown[] = "⭐ Regular customer ($500+ / 2+ orders): -10 pts";
             }
         }
 
-        // Mature account bonus (non-stacking with new account penalty)
-        if ($accountAgeDays > 30) {
-            $score -= 5;
-            $breakdown[] = 'Mature account (> 30 days): -5 risk';
-        }
-
-        // Cap between 0..100
+        // ===== FINAL SCORE CALCULATION =====
         $finalScore = max(0, min(100, $score));
 
         return [

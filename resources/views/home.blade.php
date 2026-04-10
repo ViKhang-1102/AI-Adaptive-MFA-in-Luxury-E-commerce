@@ -4,10 +4,13 @@
 
 @section('content')
 <!-- Hero / Banners Carousel -->
-@if($banners->count() > 0)
+@php
+$activeBanners = $banners->filter(fn($b) => $b->is_active && $b->image);
+@endphp
+@if($activeBanners->count() > 0)
 <div class="relative w-full h-[80vh] min-h-[500px] overflow-hidden group mb-16">
     <div id="banner-carousel" class="w-full h-full">
-        @foreach($banners as $key => $banner)
+        @foreach($activeBanners as $key => $banner)
         <div class="banner-slide absolute inset-0 transition-opacity duration-1000 ease-in-out {{ $key === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0' }}" data-index="{{ $key }}">
             <img src="{{ asset('storage/' . $banner->image) }}" class="w-full h-full object-cover" alt="{{ $banner->title }}">
             <div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent flex items-center justify-center">
@@ -35,7 +38,7 @@
     
     <!-- Banner navigation dots -->
     <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
-        @foreach($banners as $key => $banner)
+        @foreach($activeBanners as $key => $banner)
         <button class="banner-dot w-2.5 h-2.5 rounded-full transition-all duration-300 {{ $key === 0 ? 'bg-gold w-8' : 'bg-white/50 hover:bg-white' }}" data-index="{{ $key }}"></button>
         @endforeach
     </div>
@@ -154,7 +157,7 @@
             @foreach($discountedProducts as $product)
             <a href="{{ route('products.show', $product) }}" class="group flex flex-col bg-white overflow-hidden text-decoration-none">
                 <div class="relative aspect-[4/5] bg-neutral-50 mb-4 overflow-hidden rounded-xl">
-                    @if($product->discount_percent)
+                    @if($product->hasDiscount())
                     <div class="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 text-xs font-bold tracking-wider z-10 shadow-sm">
                         -{{ $product->discount_percent }}%
                     </div>
@@ -196,6 +199,11 @@
             @foreach($topProducts as $product)
             <a href="{{ route('products.show', $product) }}" class="group flex flex-col bg-white overflow-hidden text-decoration-none">
                 <div class="relative aspect-[4/5] bg-neutral-50 mb-4 overflow-hidden rounded-xl">
+                    @if($product->hasDiscount())
+                    <div class="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 text-xs font-bold tracking-wider z-10 shadow-sm">
+                        -{{ $product->discount_percent }}%
+                    </div>
+                    @endif
                     @if($product->images->first())
                     <img src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="{{ $product->name }}">
                     @else
@@ -238,6 +246,11 @@
             @foreach($products as $product)
             <a href="{{ route('products.show', $product) }}" class="group flex flex-col bg-white overflow-hidden text-decoration-none border border-transparent hover:border-neutral-100 p-3 -m-3 rounded-2xl transition-all">
                 <div class="relative aspect-[4/5] bg-neutral-50 mb-4 overflow-hidden rounded-xl">
+                    @if($product->hasDiscount())
+                    <div class="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 text-xs font-bold tracking-wider z-10 shadow-sm">
+                        -{{ $product->discount_percent }}%
+                    </div>
+                    @endif
                     @if($product->images->first())
                     <img src="{{ asset('storage/' . $product->images->first()->image) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="{{ $product->name }}">
                     @else

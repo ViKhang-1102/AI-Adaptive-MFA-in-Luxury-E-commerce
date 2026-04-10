@@ -66,6 +66,19 @@ class DashboardController extends Controller
             ->whereIn('status', $purchaseValidStatuses)
             ->count();
 
+        // Today's Statistics
+        $todayOrders = Order::where('seller_id', $seller->id)
+            ->whereIn('status', $validStatuses)
+            ->whereDate('created_at', now())
+            ->count();
+
+        $todayRevenue = OrderItem::whereHas('order', function($query) use ($seller, $validStatuses) {
+                $query->whereIn('status', $validStatuses)
+                      ->where('seller_id', $seller->id)
+                      ->whereDate('created_at', now());
+            })
+            ->sum(DB::raw('quantity * product_price'));
+
         return view('seller.dashboard', compact(
             'totalProducts',
             'totalOrders',
@@ -74,6 +87,8 @@ class DashboardController extends Controller
             'unreadMessages',
             'totalSpent',
             'totalPurchaseOrders',
+            'todayOrders',
+            'todayRevenue',
             'month',
             'year'
         ));

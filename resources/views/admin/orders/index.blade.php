@@ -16,9 +16,12 @@
                 @php
                     $pendingCount = \App\Models\Order::where(function ($q) {
                         $q->where('status', 'review')
-                          ->orWhereHas('securityAudit', function ($q2) {
-                              $q2->where('result', 'pending');
-                          });
+                          ->orWhere(function($q2) {
+                               $q2->whereNotIn('status', ['paid', 'processing', 'shipped', 'delivered', 'confirmed', 'canceled'])
+                                  ->whereHas('securityAudit', function ($q3) {
+                                      $q3->where('result', 'pending');
+                                  });
+                            });
                     })->count();
                 @endphp
                 @if($pendingCount > 0)
