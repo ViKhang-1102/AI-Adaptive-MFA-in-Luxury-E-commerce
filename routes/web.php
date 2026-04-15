@@ -117,49 +117,61 @@ Route::middleware(['auth', \App\Http\Middleware\CustomerMiddleware::class])->gro
         ->name('paypal.create');
 
     Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
+    
+    // Orders
+    Route::get('/order/success', function () {
+        return view('orders.success');
+    })->name('orders.success');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('/orders/{order}/payment', [OrderController::class, 'payment'])->name('orders.payment');
     Route::post('/orders/{order}/verify-faceid', [OrderController::class, 'verifyFaceID'])->name('orders.verify-faceid');
     Route::post('/orders/{order}/buy-again', [OrderController::class, 'buyAgain'])->name('orders.buyAgain');
-    Route::get('/order/success', function () {
-        return view('orders.success');
-    })->name('orders.success');
 
-    // Contact Admin (for review/verification cases)
+    // Messages - Specific routes first
+    Route::get('/messages/unread/count', [App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unread-count');
+    Route::get('/messages', [App\Http\Controllers\MessageController::class, 'customerInbox'])->name('customer.messages.index');
+    Route::get('/messages/{product}/{other}', [App\Http\Controllers\MessageController::class, 'customerConversation'])->name('customer.messages.conversation');
+    Route::post('/messages/{message}/read', [App\Http\Controllers\MessageController::class, 'markAsRead'])->name('messages.read');
+
+    // Products messages
+    Route::get('/products/{product}/messages', [App\Http\Controllers\MessageController::class, 'getMessages'])->name('messages.get');
+    Route::post('/products/{product}/messages', [App\Http\Controllers\MessageController::class, 'sendMessage'])->name('messages.send');
+
+    // Support
     Route::get('/support/contact', [SupportController::class, 'showContactForm'])->name('support.contact');
     Route::post('/support/contact', [SupportController::class, 'submitContact'])->name('support.contact.submit');
     Route::post('/support/order/{order}/cancel', [SupportController::class, 'cancelOrder'])->name('support.order.cancel');
     Route::get('/support/messages', [SupportController::class, 'messages'])->name('support.messages');
-    Route::get('/messages', [App\Http\Controllers\MessageController::class, 'customerInbox'])->name('customer.messages.index');
-    Route::get('/messages/unread/count', [App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unread-count');
-    Route::get('/messages/{product}/{other}', [App\Http\Controllers\MessageController::class, 'customerConversation'])->name('customer.messages.conversation');
-    Route::get('/products/{product}/messages', [App\Http\Controllers\MessageController::class, 'getMessages'])->name('messages.get');
-    Route::post('/products/{product}/messages', [App\Http\Controllers\MessageController::class, 'sendMessage'])->name('messages.send');
-    Route::post('/messages/{message}/read', [App\Http\Controllers\MessageController::class, 'markAsRead'])->name('messages.read');
 });
 
 // Seller Routes
 Route::middleware(['auth', \App\Http\Middleware\SellerMiddleware::class])->prefix('seller')->name('seller.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Seller\DashboardController::class, 'index'])->name('dashboard');
-    Route::resource('/products', App\Http\Controllers\Seller\ProductController::class);
-    Route::resource('/categories', App\Http\Controllers\Seller\CategoryController::class);
+    
+    // Specific routes should come first
+    Route::get('/messages/api/customers', [App\Http\Controllers\MessageController::class, 'getCustomersList'])->name('messages.api.customers');
+    Route::get('/messages/unread/count', [App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unread-count');
+    Route::get('/messages/api/customers/{customerId}/products', [App\Http\Controllers\MessageController::class, 'getCustomerProducts'])->name('messages.api.customer-products');
+    Route::get('/messages', [App\Http\Controllers\MessageController::class, 'sellerInbox'])->name('messages.index');
+    Route::get('/messages/{product}/{other}', [App\Http\Controllers\MessageController::class, 'sellerConversation'])->name('messages.conversation');
+    
+    // Orders resource and specific routes
     Route::get('/orders', [App\Http\Controllers\Seller\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [App\Http\Controllers\Seller\OrderController::class, 'show'])->name('orders.show');
-    
-    // Seller message inbox & conversation
-    Route::get('/messages', [App\Http\Controllers\MessageController::class, 'sellerInbox'])->name('messages.index');
-    Route::get('/messages/unread/count', [App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unread-count');
-    Route::get('/messages/api/customers', [App\Http\Controllers\MessageController::class, 'getCustomersList'])->name('messages.api.customers');
-    Route::get('/messages/api/customers/{customerId}/products', [App\Http\Controllers\MessageController::class, 'getCustomerProducts'])->name('messages.api.customer-products');
-    Route::get('/messages/{product}/{other}', [App\Http\Controllers\MessageController::class, 'sellerConversation'])->name('messages.conversation');
     Route::post('/orders/{order}/confirm', [App\Http\Controllers\Seller\OrderController::class, 'confirm'])->name('orders.confirm');
     Route::post('/orders/{order}/cancel', [App\Http\Controllers\Seller\OrderController::class, 'cancel'])->name('orders.cancel');
     Route::delete('/orders/{order}', [App\Http\Controllers\Seller\OrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('/orders/{order}/ship', [App\Http\Controllers\Seller\OrderController::class, 'ship'])->name('orders.ship');
     Route::post('/orders/{order}/deliver', [App\Http\Controllers\Seller\OrderController::class, 'deliver'])->name('orders.deliver');
+    
+    // Resource routes
+    Route::resource('/products', App\Http\Controllers\Seller\ProductController::class);
+    Route::resource('/categories', App\Http\Controllers\Seller\CategoryController::class);
     Route::delete('/products/image/{productImage}', [App\Http\Controllers\Seller\ProductController::class, 'deleteImage'])->name('products.deleteImage');
+    
+    // Wallet routes
     Route::get('/wallet', [App\Http\Controllers\Seller\WalletController::class, 'index'])->name('wallet');
     Route::post('/wallet/withdraw', [App\Http\Controllers\Seller\WalletController::class, 'withdraw'])->name('wallet.withdraw');
 });
@@ -177,8 +189,11 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix
     Route::post('/wallet/withdraw', [App\Http\Controllers\Admin\WalletController::class, 'withdrawPlatformFee'])->name('wallet.withdraw');
     Route::post('/transactions/{transaction}/approve', [App\Http\Controllers\Admin\TransactionController::class, 'approve'])->name('transaction.approve');
     Route::post('/transactions/{transaction}/reject', [App\Http\Controllers\Admin\TransactionController::class, 'reject'])->name('transaction.reject');
-    Route::get('/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
+    // Specific routes should come FIRST (pending-verifications)
     Route::get('/orders/pending-verifications', [App\Http\Controllers\Admin\OrderController::class, 'pending'])->name('orders.pending');
+    // Generic list route
+    Route::get('/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
+    // Routes with parameters should come LAST
     Route::get('/orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{order}/verify', [App\Http\Controllers\Admin\OrderController::class, 'verify'])->name('orders.verify');
     Route::post('/orders/{order}/reject', [App\Http\Controllers\Admin\OrderController::class, 'reject'])->name('orders.reject');

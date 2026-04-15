@@ -34,6 +34,24 @@ class RiskAssessmentService
             ];
         }
 
+        // STATIC MODE: If Adaptive AI Engine is disabled, enforce OTP for everyone
+        $aiEnabled = env('ENABLE_AI_MFA', true);
+        if (!$aiEnabled) {
+            return [
+                'risk_score' => 45.0, // Fixed medium risk
+                'level' => 'medium',
+                'suggestion' => 'otp',
+                'explanation' => [
+                    'score_breakdown' => [
+                        "⚠️ Adaptive AI Engine is DISABLED (Static Mode).",
+                        "🔒 System policy: Mandatory OTP verification for all transactions.",
+                        "ℹ️ Learning and behavioral patterns are ignored in this mode."
+                    ],
+                    'input' => ['amount' => $transactionAmount, 'ai_enabled' => false],
+                ],
+            ];
+        }
+
         try {
             $loginTime = now()->toIso8601String(); 
             
