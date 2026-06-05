@@ -17,7 +17,16 @@ $source = $files[0];
 
 $storedRelative = 'identity_images/' . basename($source);
 $img = file_get_contents($source);
+try {
+    $img = \App\Services\FileEncrypter::decrypt($img);
+} catch (\Exception $e) {
+    // Keep raw if decryption fails (e.g. legacy file)
+}
 $b64 = 'data:image/jpeg;base64,' . base64_encode($img);
+
+// Save decrypted image temporarily to allow OpenCV reading it for jitter simulation
+$tempDecryptedPath = tempnam(sys_get_temp_dir(), 'dec') . '.jpg';
+file_put_contents($tempDecryptedPath, $img);
 
 // Compare against the same identity image (should match)
 $result = $service->verify($b64, $storedRelative);
@@ -54,14 +63,16 @@ function base64_from_jittered_image(string $path, float $alpha, int $beta, array
     return 'data:image/jpeg;base64,' . trim($out);
 }
 
-$jittered = base64_from_jittered_image($source, 0.7, -30, [20, 10, -15]);
+$jittered = base64_from_jittered_image($tempDecryptedPath, 0.7, -30, [20, 10, -15]);
 $result2 = $service->verify($jittered, $storedRelative);
 
 echo "FaceVerificationService result (jittered / low-light):\n";
 var_dump($result2);
 
-$jittered2 = base64_from_jittered_image($source, 1.2, 20, [-15, -10, 10]);
+$jittered2 = base64_from_jittered_image($tempDecryptedPath, 1.2, 20, [-15, -10, 10]);
 $result3 = $service->verify($jittered2, $storedRelative);
 
 echo "FaceVerificationService result (jittered / warm-light):\n";
 var_dump($result3);
+
+@unlink($tempDecryptedPath);

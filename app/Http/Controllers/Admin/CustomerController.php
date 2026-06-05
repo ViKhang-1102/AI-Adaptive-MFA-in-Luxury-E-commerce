@@ -153,4 +153,28 @@ class CustomerController extends Controller
 
         return back()->with('success', 'Customer and all associated data deleted permanently');
     }
+
+    public function showIdentityImage($user)
+    {
+        $user = User::findOrFail($user);
+        
+        if (!$user->isCustomer() || !$user->identity_image) {
+            abort(404);
+        }
+
+        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($user->identity_image)) {
+            abort(404);
+        }
+
+        $encryptedData = \Illuminate\Support\Facades\Storage::disk('public')->get($user->identity_image);
+        
+        // Try decrypting. If it fails, assume it's a legacy unencrypted image!
+        try {
+            $decrypted = \App\Services\FileEncrypter::decrypt($encryptedData);
+        } catch (\Exception $e) {
+            $decrypted = $encryptedData;
+        }
+
+        return response($decrypted)->header('Content-Type', 'image/jpeg');
+    }
 }

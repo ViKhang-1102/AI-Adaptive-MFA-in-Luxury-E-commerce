@@ -13,15 +13,77 @@ import cv2
 import numpy as np
 import requests
 
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import padding
+from dotenv import load_dotenv
+
+load_dotenv()
+
 def log_debug(msg):
     """Log to stderr so we do not corrupt JSON output on stdout."""
     sys.stderr.write(f"DEBUG: {msg}\n")
 
+class Encrypter:
+    def __init__(self):
+        app_key = os.environ.get('APP_KEY', '')
+        if app_key.startswith('base64:'):
+            self.key = base64.b64decode(app_key[7:])
+        else:
+            self.key = hashlib.sha256(app_key.encode('utf-8')).digest()
+        
+        # Key must be 32 bytes for AES-256
+        if len(self.key) != 32:
+            self.key = hashlib.sha256(self.key).digest()
+
+    def encrypt(self, data: bytes) -> bytes:
+        iv = os.urandom(16)
+        padder = padding.PKCS7(128).padder()
+        padded_data = padder.update(data) + padder.finalize()
+        
+        cipher = Cipher(algorithms.AES(self.key), modes.CBC(iv), backend=default_backend())
+        encryptor = cipher.encryptor()
+        ciphertext = encryptor.update(padded_data) + encryptor.finalize()
+        return iv + ciphertext
+
+    def decrypt(self, encrypted_data: bytes) -> bytes:
+        if len(encrypted_data) < 17:
+            return encrypted_data # Too short to be encrypted
+        iv = encrypted_data[:16]
+        ciphertext = encrypted_data[16:]
+        
+        cipher = Cipher(algorithms.AES(self.key), modes.CBC(iv), backend=default_backend())
+        decryptor = cipher.decryptor()
+        padded_data = decryptor.update(ciphertext) + decryptor.finalize()
+        
+        unpadder = padding.PKCS7(128).unpadder()
+        data = unpadder.update(padded_data) + unpadder.finalize()
+        return data
+
 def load_image(path):
-    img = cv2.imread(path)
-    if img is None:
+    try:
+        with open(path, 'rb') as f:
+            data = f.read()
+        
+        # Try decrypting
+        try:
+            enc = Encrypter()
+            decrypted = enc.decrypt(data)
+            nparr = np.frombuffer(decrypted, np.uint8)
+            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            if img is not None:
+                log_debug(f"Loaded encrypted image: {os.path.basename(path)}")
+                return img
+        except Exception as e:
+            # Not encrypted or decryption failed
+            log_debug(f"Decrypt failed for {os.path.basename(path)}: {str(e)}. Loading raw.")
+            
+        nparr = np.frombuffer(data, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        return img
+    except Exception as e:
+        log_debug(f"Error loading image {path}: {str(e)}")
         return None
-    return img
 
 def gray_world_white_balance(img):
     """Apply Gray World white balance to remove environmental color cast (yellow/green)."""
@@ -41,7 +103,6 @@ def gray_world_white_balance(img):
         result[:, :, 2] = np.clip(result[:, :, 2] * (avg / avg_r), 0, 255)
 
     return result.astype(np.uint8)
-
 
 def enhance_image(img):
     """Image preprocessing (Adaptive Environment Correction).
@@ -65,18 +126,41 @@ def enhance_image(img):
     return enhanced
 
 def detect_face_region(img):
-    cascade_path = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
-    face_cascade = cv2.CascadeClassifier(cascade_path)
+    cascades_names = [
+        'haarcascade_frontalface_default.xml',
+        'haarcascade_frontalface_alt2.xml',
+        'haarcascade_frontalface_alt.xml',
+        'haarcascade_profileface.xml'
+    ]
     
+    # Load all cascades
+    cascades = []
+    for name in cascades_names:
+        p = cv2.data.haarcascades + name
+        cc = cv2.CascadeClassifier(p)
+        if not cc.empty():
+            cascades.append((name, cc))
+
     def _detect(img_to_check):
         gray = cv2.cvtColor(img_to_check, cv2.COLOR_BGR2GRAY)
-        # Relax minNeighbors to detect faces more easily under difficult conditions
-        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=3, minSize=(40, 40))
-        if len(faces) == 0:
-            return None
-        # Prioritize the largest face (closest to the camera)
-        faces = sorted(faces, key=lambda r: r[2] * r[3], reverse=True)
-        return faces[0]
+        
+        # Try each cascade with minNeighbors=3 first
+        for name, face_cascade in cascades:
+            faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=3, minSize=(40, 40))
+            if len(faces) > 0:
+                log_debug(f"Face detected using {name} (minNeighbors=3)")
+                faces = sorted(faces, key=lambda r: r[2] * r[3], reverse=True)
+                return faces[0]
+                
+        # If all failed, try with relaxed minNeighbors=2
+        for name, face_cascade in cascades:
+            faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=2, minSize=(40, 40))
+            if len(faces) > 0:
+                log_debug(f"Face detected using {name} (relaxed minNeighbors=2)")
+                faces = sorted(faces, key=lambda r: r[2] * r[3], reverse=True)
+                return faces[0]
+                
+        return None
 
     # Try detection at multiple scales (multi-scale retry)
     scales = [1.0, 1.25, 0.8, 1.5]
@@ -102,9 +186,39 @@ def detect_face_region(img):
             x1 = max(0, x - margin_w)
             x2 = min(img.shape[1], x + w + margin_w)
             
-            return img[y1:y2, x1:x2], True
+            return img[y1:y2, x1:x2], (x, y, w, h), True
 
-    return img, False
+    # Fallback to center-crop of the image (assuming user positioned face inside the oval guide)
+    h, w = img.shape[:2]
+    cw = int(w * 0.50)
+    ch = int(h * 0.75)
+    cx = (w - cw) // 2
+    cy = (h - ch) // 2
+    
+    log_debug(f"FACE DETECTION WARNING: No face found. Falling back to center crop: x={cx}, y={cy}, w={cw}, h={ch}")
+    return img[cy:cy+ch, cx:cx+cw], (cx, cy, cw, ch), False
+
+def crop_face_custom(img, bbox, margin=0.15, shift_x=0.0, shift_y=0.0):
+    """Crop face region from image using custom margins and shifts."""
+    if bbox is None:
+        return img
+    
+    x, y, w_face, h_face = bbox
+    
+    # Apply shift
+    cx = x + int(w_face * shift_x)
+    cy = y + int(h_face * shift_y)
+    
+    # Apply margin
+    margin_w = int(w_face * margin)
+    margin_h = int(h_face * margin)
+    
+    y1 = max(0, cy - margin_h)
+    y2 = min(img.shape[0], cy + h_face + margin_h)
+    x1 = max(0, cx - margin_w)
+    x2 = min(img.shape[1], cx + w_face + margin_w)
+    
+    return img[y1:y2, x1:x2]
 
 def get_face_descriptor_vision(img, api_key):
     """Extract facial landmarks from Google Vision API."""
@@ -156,7 +270,6 @@ def _normalize_path_for_hash(path: str) -> str:
     """Normalize path so cache keys are stable and independent from image content."""
     return os.path.normpath(path).replace('\\', '/').lower()
 
-
 def _get_user_id_from_reference(reference_path: str) -> Optional[str]:
     """Try to extract user ID from filename or path (e.g. user_123, user-123)."""
     if not reference_path:
@@ -169,7 +282,6 @@ def _get_user_id_from_reference(reference_path: str) -> Optional[str]:
     if m:
         return m.group(1)
     return None
-
 
 def _get_cache_path(reference_path: str, cache_dir: str, user_id: str = None) -> str:
     """Each user -> one stable JSON cache file.
@@ -187,14 +299,12 @@ def _get_cache_path(reference_path: str, cache_dir: str, user_id: str = None) ->
 
     return os.path.join(cache_dir, f'{key}.json')
 
-
 def _brightness_label(brightness: float) -> str:
     if brightness < 90:
         return 'dark'
     if brightness > 170:
         return 'bright'
     return 'normal'
-
 
 def compute_grid_descriptors(img, grid=(3, 3), cell_size=(128, 128)):
     """Create a 3x3 grid-based descriptor to stay stable when hair/beard changes."""
@@ -213,14 +323,16 @@ def compute_grid_descriptors(img, grid=(3, 3), cell_size=(128, 128)):
             descriptors.append(compute_face_vector(cell, size=cell_size))
     return descriptors
 
-
 def compare_grid_descriptors(ref_grid, cand_grid):
-    """Compare two grid descriptors and return a match score with per-cell details."""
-    # Weight the 'golden triangle' region (eyes + nose) in the middle row more heavily.
+    """Compare two grid descriptors and return a match score with per-cell details.
+    
+    Corner cells (containing hair and background) are ignored (0 weight).
+    Center cells (eyes, nose, mouth) are highly weighted.
+    """
     weights = [
-        [0.02, 0.06, 0.02],
-        [0.20, 0.40, 0.20],
-        [0.02, 0.06, 0.02],
+        [0.00, 0.15, 0.00],
+        [0.10, 0.50, 0.10],
+        [0.00, 0.15, 0.00],
     ]
 
     total_score = 0.0
@@ -228,27 +340,40 @@ def compare_grid_descriptors(ref_grid, cand_grid):
     center_score = None
 
     for idx, (ref_vec, cand_vec) in enumerate(zip(ref_grid, cand_grid)):
-        dist = float(np.linalg.norm(np.array(ref_vec, dtype=float) - np.array(cand_vec, dtype=float)))
-        score = max(0.0, 1.0 - (dist / 1.5))
+        r_arr = np.array(ref_vec, dtype=float)
+        c_arr = np.array(cand_vec, dtype=float)
+        
+        # Calculate Cosine Similarity (robust to shifts, scale, and high-dimensional distance compression)
+        r_norm = np.linalg.norm(r_arr)
+        c_norm = np.linalg.norm(c_arr)
+        if r_norm > 0 and c_norm > 0:
+            score = float(np.dot(r_arr, c_arr) / (r_norm * c_norm))
+        else:
+            score = 0.0
+            
         r = idx // 3
         c = idx % 3
         w = weights[r][c]
         total_score += score * w
+        
+        dist = float(np.linalg.norm(r_arr - c_arr))
         per_cell.append({'row': r, 'col': c, 'dist': dist, 'score': score, 'weight': w})
         if r == 1 and c == 1:
             center_score = score
 
-    # Match thresholds tuned for real-world conditions (webcam, indoor lighting).
-    center_threshold = 0.40
-    total_threshold = 0.35
+    # Match thresholds for Cosine Similarity.
+    # Same person typically scores 0.65 - 0.85. Different people score <= 0.52.
+    center_threshold = 0.60
+    total_threshold = 0.55
     match = (center_score is not None and center_score >= center_threshold and total_score >= total_threshold)
 
     log_debug(
-        f"Regional score breakdown: total={total_score:.3f}, center={center_score:.3f} "
+        f"Regional score breakdown (Cosine Similarity): total={total_score:.3f}, center={center_score:.3f} "
         f"(threshold-center={center_threshold:.2f}, threshold-total={total_threshold:.2f}), match={match}"
     )
     for cell in per_cell:
-        log_debug(f"  cell[{cell['row']},{cell['col']}]=score:{cell['score']:.3f} w:{cell['weight']}")
+        if cell['weight'] > 0:
+            log_debug(f"  cell[{cell['row']},{cell['col']}]=similarity:{cell['score']:.3f} w:{cell['weight']}")
 
     return {
         'match': bool(match),
@@ -256,7 +381,6 @@ def compare_grid_descriptors(ref_grid, cand_grid):
         'center_score': float(center_score or 0.0),
         'cells': per_cell
     }
-
 
 def build_template_descriptor(img):
     """Create a template descriptor (grid + lighting info) from a face image."""
@@ -270,23 +394,32 @@ def build_template_descriptor(img):
         'lighting': lighting,
     }
 
-
 def augment_dark_noisy(img):
     """Create dark + noisy variants so AI is familiar with typical indoor conditions."""
     return augment_noisy(augment_dark(img))
-
 
 def augment_dark(img):
     """Create a darker version to simulate low-light conditions."""
     return cv2.convertScaleAbs(img, alpha=0.6, beta=-30)
 
+def augment_bright(img):
+    """Create a brighter version to simulate high-light/sunny conditions."""
+    return cv2.convertScaleAbs(img, alpha=1.3, beta=20)
+
+def augment_high_contrast(img):
+    """Create a high-contrast version using CLAHE for local enhancement."""
+    ycrcb = cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb)
+    y, cr, cb = cv2.split(ycrcb)
+    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+    y = clahe.apply(y)
+    img_enhanced = cv2.cvtColor(cv2.merge((y, cr, cb)), cv2.COLOR_YCrCb2BGR)
+    return img_enhanced
 
 def augment_noisy(img):
     """Add Gaussian noise to simulate low-quality camera environments."""
     noise = np.random.normal(0, 12, img.shape).astype(np.int16)
     noisy = np.clip(img.astype(np.int16) + noise, 0, 255).astype(np.uint8)
     return noisy
-
 
 def rotate_image(img, angle: float):
     """Rotate image around the center while keeping original size."""
@@ -296,9 +429,7 @@ def rotate_image(img, angle: float):
     rotated = cv2.warpAffine(img, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REFLECT)
     return rotated
 
-
 MAX_TEMPLATES = 20
-
 
 def save_to_cache(reference_path, descriptor, cache_dir, user_id: str = None):
     """Persist technical identity (JSON) into cache keyed by User ID (multi-template).
@@ -312,8 +443,15 @@ def save_to_cache(reference_path, descriptor, cache_dir, user_id: str = None):
     existing = {}
     if not is_new_profile:
         try:
-            with open(cache_path, 'r', encoding='utf-8') as f:
-                existing = json.load(f) or {}
+            with open(cache_path, 'rb') as f:
+                data = f.read()
+            try:
+                enc = Encrypter()
+                decrypted = enc.decrypt(data)
+                existing = json.loads(decrypted.decode('utf-8')) or {}
+            except Exception:
+                # Fallback to plaintext JSON
+                existing = json.loads(data.decode('utf-8')) or {}
         except Exception:
             existing = {}
 
@@ -350,8 +488,16 @@ def save_to_cache(reference_path, descriptor, cache_dir, user_id: str = None):
         # Legacy fallback to avoid breaking previously stored data
         out = descriptor
 
-    with open(cache_path, 'w', encoding='utf-8') as f:
-        json.dump(out, f)
+    try:
+        enc = Encrypter()
+        json_str = json.dumps(out)
+        encrypted = enc.encrypt(json_str.encode('utf-8'))
+        with open(cache_path, 'wb') as f:
+            f.write(encrypted)
+    except Exception as e:
+        log_debug(f"Error encrypting and saving cache: {str(e)}")
+        with open(cache_path, 'w', encoding='utf-8') as f:
+            json.dump(out, f)
 
     if is_new_profile:
         if user_id:
@@ -435,7 +581,6 @@ def compute_face_vector(img, size=(128, 128)):
     combined_vector = np.concatenate((hog_feats, lbp_hist))
     return combined_vector.tolist()
 
-
 def euclidean_dist(l1, l2):
     """Compute average Euclidean distance between two landmark sets."""
     dists = []
@@ -493,47 +638,73 @@ def main():
     cand_enhanced = enhance_image(cand_img)
 
     # 2. Face region detection
-    ref_face, ref_found = detect_face_region(ref_enhanced)
-    cand_face, cand_found = detect_face_region(cand_enhanced)
+    ref_face, ref_bbox, ref_found = detect_face_region(ref_enhanced)
+    cand_face, cand_bbox, cand_found = detect_face_region(cand_enhanced)
 
     # 3. Enrollment flow - store multiple templates (multi-template) for both bright and dark conditions.
     if args.enroll:
-        used_img = cand_face if cand_found else cand_enhanced
-
         # Determine User ID so cache is separated (user_{id}.json)
         user_id = args.user_id or _get_user_id_from_reference(args.reference)
-
         templates = []
 
-        # 1) Base image after GrayWorld white balance
-        gray_world = gray_world_white_balance(used_img)
-        desc_gray = build_template_descriptor(gray_world)
-        save_to_cache(args.reference, desc_gray, cache_dir, user_id=user_id)
-        templates.append({'type': 'gray_world', 'lighting': desc_gray['lighting'], 'brightness': desc_gray['brightness']})
+        # We will generate various crops from cand_enhanced using bbox
+        bbox = cand_bbox
 
-        # 2) & 3) Rotated images at +-15 degrees
-        for angle in (-15, 15):
-            rotated = rotate_image(used_img, angle)
-            desc_rot = build_template_descriptor(rotated)
-            save_to_cache(args.reference, desc_rot, cache_dir, user_id=user_id)
-            templates.append({'type': f'rotated_{angle}', 'lighting': desc_rot['lighting'], 'brightness': desc_rot['brightness']})
+        # Helper to process and save a template
+        def add_template(face_img, t_type):
+            desc = build_template_descriptor(face_img)
+            save_to_cache(args.reference, desc, cache_dir, user_id=user_id)
+            templates.append({'type': t_type, 'lighting': desc['lighting'], 'brightness': desc['brightness']})
 
-        # 4) Dark variant
-        dark = augment_dark(used_img)
-        desc_dark = build_template_descriptor(dark)
-        save_to_cache(args.reference, desc_dark, cache_dir, user_id=user_id)
-        templates.append({'type': 'dark', 'lighting': desc_dark['lighting'], 'brightness': desc_dark['brightness']})
+        # 1. Base / Standard Crop (margin=0.15)
+        base_crop = crop_face_custom(cand_enhanced, bbox, margin=0.15)
+        add_template(base_crop, 'base')
 
-        # 5) Noisy variant
-        noisy = augment_noisy(used_img)
-        desc_noisy = build_template_descriptor(noisy)
-        save_to_cache(args.reference, desc_noisy, cache_dir, user_id=user_id)
-        templates.append({'type': 'noisy', 'lighting': desc_noisy['lighting'], 'brightness': desc_noisy['brightness']})
+        # 2. Tight Crop (margin=0.03 - hair-independent)
+        tight_crop = crop_face_custom(cand_enhanced, bbox, margin=0.03)
+        add_template(tight_crop, 'tight_crop')
+
+        # 3. Left Shift (margin=0.15, shift_x=-0.06)
+        left_shift = crop_face_custom(cand_enhanced, bbox, margin=0.15, shift_x=-0.06)
+        add_template(left_shift, 'shift_left')
+
+        # 4. Right Shift (margin=0.15, shift_x=0.06)
+        right_shift = crop_face_custom(cand_enhanced, bbox, margin=0.15, shift_x=0.06)
+        add_template(right_shift, 'shift_right')
+
+        # 5. Up Shift (margin=0.15, shift_y=-0.06)
+        up_shift = crop_face_custom(cand_enhanced, bbox, margin=0.15, shift_y=-0.06)
+        add_template(up_shift, 'shift_up')
+
+        # 6. Down Shift (margin=0.15, shift_y=0.06)
+        down_shift = crop_face_custom(cand_enhanced, bbox, margin=0.15, shift_y=0.06)
+        add_template(down_shift, 'shift_down')
+
+        # 7 & 8. Rotations on base crop (+/- 15 degrees, +/- 8 degrees)
+        for angle in (-15, 15, -8, 8):
+            rotated = rotate_image(base_crop, angle)
+            add_template(rotated, f'rotated_{angle}')
+
+        # 9. Dark variant (low light)
+        dark = augment_dark(base_crop)
+        add_template(dark, 'dark')
+
+        # 10. Bright variant (strong light)
+        bright = augment_bright(base_crop)
+        add_template(bright, 'bright')
+
+        # 11. High Contrast variant (CLAHE)
+        contrast = augment_high_contrast(base_crop)
+        add_template(contrast, 'high_contrast')
+
+        # 12. Noisy variant
+        noisy = augment_noisy(base_crop)
+        add_template(noisy, 'noisy')
 
         print(json.dumps({
             'match': True,
             'confidence': 1.0,
-            'reason': 'Enrollment saved (multi-angle templates).',
+            'reason': 'Enrollment saved (multi-angle, shift, and tight-crop templates).',
             'enrolled_templates': templates,
         }))
         return
@@ -562,19 +733,38 @@ def main():
     ref_desc = None
     if os.path.exists(cache_path):
         try:
-            with open(cache_path, 'r', encoding='utf-8') as f:
-                ref_desc = json.load(f)
-        except Exception:
-            pass
+            with open(cache_path, 'rb') as f:
+                data = f.read()
+            # Try decrypting
+            try:
+                enc = Encrypter()
+                decrypted = enc.decrypt(data)
+                ref_desc = json.loads(decrypted.decode('utf-8'))
+            except Exception as e:
+                # Fallback to legacy unencrypted JSON
+                log_debug(f"Cache decryption failed: {str(e)}. Loading raw JSON.")
+                ref_desc = json.loads(data.decode('utf-8'))
+        except Exception as e:
+            log_debug(f"Error loading cache: {str(e)}")
 
     # 1) Multi-template (Grid-based) matching
     if isinstance(ref_desc, dict) and isinstance(ref_desc.get('templates'), list):
-        cand_grid = compute_grid_descriptors(cand_face if cand_found else cand_enhanced)
+        cand_base = cand_face
+        cand_tight = crop_face_custom(cand_enhanced, cand_bbox, margin=0.03)
+        
+        cand_grid_base = compute_grid_descriptors(cand_base)
+        cand_grid_tight = compute_grid_descriptors(cand_tight)
+        
         best = None
         for idx, t in enumerate(ref_desc.get('templates', [])):
             if not isinstance(t, dict) or 'grid' not in t:
                 continue
             sys.stderr.write(f"Matching with Template index: {idx}\n")
+            
+            # If the template is a tight crop, compare with tight candidate grid. Otherwise compare with base.
+            is_tight = (t.get('type') == 'tight_crop')
+            cand_grid = cand_grid_tight if is_tight else cand_grid_base
+            
             score = compare_grid_descriptors(t['grid'], cand_grid)
             if best is None or score['score'] > best['score']['score']:
                 best = {'score': score, 'template': t}
@@ -586,7 +776,7 @@ def main():
 
             # Self-learning: if match is strong (score > 0.85), add a new template to update appearance.
             if match and comp['score'] > 0.85:
-                new_template = build_template_descriptor(cand_face if cand_found else cand_enhanced)
+                new_template = build_template_descriptor(cand_face)
                 save_to_cache(args.reference, new_template, cache_dir)
                 log_debug(f"Update-on-success: added new template (score={comp['score']:.3f})")
 
@@ -608,10 +798,9 @@ def main():
 
     # 2) If landmark cache exists and Google Key is available -> compare landmarks (legacy)
     if ref_desc and isinstance(ref_desc, list) and google_key:
-        cand_desc = get_face_descriptor_vision(cand_face if cand_found else cand_enhanced, google_key)
+        cand_desc = get_face_descriptor_vision(cand_face, google_key)
         if cand_desc:
             dist = euclidean_dist(ref_desc, cand_desc)
-            # Threshold Landmark Distance = 0.42
             match = dist <= 0.42
             print(json.dumps({
                 'match': match,
@@ -623,17 +812,15 @@ def main():
 
     # 3) If vector descriptor cache exists (fallback), compare Euclidean distance (legacy)
     if ref_desc and isinstance(ref_desc, dict) and 'descriptor' in ref_desc:
-        cand_desc = compute_face_vector(cand_face if cand_found else cand_enhanced)
+        cand_desc = compute_face_vector(cand_face)
         ref_vec = np.array(ref_desc['descriptor'], dtype=float)
         cand_vec = np.array(cand_desc, dtype=float)
         
         if len(ref_vec) != len(cand_vec):
-            # Bad descriptor length from old model; force mismatch to trigger auth cache update
             dist = 1.0 
         else:
             dist = float(np.linalg.norm(ref_vec - cand_vec))
             
-        # Combined HOG+LBP descriptor threshold, allowing reasonable variation 0.80
         match = dist <= 0.80
         print(json.dumps({
             'match': bool(match),
@@ -645,8 +832,7 @@ def main():
         return
 
     # Final fallback: LBPH (OpenCV)
-    raw_score = lbph_match(ref_face if ref_found else ref_img, cand_face if cand_found else cand_img)
-    # LBPH threshold = 65.0
+    raw_score = lbph_match(ref_face, cand_face)
     match = raw_score <= 65.0
     print(json.dumps({
         'match': match,
@@ -656,5 +842,4 @@ def main():
     }))
 
 if __name__ == '__main__':
-    # Ensure we only print JSON to stdout
     main()

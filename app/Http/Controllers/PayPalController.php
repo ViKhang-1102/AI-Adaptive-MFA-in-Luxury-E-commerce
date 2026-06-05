@@ -35,8 +35,9 @@ class PayPalController extends Controller
         
         // Trust checkout-level verification if already performed for this order
         $checkoutAudit = $order->securityAudit;
-        $isAlreadyVerified = $checkoutAudit && 
-            ($checkoutAudit->result === 'success' || $checkoutAudit->suggestion === 'allow');
+        $isAlreadyVerified = ($checkoutAudit && 
+            ($checkoutAudit->result === 'success' || $checkoutAudit->suggestion === 'allow'))
+            || Session::get("order_{$order->id}_face_verified");
 
         if (!Session::get('mfa_verified') && !$isAlreadyVerified) {
             $enableAiMfa = env('ENABLE_AI_MFA', true);

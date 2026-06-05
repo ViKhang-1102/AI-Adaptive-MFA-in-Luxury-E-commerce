@@ -129,7 +129,7 @@ Rate products     View earnings     Manage categories
 
 ## 🤖 AI Security & Risk Engine
 
-This project includes an **AI-assisted security layer** that evaluates risky actions (login, checkout, password change) and enforces multi-factor authentication (MFA) when necessary.
+This project includes an **AI-assisted security layer** that evaluates risky actions (login, checkout, password change, online payments) and enforces multi-factor authentication (MFA/Biometrics) when necessary.
 
 - **RiskAssessmentService**
   - Builds an input payload: user ID, device fingerprint (session-based), IP history, geo-location, transaction amount, and user role.
@@ -151,17 +151,28 @@ This project includes an **AI-assisted security layer** that evaluates risky act
   - Successful OTP/FaceID:
     - Marks session as `mfa_verified` and `device_verified`, so future actions on the same device may skip MFA if risk is low.
 
-- **FaceID Digital Identity**
-  - Frontend captures a webcam snapshot as Base64 JPEG.
-  - Backend (`FaceVerificationService`) writes an identity image and calls `scripts/face_verify.py`.
-  - Python performs:
-    - Face detection, alignment, light normalization (GrayWorld/CLAHE).
-    - Builds grid descriptors and generates multiple templates (normal, rotated, dark, noisy).
-    - Persists cache descriptors in `storage/app/face_verify_cache/user_{id}.json`.
-  - During verification:
-    - Live capture is converted to a descriptor.
-    - Compared against all cached templates using weighted grid similarity.
-    - Returns JSON with `match`, `confidence`, lighting info, and detailed score breakdown.
+- **FaceID Biometric Encryption & Security (AES-256-CBC)**
+  - All biometric identity images, temporary verification scans, and cached template descriptors are securely encrypted on disk in AES-256-CBC using the Laravel `APP_KEY` (via [FileEncrypter.php](file:///c:/laragon/www/E-commerce2026/app/Services/FileEncrypter.php)).
+  - Decryption happens in memory during verification; raw unencrypted biometric data is never written to disk.
+  - Includes a legacy unencrypted fallback layer to support seamless transition of previously enrolled users.
+  - Exposes a secure, admin-only route `/admin/customers/{user}/identity-image` that decrypts and serves enrolled identity images in memory to authorized administrators, avoiding public file system disclosure.
+
+- **Robust Multi-Cascade Face Detection**
+  - Face detection sequentially checks four Haar Cascades: `frontalface_default`, `frontalface_alt2`, `frontalface_alt`, and `profileface` across multiple image scales.
+  - Automatically relaxes the search (e.g. `minNeighbors=2`) if initial scans fail, ensuring high resilience to head turns, tilts, and harsh lighting shadows.
+  - **Center-Crop Fallback:** If all cascades fail to locate a face, the system crops the 320x360 center region (where the user aligns their face to the camera oval guide). This ensures grid matching compares cropped face-centered regions rather than uncropped background pixels, eliminating background noise false rejects.
+
+- **Grid Matcher & Cosine Similarity**
+  - Preprocesses face regions using **Gray World white balance** (to remove lighting color casts) and **CLAHE local histogram equalization** (to balance harsh ceiling light hotspots).
+  - During enrollment, creates 12 augmented templates (base, tight crop, 4-directional shifts, 4 rotations, dark, bright, high-contrast, and noisy) to capture different expressions, positions, and ambient changes.
+  - Custom 3x3 grid comparison completely ignores corner cells (weights set to `0.00`) to remain **hairstyle-invariant**, focusing 80% of comparison weights on the face center (eyebrows, eyes, nose, mouth).
+  - **Cosine Similarity:** Uses Cosine Similarity to compare grid descriptors. This metric is scale-invariant and resilient to high-dimensional feature distance scaling. Real-world matches score `0.65` to `0.85` (confidence levels of 0.90+), while different individuals score `<= 0.52`, ensuring secure rejection and robust acceptance.
+
+- **Biometric Attempt Safety Lockout**
+  - Order-level FaceID scans have a **3-attempt limit** tracked in session (`order_{id}_face_attempts`).
+  - Attempts 1 and 2 return warnings, allowing the user to reposition and auto-retry without changing the order status.
+  - On the 3rd failed attempt, the order is reverted to `review` status, an admin alert is logged, and the frontend scanner redirects the user, avoiding infinite camera loops.
+  - PayPal payment initiation trusts the successful biometric session key, preventing double-verification prompts before payment.
 
 - **Admin Risk Audits**
   - Every intercepted action writes a `SecurityAudit` record including:

@@ -180,6 +180,7 @@ Route::middleware(['auth', \App\Http\Middleware\SellerMiddleware::class])->prefi
 Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::resource('/customers', App\Http\Controllers\Admin\CustomerController::class, ['except' => ['show']]);
+    Route::get('/customers/{user}/identity-image', [App\Http\Controllers\Admin\CustomerController::class, 'showIdentityImage'])->name('customers.identity-image');
     Route::resource('/sellers', App\Http\Controllers\Admin\SellerController::class, ['except' => ['show']]);
     Route::resource('/categories', App\Http\Controllers\Admin\CategoryController::class, ['except' => ['show']]);
     Route::resource('/banners', App\Http\Controllers\Admin\BannerController::class, ['except' => ['show']]);

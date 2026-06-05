@@ -91,7 +91,8 @@ class FaceVerificationService
                 mkdir($tmpDir, 0755, true);
             }
             $liveFilePath = $tmpDir . '/live_' . uniqid() . '.jpg';
-            file_put_contents($liveFilePath, base64_decode($snapshotBase64));
+            $encryptedData = \App\Services\FileEncrypter::encrypt(base64_decode($snapshotBase64));
+            file_put_contents($liveFilePath, $encryptedData);
 
             $python = env('PYTHON_BINARY');
             if ($python && !file_exists($python)) {

@@ -48,7 +48,7 @@ class OTPController extends Controller
         // Enrollment Flow
         $snapshotData = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $faceData));
         $newIdentityPath = 'identity_images/user_' . $user->id . '_' . time() . '.jpg';
-        Storage::disk('public')->put($newIdentityPath, $snapshotData);
+        Storage::disk('public')->put($newIdentityPath, \App\Services\FileEncrypter::encrypt($snapshotData));
         
         // Extract facial landmarks immediately and persist JSON cache (Digital Identity)
         $enrollResult = $faceService->verify($faceData, $newIdentityPath, true, $user->id);
@@ -184,7 +184,10 @@ class OTPController extends Controller
             return redirect()->route('home')->with('error', 'Unable to associate identity image with a user.');
         }
 
-        $path = $request->file('identity_image')->store('identities', 'public');
+        $file = $request->file('identity_image');
+        $path = 'identities/' . uniqid() . '.' . $file->getClientOriginalExtension();
+        $encryptedData = \App\Services\FileEncrypter::encrypt(file_get_contents($file->getRealPath()));
+        Storage::disk('public')->put($path, $encryptedData);
         $user->update(['identity_image' => $path]);
 
         // Mark that the user now has an identity image in this flow
@@ -235,7 +238,7 @@ class OTPController extends Controller
                 // Enrollment Flow: First time FaceID or Re-enrollment for missing cache
                 $snapshotData = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $faceData));
                 $newIdentityPath = 'identity_images/user_' . $user->id . '_' . time() . '.jpg';
-                Storage::disk('public')->put($newIdentityPath, $snapshotData);
+                Storage::disk('public')->put($newIdentityPath, \App\Services\FileEncrypter::encrypt($snapshotData));
                 
                 // Extract facial landmarks immediately and persist JSON cache (Digital Identity)
                 $enrollResult = $faceService->verify($faceData, $newIdentityPath, true, $user->id);
@@ -277,7 +280,7 @@ class OTPController extends Controller
                             if ($faceData) {
                                 $snapshotData = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $faceData));
                                 $scanPath = 'face_scans/user_' . $user->id . '_' . time() . '.jpg';
-                                Storage::disk('public')->put($scanPath, $snapshotData);
+                                Storage::disk('public')->put($scanPath, \App\Services\FileEncrypter::encrypt($snapshotData));
                                 $meta['face_scan_image'] = $scanPath;
                             }
 

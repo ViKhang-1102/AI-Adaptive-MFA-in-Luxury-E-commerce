@@ -39,6 +39,8 @@ $user = User::firstOrCreate(
 // Start session
 $session = $app['session.store'];
 $session->start();
+$app->instance('session', $session);
+$app->instance('session.store', $session);
 
 // Ensure Facades have access to app
 Illuminate\Support\Facades\Facade::setFacadeApplication($app);
@@ -52,6 +54,7 @@ $request = Request::create('/login', 'POST', [
     'password' => 'password',
 ]);
 $request->setLaravelSession($session);
+$app->instance('request', $request);
 
 /** @var \App\Http\Controllers\AuthController $authController */
 $authController = $app->make(\App\Http\Controllers\AuthController::class);
@@ -68,11 +71,21 @@ if (!$expectedOtp) {
     exit(1);
 }
 
+// Override risk score to bypass FaceID enforcement for this OTP-only test
+$pendingAuditId = $session->get('pending_audit_id');
+if ($pendingAuditId) {
+    $audit = \App\Models\SecurityAudit::find($pendingAuditId);
+    if ($audit) {
+        $audit->update(['risk_score' => 20]);
+    }
+}
+
 echo "[Login] OTP generated: {$expectedOtp}\n";
 
 // 2) Verify OTP
 $verifyRequest = Request::create('/verify-otp', 'POST', ['otp' => $expectedOtp]);
 $verifyRequest->setLaravelSession($session);
+$app->instance('request', $verifyRequest);
 
 /** @var \App\Http\Controllers\Auth\OTPController $otpController */
 $otpController = $app->make(\App\Http\Controllers\Auth\OTPController::class);
@@ -130,6 +143,7 @@ $orderRequest = Request::create('/orders', 'POST', [
     'payment_method' => 'cod',
 ]);
 $orderRequest->setLaravelSession($session);
+$app->instance('request', $orderRequest);
 
 /** @var \App\Http\Controllers\OrderController $orderController */
 $orderController = $app->make(\App\Http\Controllers\OrderController::class);

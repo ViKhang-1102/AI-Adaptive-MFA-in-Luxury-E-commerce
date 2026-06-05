@@ -36,7 +36,10 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('identity_image')) {
-            $path = $request->file('identity_image')->store('identities', 'public');
+            $file = $request->file('identity_image');
+            $path = 'identities/' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $encryptedData = \App\Services\FileEncrypter::encrypt(file_get_contents($file->getRealPath()));
+            \Illuminate\Support\Facades\Storage::disk('public')->put($path, $encryptedData);
             $validated['identity_image'] = $path;
         }
 

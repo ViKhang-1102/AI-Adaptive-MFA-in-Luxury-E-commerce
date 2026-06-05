@@ -571,7 +571,11 @@ class OrderController extends Controller
     {
         if ($order->customer_id !== Auth::id()) { abort(403); }
         if ($order->status !== 'verified_by_admin') {
-            return response()->json(['success' => false, 'reason' => 'Invalid order status for FaceID verification.'], 422);
+            return response()->json([
+                'success' => false,
+                'reason' => 'Invalid order status for FaceID verification.',
+                'redirect' => route('orders.show', $order)
+            ], 422);
         }
 
         $request->validate([
@@ -592,6 +596,9 @@ class OrderController extends Controller
             // Move order to pending so it can be paid
             $order->update(['status' => 'pending']);
 
+            // Clear attempts counter on success
+            Session::forget("order_{$order->id}_face_attempts");
+
             return response()->json([
                 'success' => true,
                 'message' => 'Biometric verification successful. Proceeding to payment...',
@@ -599,7 +606,21 @@ class OrderController extends Controller
             ]);
         }
 
-        // FAILURE: Revert order back to 'review' status and notify admin
+        // Increment attempts count
+        $attemptsKey = "order_{$order->id}_face_attempts";
+        $attempts = Session::get($attemptsKey, 0) + 1;
+        Session::put($attemptsKey, $attempts);
+
+        if ($attempts < 3) {
+            $remaining = 3 - $attempts;
+            return response()->json([
+                'success' => false,
+                'reason' => "Biometric match failed. Attempt {$attempts} of 3. Please look straight at the camera with good lighting. ({$remaining} attempts remaining)",
+            ]);
+        }
+
+        // FAILURE: After 3 failed attempts, revert order back to 'review' status and notify admin
+        Session::forget($attemptsKey);
         $order->update(['status' => 'review']);
         
         // Update the security audit if it exists
@@ -608,7 +629,7 @@ class OrderController extends Controller
             $meta = $audit->metadata ?? [];
             $meta['faceid_failure'] = [
                 'attempted_at' => now()->toDateTimeString(),
-                'reason' => $result['reason'] ?? 'Face match failed',
+                'reason' => $result['reason'] ?? 'Face match failed (3 attempts exhausted)',
             ];
             $audit->metadata = $meta;
             $audit->save();
@@ -618,12 +639,12 @@ class OrderController extends Controller
         \App\Models\OrderNotification::create([
             'order_id' => $order->id,
             'customer_id' => $order->customer_id,
-            'message' => 'CRITICAL: FaceID verification failed for a verified high-risk order. Order reverted to review.',
+            'message' => 'CRITICAL: FaceID verification failed 3 times for a verified high-risk order. Order reverted to review.',
         ]);
 
         return response()->json([
             'success' => false,
-            'reason' => 'Biometric match failed. For your security, this order has been reverted to manual review.',
+            'reason' => 'Biometric match failed 3 times. For your security, this order has been reverted to manual review.',
             'redirect' => route('orders.show', $order)
         ]);
     }
