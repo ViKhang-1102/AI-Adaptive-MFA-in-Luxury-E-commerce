@@ -4,9 +4,9 @@ FROM composer:2.8 AS build
 WORKDIR /var/www/html
 
 COPY composer.json composer.lock* ./
+COPY . ./
 RUN composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
 
-COPY . ./
 
 FROM php:8.2-apache-bookworm
 
