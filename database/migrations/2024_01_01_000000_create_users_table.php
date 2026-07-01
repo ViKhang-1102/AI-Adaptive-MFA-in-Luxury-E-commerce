@@ -11,13 +11,14 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->enum('role', ['admin', 'seller', 'customer'])->default('customer');
-            $table->string('name');
-            $table->string('email')->unique();
+            // Explicit string length limits to avoid Postgres index key size issues
+            $table->string('name', 191);
+            $table->string('email', 191)->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->string('phone')->nullable();
+            $table->string('password', 191);
+            $table->string('phone', 20)->nullable();
             $table->text('address')->nullable();
-            $table->string('avatar')->nullable();
+            $table->string('avatar', 191)->nullable();
             $table->text('bio')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamp('last_login')->nullable();
