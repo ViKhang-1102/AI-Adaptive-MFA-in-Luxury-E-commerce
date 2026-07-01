@@ -6,6 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Disable wrapping this migration in a transaction.
+     * Some Postgres DDL operations and partial failures are easier
+     * to diagnose when not run inside a transaction.
+     */
+    public $withinTransaction = false;
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
